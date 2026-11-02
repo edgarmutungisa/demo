@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-02T11:37Z",
+ "generated_at": "2026-11-02T11:40Z",
  "note": "Titles, dates and links exactly as published by each source. Always open the source and follow your District Veterinary Officer.",
  "kept_previous": false,
  "sources": [
@@ -7,33 +7,15 @@
    "id": "maaif",
    "name": "MAAIF (agriculture.go.ug)",
    "url": "https://www.agriculture.go.ug/feed/",
-   "ok": true,
-   "items_read": 10,
-   "kept": 2,
-   "too_old": 0,
-   "undated": 0,
-   "untrusted_publisher": 0,
-   "not_animal_health": 6,
-   "duplicate": 0,
-   "untrusted_names": [],
-   "newest_seen": "2026-01-12",
-   "older_than_latest": 2
+   "ok": false,
+   "error": "TimeoutError: The read operation timed out"
   },
   {
    "id": "maaif_p2",
    "name": "MAAIF (agriculture.go.ug), older posts page 2",
    "url": "https://www.agriculture.go.ug/feed/?paged=2",
-   "ok": true,
-   "items_read": 10,
-   "kept": 0,
-   "too_old": 0,
-   "undated": 0,
-   "untrusted_publisher": 0,
-   "not_animal_health": 0,
-   "duplicate": 0,
-   "untrusted_names": [],
-   "newest_seen": "2025-08-21",
-   "older_than_latest": 10
+   "ok": false,
+   "error": "HTTPError: HTTP Error 502: Bad Gateway"
   },
   {
    "id": "maaif_p3",
@@ -105,15 +87,14 @@
    "url": "https://www.agriculture.go.ug/?s=livestock&feed=rss2",
    "ok": true,
    "items_read": 10,
-   "kept": 2,
+   "kept": 4,
    "too_old": 0,
    "undated": 0,
    "untrusted_publisher": 0,
-   "not_animal_health": 1,
+   "not_animal_health": 5,
    "duplicate": 1,
    "untrusted_names": [],
-   "newest_seen": "2026-04-09",
-   "older_than_latest": 6
+   "newest_seen": "2026-04-09"
   },
   {
    "id": "maaif_s2",
@@ -125,11 +106,11 @@
    "too_old": 0,
    "undated": 0,
    "untrusted_publisher": 0,
-   "not_animal_health": 0,
+   "not_animal_health": 1,
    "duplicate": 1,
    "untrusted_names": [],
    "newest_seen": "2025-10-24",
-   "older_than_latest": 8
+   "older_than_latest": 7
   },
   {
    "id": "maaif_s3",
@@ -461,28 +442,6 @@
    ]
   },
   {
-   "id": "100c07c69991",
-   "title": "Job Advert for the Resilient Livestock Value Chain Project (ReLIV)",
-   "url": "https://www.agriculture.go.ug/?post_type=job_listing&p=29783&utm_source=rss&utm_medium=rss&utm_campaign=job-advert-for-the-resilient-livestock-value-chain-project-reliv",
-   "published": "2026-01-21T15:20Z",
-   "source": "MAAIF (agriculture.go.ug), site search: livestock",
-   "source_kind": "official",
-   "publisher": "MAAIF (agriculture.go.ug), site search: livestock",
-   "category": "livestock",
-   "districts": []
-  },
-  {
-   "id": "63ee4046d3b0",
-   "title": "RECRUITMENT OF STAFF FOR THE RESILIENT LIVESTOCK VALUE CHAIN PROJECT (ReLIV).",
-   "url": "https://www.agriculture.go.ug/sdm_downloads/recruitment-of-staff-for-the-resilient-livestock-value-chain-project-reliv/?utm_source=rss&utm_medium=rss&utm_campaign=recruitment-of-staff-for-the-resilient-livestock-value-chain-project-reliv",
-   "published": "2026-01-21T15:11Z",
-   "source": "MAAIF (agriculture.go.ug), site search: livestock",
-   "source_kind": "official",
-   "publisher": "MAAIF (agriculture.go.ug), site search: livestock",
-   "category": "livestock",
-   "districts": []
-  },
-  {
    "id": "98096305734b",
    "title": "Guidelines for provision of Artificial Insemination (AI) services in dairy and beef cattle under UCSATP E-voucher system",
    "url": "https://www.agriculture.go.ug/sdm_downloads/guidelines-ai-services/?utm_source=rss&utm_medium=rss&utm_campaign=guidelines-ai-services",
@@ -498,27 +457,46 @@
    "title": "MAAIF Activates Emergency Response Measures to Isolated Suspected Anthrax Outbreak in Rwambu Parish of Ibanda District",
    "url": "https://www.agriculture.go.ug/2025/10/20/maaif-activates-emergency-response-measures-to-isolated-suspected-anthrax-outbreak-in-rwambu-parish-of-ibanda-district/?utm_source=rss&utm_medium=rss&utm_campaign=maaif-activates-emergency-response-measures-to-isolated-suspected-anthrax-outbreak-in-rwambu-parish-of-ibanda-district",
    "published": "2025-10-20T13:15Z",
-   "source": "MAAIF (agriculture.go.ug)",
+   "source": "MAAIF (agriculture.go.ug), site search: livestock",
    "source_kind": "official",
-   "publisher": "MAAIF (agriculture.go.ug)",
+   "publisher": "MAAIF (agriculture.go.ug), site search: livestock",
    "category": "outbreak",
    "districts": [
     "Ibanda"
    ]
   },
   {
-   "id": "9ecb1bd391d0",
-   "title": "Clarification on False Reports Regarding Alleged Burning of a Tractor in Buvuma District Issued by the Ministry of Agriculture, Animal Industry and Fisheries (MAAIF)",
-   "url": "https://www.agriculture.go.ug/2025/10/13/clarification-of-false-reports-regarding-alleged-burning-of-a-tractor-in-buvuma-district-issued-by-the-ministry-of-agriculture-animal-industry-and-fisheries-maaif/?utm_source=rss&utm_medium=rss&utm_campaign=clarification-of-false-reports-regarding-alleged-burning-of-a-tractor-in-buvuma-district-issued-by-the-ministry-of-agriculture-animal-industry-and-fisheries-maaif",
-   "published": "2025-10-13T08:26Z",
-   "source": "MAAIF (agriculture.go.ug)",
+   "id": "8997e502dca5",
+   "title": "APPLICATION FOR ACCREDITATION UNDER THE LIVESTOCK VALUE CHAIN",
+   "url": "https://www.agriculture.go.ug/sdm_downloads/application-for-accreditation-under-the-livestock-value-chain-2/?utm_source=rss&utm_medium=rss&utm_campaign=application-for-accreditation-under-the-livestock-value-chain-2",
+   "published": "2025-08-04T09:34Z",
+   "source": "MAAIF (agriculture.go.ug), site search: livestock",
    "source_kind": "official",
-   "publisher": "MAAIF (agriculture.go.ug)",
+   "publisher": "MAAIF (agriculture.go.ug), site search: livestock",
    "category": "livestock",
-   "districts": [
-    "Buvuma",
-    "Kampala"
-   ]
+   "districts": []
+  },
+  {
+   "id": "ea7fd2fb86fa",
+   "title": "ITEM SPECIFICATION FOR THE PRODUCTION INPUTS AND AGRICULTURAL EQUIPMENT FOR LIVESTOCK VALUE CHAINS UNDER THE UCSATP",
+   "url": "https://www.agriculture.go.ug/sdm_downloads/item-specification-for-the-production-inputs-and-agricultural-equipment-for-livestock-value-chains-under-the-ucsatp/?utm_source=rss&utm_medium=rss&utm_campaign=item-specification-for-the-production-inputs-and-agricultural-equipment-for-livestock-value-chains-under-the-ucsatp",
+   "published": "2025-08-01T13:52Z",
+   "source": "MAAIF (agriculture.go.ug), site search: livestock",
+   "source_kind": "official",
+   "publisher": "MAAIF (agriculture.go.ug), site search: livestock",
+   "category": "livestock",
+   "districts": []
+  },
+  {
+   "id": "a0298b0aa33d",
+   "title": "Process Development of Veterinary APIs and Intermediates",
+   "url": "https://www.agriculture.go.ug/event-venue/process-development-of-veterinary-apis-and-intermediates/?utm_source=rss&utm_medium=rss&utm_campaign=process-development-of-veterinary-apis-and-intermediates",
+   "published": "2025-01-24T06:04Z",
+   "source": "MAAIF (agriculture.go.ug), site search: livestock",
+   "source_kind": "official",
+   "publisher": "MAAIF (agriculture.go.ug), site search: livestock",
+   "category": "livestock",
+   "districts": []
   }
  ]
 }
