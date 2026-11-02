@@ -157,16 +157,28 @@ def parse_feed(xml_text: str) -> List[dict]:
     return items
 
 
-def classify(title: str, summary: str = "") -> Optional[dict]:
-    """Return {category, districts} if this is a Ugandan animal-health notice, else None."""
+# For the ministry's own posts: any post whose headline is about livestock counts.
+_LIVESTOCK_TITLE = re.compile(r"\b(cattle|cows?|calves|bulls?|livestock|animals?|herds?|pigs?|piggery|goats?|sheep|poultry|chickens?|"
+                              r"dogs?|veterinar\w*|vets?|dairy|milk|abattoirs?|slaughter\w*|beef|pastures?|ranch\w*|acaricides?|"
+                              r"ticks?|fodder|hides|animal feeds?|breeding|artificial insemination)\b", re.I)
+
+
+def classify(title: str, summary: str = "", official: bool = False) -> Optional[dict]:
+    """Return {category, districts} if this is a Ugandan livestock notice, else None.
+
+    News must be about animal health in Uganda. A MAAIF post counts when it is about animal
+    health or its headline is about livestock. The label comes from the headline only."""
     text = f"{title} {summary}"
     relevant = bool(_DISEASE.search(text)) or (bool(_CONTROL.search(text)) and bool(_ANIMAL.search(title)))
+    if official and not relevant:
+        relevant = bool(_LIVESTOCK_TITLE.search(title))
     if not relevant or (_EXCLUDE.search(title) and not _DISEASE.search(title)):
         return None
     districts = sorted(set(_DISTRICT_RE.findall(text)))
-    if not districts and not re.search(r"\bUganda\b|\bUgandan\b|\bMAAIF\b", text):
+    if not official and not districts and not re.search(r"\bUganda\b|\bUgandan\b|\bMAAIF\b", text):
         return None
-    category = next((name for name, rx in _CATEGORY if rx.search(text)), "advisory")
+    default = "livestock" if official and not _DISEASE.search(title) and not _CONTROL.search(title) else "advisory"
+    category = next((name for name, rx in _CATEGORY if rx.search(title)), default)
     return {"category": category, "districts": districts}
 
 
@@ -236,7 +248,7 @@ def build_notices(feeds: Dict[str, str], now: Optional[dt.datetime] = None, stat
         title, publisher = _clean_title(it["title"], it["publisher"])
         if sid.startswith("gnews") and not _trusted(publisher):
             count(sid, "untrusted_publisher", publisher); continue
-        c = classify(title, it["summary"] if official else "")
+        c = classify(title, it["summary"] if official else "", official=official)
         if c is None:
             count(sid, "not_animal_health"); continue
         key, words = re.sub(r"[^a-z0-9]+", " ", title.lower()).strip(), _words(title)

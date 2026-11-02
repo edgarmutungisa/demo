@@ -847,7 +847,7 @@ function loadNotices(){
 const lsGet = k => { try { return localStorage.getItem(k); } catch(e){ return null; } };
 const lsSet = (k,v) => { try { localStorage.setItem(k,v); } catch(e){} };
 const nDate = iso => { const d=new Date(iso); return isNaN(d) ? "" : d.toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"}); };
-const NCAT = {quarantine:"Quarantine", vaccination:"Vaccination", outbreak:"Outbreak", advisory:"Notice", ministry:"MAAIF"};
+const NCAT = {quarantine:"Quarantine", vaccination:"Vaccination", outbreak:"Outbreak", advisory:"Notice", ministry:"MAAIF", livestock:"Livestock"};
 function noticeMine(n){ const d=(S.farm&&S.district||"").toLowerCase(); return !!d && (n.districts||[]).some(x=>x.toLowerCase()===d); }
 function unseen(){ const seen=lsGet("dst-notices-seen")||""; return (NOTICES&&NOTICES.notices||[]).filter(n=>n.published>seen); }
 function updateNoticeCount(){ const c=$("notices-cnt"), k=unseen().length; c.hidden=!k; c.textContent=k>9?"9+":String(k); }
