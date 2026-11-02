@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-02T10:38Z",
+ "generated_at": "2026-11-02T11:03Z",
  "note": "Titles, dates and links exactly as published by each source. Always open the source and follow your District Veterinary Officer.",
  "kept_previous": false,
  "sources": [
@@ -9,39 +9,34 @@
    "url": "https://www.agriculture.go.ug/feed/",
    "ok": true,
    "items_read": 10,
-   "kept": 0,
-   "too_old": 10,
+   "kept": 5,
+   "too_old": 0,
    "undated": 0,
    "untrusted_publisher": 0,
    "not_animal_health": 0,
    "duplicate": 0,
    "untrusted_names": [],
-   "newest_seen": "2026-01-12"
+   "newest_seen": "2026-01-12",
+   "older_than_latest": 5
   },
   {
    "id": "gnews_fmd",
    "name": "Google News: FMD in Uganda",
    "url": "https://news.google.com/rss/search?q=Uganda+%28%22foot+and+mouth%22+OR+%22foot-and-mouth%22+OR+FMD%29+when%3A90d&hl=en-UG&gl=UG&ceid=UG%3Aen",
    "ok": true,
-   "items_read": 43,
-   "kept": 8,
+   "items_read": 10,
+   "kept": 2,
    "too_old": 0,
    "undated": 0,
-   "untrusted_publisher": 18,
-   "not_animal_health": 15,
-   "duplicate": 2,
+   "untrusted_publisher": 3,
+   "not_animal_health": 4,
+   "duplicate": 1,
    "untrusted_names": [
-    "UG Diplomat",
-    "ReliefWeb",
-    "AOL.co.uk",
     "3tres3.com",
-    "Philstar.com",
-    "Manila Bulletin",
-    "Kilimo News",
     "Dairy Business Middle East & Africa",
     "Africa24 TV"
    ],
-   "newest_seen": "2026-11-02"
+   "newest_seen": "2026-10-29"
   },
   {
    "id": "gnews_diseases",
@@ -49,12 +44,12 @@
    "url": "https://news.google.com/rss/search?q=Uganda+%28anthrax+OR+%22lumpy+skin%22+OR+CBPP+OR+%22East+Coast+Fever%22+OR+%22Rift+Valley+fever%22+OR+%22swine+fever%22+OR+%22bird+flu%22+OR+%22avian+influenza%22+OR+PPR+OR+rabies+OR+trypanosomiasis%29+when%3A90d&hl=en-UG&gl=UG&ceid=UG%3Aen",
    "ok": true,
    "items_read": 32,
-   "kept": 7,
+   "kept": 8,
    "too_old": 0,
    "undated": 0,
    "untrusted_publisher": 18,
    "not_animal_health": 6,
-   "duplicate": 1,
+   "duplicate": 0,
    "untrusted_names": [
     "Devdiscourse",
     "IndexBox",
@@ -79,26 +74,28 @@
    "name": "Google News: livestock quarantines and vaccination in Uganda",
    "url": "https://news.google.com/rss/search?q=Uganda+%28livestock+OR+cattle+OR+animals%29+%28quarantine+OR+vaccination+OR+%22movement+ban%22+OR+outbreak+OR+MAAIF%29+when%3A90d&hl=en-UG&gl=UG&ceid=UG%3Aen",
    "ok": true,
-   "items_read": 25,
-   "kept": 2,
+   "items_read": 65,
+   "kept": 6,
    "too_old": 0,
    "undated": 0,
-   "untrusted_publisher": 13,
-   "not_animal_health": 6,
-   "duplicate": 4,
+   "untrusted_publisher": 33,
+   "not_animal_health": 18,
+   "duplicate": 8,
    "untrusted_names": [
     "Centers for Disease Control and Prevention | CDC (.gov)",
+    "CIDRAP",
     "NICD",
+    "PM News Nigeria",
+    "BBC",
+    "AOL.com",
     "World Vision",
     "GOV.UK blogs",
-    "BBC",
-    "Barbados Today",
-    "CABI Digital Library",
-    "PBS",
-    "Global Biodefense",
     "Al Jazeera",
-    "thecitizen.co.tz",
-    "Internazionale",
+    "Red Pepper",
+    "National Geographic",
+    "SoftPower News",
+    "People Daily",
+    "Anadolu Ajansı",
     "Outbreak News Today"
    ],
    "newest_seen": "2026-11-02"
@@ -125,7 +122,7 @@
    "title": "Rwamirama warns Kyotera farmers over low vaccination uptake",
    "url": "https://news.google.com/rss/articles/CBMiigFBVV95cUxOSi1TNjJLMUk1NVlsdDdSZzVUMUpCc1pkVGtyM2pNbTYzR3Jpb0hna2ZpazVoX01JVk1QLXF5SUVadmVtZ2RCaUVOTG9McWVLMzdRVUlUX0NrQUQ1V3RRSno2RjJJQWhBbjVVZi1rajNpWWJtTUJBWTAyOHF2N0U5Zm9zZlJxbmVVM1E?oc=5",
    "published": "2026-11-02T06:25Z",
-   "source": "Google News: FMD in Uganda",
+   "source": "Google News: livestock quarantines and vaccination in Uganda",
    "source_kind": "news",
    "publisher": "NTV Uganda",
    "category": "vaccination",
@@ -138,7 +135,7 @@
    "title": "Nakasongola Pastoralists Alarmed by FMD Infections in Immunized Cattle, Doubt Vaccine Effectiveness",
    "url": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE5SMWRQSXRpSmllZ3djV1RRa01MQnZ1c2J1M0NvSGVGQjM0N2RnMm9rbFBjaGtMRFZDRTR1UF9BVFl4dk9MTE92RXY3RXFkekZjb19Rb0tTNTJ3U1owaEJsOTFRWEZGdkl4?oc=5",
    "published": "2026-10-29T13:37Z",
-   "source": "Google News: FMD in Uganda",
+   "source": "Google News: livestock quarantines and vaccination in Uganda",
    "source_kind": "news",
    "publisher": "Uganda Radionetwork",
    "category": "advisory",
@@ -173,17 +170,6 @@
    ]
   },
   {
-   "id": "b83b21d449b1",
-   "title": "Uganda Steps Up Rabies Elimination Efforts Ahead of 2030 Target",
-   "url": "https://news.google.com/rss/articles/CBMipAFBVV95cUxOTm5VNzRCSWtZMFJJcHUtNzduTkh5SDRDajlZd3dPdEh4U2xweXRTTkhiR3NQSTlfNUhRVWlRWTNNMnE5S0NoZWp3Q1pfUkJRdWJldjJjemhVdzJRMXZwTFVLY2tqOVNtV1RrMG1xT3JqTkRzcm9wcWFncjlPQ2FtSk1wbVNjZ0wybklJeXRjeElMSVZtUEZYakVGOW1aSV9xYnFMVNIBrAFBVV95cUxNcllOellZcnpJQVZ4eXBtRTBEdEpCMkxkUkI5YjIyUktWMTItekFFN2xGcHNSR2pJOTFhNDE1MUdCWVJlZTRuTjhWaUNjYTA2MHh5T3hIZ1lqRTRPVEYxNGNmSzNYZkZtSHJuOGNnOUtRXzJVSUZidUswcEhZeUtGMVVUTW90WEIxdWZIOXZwVEhfUEdZYTNJUGNqb0RqbnBKSkh3b0tHZjdiQ3hr?oc=5",
-   "published": "2026-09-23T07:00Z",
-   "source": "Google News: FMD in Uganda",
-   "source_kind": "news",
-   "publisher": "Nilepost",
-   "category": "advisory",
-   "districts": []
-  },
-  {
    "id": "f4585527fa11",
    "title": "Uganda celebrates world rabies week 2026",
    "url": "https://news.google.com/rss/articles/CBMigwFBVV95cUxOQlQtcFZTbUtaVjFvbDB3RHhrMmVfVHlIQWEtdE4tLWRBOWM2NkoxX3FibVFHZThBdTdxcEktdkdHeC1mX2hQbzNPbzdXczVPQ0k5UlhVZUpxdTZRcU9hMEs4Z2wtampuMTA5N0U3VDRLai1LM2htLXpoVmxUUWVWWkZrUQ?oc=5",
@@ -206,6 +192,17 @@
    "districts": []
   },
   {
+   "id": "b83b21d449b1",
+   "title": "Uganda Steps Up Rabies Elimination Efforts Ahead of 2030 Target",
+   "url": "https://news.google.com/rss/articles/CBMipAFBVV95cUxOTm5VNzRCSWtZMFJJcHUtNzduTkh5SDRDajlZd3dPdEh4U2xweXRTTkhiR3NQSTlfNUhRVWlRWTNNMnE5S0NoZWp3Q1pfUkJRdWJldjJjemhVdzJRMXZwTFVLY2tqOVNtV1RrMG1xT3JqTkRzcm9wcWFncjlPQ2FtSk1wbVNjZ0wybklJeXRjeElMSVZtUEZYakVGOW1aSV9xYnFMVNIBrAFBVV95cUxNcllOellZcnpJQVZ4eXBtRTBEdEpCMkxkUkI5YjIyUktWMTItekFFN2xGcHNSR2pJOTFhNDE1MUdCWVJlZTRuTjhWaUNjYTA2MHh5T3hIZ1lqRTRPVEYxNGNmSzNYZkZtSHJuOGNnOUtRXzJVSUZidUswcEhZeUtGMVVUTW90WEIxdWZIOXZwVEhfUEdZYTNJUGNqb0RqbnBKSkh3b0tHZjdiQ3hr?oc=5",
+   "published": "2026-09-23T07:00Z",
+   "source": "Google News: other animal diseases in Uganda",
+   "source_kind": "news",
+   "publisher": "Nilepost",
+   "category": "advisory",
+   "districts": []
+  },
+  {
    "id": "2c7c1754a864",
    "title": "Minister Warns Rabies Is a ‘Death Sentence’ as Uganda Targets 2030 Eradication",
    "url": "https://news.google.com/rss/articles/CBMitgFBVV95cUxOOUlUVzNaLTA2MEkzdnVTb0ZNdjZlVUdCc2lSNHI3aXZfMllvdm1nODVmbUtqSVlLOE5vOF9jRGRua0hEeVRLTnlrS29ONzl3eS0xUDFRemdPRDFUU0ZmWDZmLUlKWEZKMGRQaG5VV1JQQjZoaU5ZRWJsSWVqYVZiRzV4MzFPbkM0OGVrUUdGR19ndklfMU4tQXY3QThUczc3ZTBRYUNEd19EUXZXUW1UZnFZWEJtQdIBvgFBVV95cUxPTFBTcGdsY3pOYWg3cUVFelk4Tzc5NE9YU3F3Q2YzTkx4RmVrcHEtcE9GODR5eEZhT3FoR0FEQmJzUElDYURtTkI2MDk1MFozamxBTG5VSUVKV2EyYnFIaVFDLTBSQy1HMk5PSmtjUU92MnVJT3loemNOR2ZadUxRSXJhOUFRTHF2QXkxdTY1RlZmc1RfRmNBelRMX2hjQ3VSM3M4NkNJWTVQNTBfenpSZDJrbTZidXNwNUE3RWZR?oc=5",
@@ -221,7 +218,7 @@
    "title": "Foot and mouth disease hits Nakasongola",
    "url": "https://news.google.com/rss/articles/CBMinwFBVV95cUxQeUFyT21XOTRsczhMazZzS3BUNDZWSUw0X21BSWFOU2Itc0RKQmlodlQ0WWlwNlY3VnJ6UVdFYnA1OWw0RFRpMUxMS2J5c29WQ3FvVEdwcS15RU1vY0hxVzI2ejFhdG1rU3dWU1p5UTJXTGU5ODlTNU8zOVlTdDNQNUFnNmdEUkVMbjBnbnFjOWcwZ3ZyOGhHak5tNDdGdVk?oc=5",
    "published": "2026-09-17T07:00Z",
-   "source": "Google News: FMD in Uganda",
+   "source": "Google News: livestock quarantines and vaccination in Uganda",
    "source_kind": "news",
    "publisher": "NewVision.co.ug",
    "category": "outbreak",
@@ -269,19 +266,6 @@
    ]
   },
   {
-   "id": "ca74e54ca8d5",
-   "title": "Ntungamo Lifts Foot-and-Mouth Disease Quarantine in Most Areas",
-   "url": "https://news.google.com/rss/articles/CBMipwFBVV95cUxQSWFteWo0andHN2p3ZEJCNTFua0pzS1d5aGVXQ3ctVXF4WWVMZUNXX2w4TmM0MGlxLWh1Vy1tTjdXb3EyWi1qdGYzaHluSGNyX3BLZUJRYlR0clIxY0dwank4bHZ2c1ZJTVRpdlF5bUd3M0x5aFJtMU5sNGF1NFRZMTg2QTZDd3g2dzhYSklyX0psUS1UaGdhNzdsTmkzU1R5NGp1QjVaMNIBrwFBVV95cUxQaGZqM3JKY2JnaW1kSklHRWJiYm8xQU1uVE1mLTRmdXlxY1pkRjFSM29nQTBEcnV1QzFuVGstQzEwOTNPWVBMREtMMUlka0hSWFBFRkxaSmd4TnNROGotQWdpb0xCRXZrZEZWTnRING9SWGxqQURheU95NDVaSHNpdTcwdERoNDNPbWNmUWhIaFBJSnFESjRYamFwcHllaWtWX0JwNF96czdFWmxTZXFZ?oc=5",
-   "published": "2026-08-18T07:00Z",
-   "source": "Google News: FMD in Uganda",
-   "source_kind": "news",
-   "publisher": "Nilepost",
-   "category": "quarantine",
-   "districts": [
-    "Ntungamo"
-   ]
-  },
-  {
    "id": "32c8355adf5a",
    "title": "Milk Shortage Hits Mbarara as Drought, Anthrax Cut Production",
    "url": "https://news.google.com/rss/articles/CBMipAFBVV95cUxOcHZaOW45amFYMWtfM1d2TTI0OU1yRGRjcDhKaGRjYnpQRjFrYi0yZ0FhV2RYVlNYQzNzd0RQeGxxMzNaZDNjekh5LW80T3Z3N2wwMTM1cE93Z09UelYtUVJBZFE4SGNHbEY3ZlYtSHNMZWIwMU43aExIaXAzTU04U0IxcUhUNHp1ckhvSlpoT1ZkZzlqcUlfMTlpWWpuVU02M1dTNdIBrAFBVV95cUxPQmw4RGM1eDRKRDZOTUhpUG1ZT2FTcmx0Y21KQ0UzYkFrRXg3R3hvQTZEdUpnYktTaXhRblVpejVYWDBkN0RMbWhXRWp3ZGI1aERqZUJxZVdzRGF1cEYyNHdkM2d3Z3drNFdhQnhGNHRLcFNSQUE1OVhnSjBmZ2VjeENJcDBuV0pnWTVnMThEZ19aQWZRbnNkb29PaUM4MUk0cnFheTBLdTQyTS1u?oc=5",
@@ -323,13 +307,76 @@
    "title": "MAAIF warns Kabale farmers over compulsory FMD vaccination",
    "url": "https://news.google.com/rss/articles/CBMimAFBVV95cUxPU0NmOHhVazdTeEFPcElfUjZvZGJlakc0b0NoejNtR1N1TzFsc1FnWWVDREdRTE0wTG1fNTdxX0ZSQjR6TWZKV2NBaDRwV3dMcjQyNG1NT00yYVhfVWdEaTBVek9kbVdXRXRNM2hONmFlVDRHSlJaRnlCZl8zdWNFemhVWDlWTkd1cDdYanZvSFVITUgwdVdYX9IBoAFBVV95cUxNTGpmbHRNMDYxUnRRczdVbnptaTYzcmhkcHVTZjJUbTZWc3hocUNOejQwNVVmMm1vcFF4RGktdHFJX29WSFNEMy1KYkItRXc0SnNSbjFYYk51X0lQVHR1V183ZlZYa05PZTJyUktTLWMzUnkxSHlmNkpLRDBtcUx3X2FpRnlFY1cteXJQTkJId3gtN3NLOEc0V2dWRko2MGNC?oc=5",
    "published": "2026-08-07T07:00Z",
-   "source": "Google News: FMD in Uganda",
+   "source": "Google News: livestock quarantines and vaccination in Uganda",
    "source_kind": "news",
    "publisher": "Nilepost",
    "category": "vaccination",
    "districts": [
     "Kabale"
    ]
+  },
+  {
+   "id": "b71052bb2cc8",
+   "title": "Invitation to attend pre bid meeting for Procurement of 20 tractors for NOSP",
+   "url": "https://www.agriculture.go.ug/2026/01/12/invitation-to-attend-pre-bid-meeting-for-procurement-of-20-tractors-for-nosp/?utm_source=rss&utm_medium=rss&utm_campaign=invitation-to-attend-pre-bid-meeting-for-procurement-of-20-tractors-for-nosp",
+   "published": "2026-01-12T13:07Z",
+   "source": "MAAIF (agriculture.go.ug)",
+   "source_kind": "official",
+   "publisher": "MAAIF (agriculture.go.ug)",
+   "category": "ministry",
+   "districts": []
+  },
+  {
+   "id": "1e33306f377a",
+   "title": "Status of compensation payments to Project Affected Persons in Bubembe, Bwaka, Buwanga, Mbekete, Kachanga, Kaziru, Bukalabati, and Ndayiga in Buvuma District affected by the National Oil Palm Project (NOPP)",
+   "url": "https://www.agriculture.go.ug/2026/01/10/status-of-compensation-payments-to-project-affected-persons-in-bubembe-bwaka-buwanga-mbekete-kachanga-kaziru-bukalabati-and-ndayiga-in-buvuma-district-affected-by-the-national-oil-palm-project/?utm_source=rss&utm_medium=rss&utm_campaign=status-of-compensation-payments-to-project-affected-persons-in-bubembe-bwaka-buwanga-mbekete-kachanga-kaziru-bukalabati-and-ndayiga-in-buvuma-district-affected-by-the-national-oil-palm-project",
+   "published": "2026-01-10T13:20Z",
+   "source": "MAAIF (agriculture.go.ug)",
+   "source_kind": "official",
+   "publisher": "MAAIF (agriculture.go.ug)",
+   "category": "ministry",
+   "districts": [
+    "Buvuma",
+    "Kampala"
+   ]
+  },
+  {
+   "id": "3f238a999919",
+   "title": "Press release: MAAIF Starts Compensation of Project Affected Persons in Sango Bay-Kyotera",
+   "url": "https://www.agriculture.go.ug/2025/12/19/press-release-maaif-starts-compensation-of-project-affected-persons-in-sango-bay-kyotera/?utm_source=rss&utm_medium=rss&utm_campaign=press-release-maaif-starts-compensation-of-project-affected-persons-in-sango-bay-kyotera",
+   "published": "2025-12-19T09:30Z",
+   "source": "MAAIF (agriculture.go.ug)",
+   "source_kind": "official",
+   "publisher": "MAAIF (agriculture.go.ug)",
+   "category": "ministry",
+   "districts": [
+    "Kampala",
+    "Kyotera"
+   ]
+  },
+  {
+   "id": "5a749cf54d6a",
+   "title": "Press Release: MAAIF Pays UGX 24 Billion in Compensation to Project Affected Persons of the National Oil Palm Project (NOPP)",
+   "url": "https://www.agriculture.go.ug/2025/12/05/press-release-maaif-pays-ugx-24-billion-in-compensation-to-project-affected-persons-of-the-national-oil-palm-project-nopp/?utm_source=rss&utm_medium=rss&utm_campaign=press-release-maaif-pays-ugx-24-billion-in-compensation-to-project-affected-persons-of-the-national-oil-palm-project-nopp",
+   "published": "2025-12-05T08:18Z",
+   "source": "MAAIF (agriculture.go.ug)",
+   "source_kind": "official",
+   "publisher": "MAAIF (agriculture.go.ug)",
+   "category": "ministry",
+   "districts": [
+    "Kampala"
+   ]
+  },
+  {
+   "id": "ad6549a1f9e2",
+   "title": "Uganda Showcases Excellence in Coffee and Tourism, Wins Award at Swiss Expo",
+   "url": "https://www.agriculture.go.ug/2025/11/01/uganda-showcases-excellence-in-coffee-and-tourism-wins-award-at-swiss-expo/?utm_source=rss&utm_medium=rss&utm_campaign=uganda-showcases-excellence-in-coffee-and-tourism-wins-award-at-swiss-expo",
+   "published": "2025-11-01T11:32Z",
+   "source": "MAAIF (agriculture.go.ug)",
+   "source_kind": "official",
+   "publisher": "MAAIF (agriculture.go.ug)",
+   "category": "ministry",
+   "districts": []
   }
  ]
 }
