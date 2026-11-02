@@ -241,7 +241,7 @@ footer .wrap{padding-block:18px 84px;font-size:13px;color:var(--mute);display:fl
 <main class="wrap">
   <section class="intro">
     <h2>Try DST Uganda: it tells farmers what is likely next</h2>
-    <p>The DST Uganda pilot serves Isingiro and Kasese districts. You are Sarah, a pastoralist in Isingiro District with Ankole-cross cows for milk, who also grows maize and beans. You're chatting on WhatsApp. Your neighbour Okello has a basic phone and uses SMS. DST Uganda is a predictive tool: it forecasts the season, the start of the rains, grass and feed for the herd, disease risk and prices, with a probability and an action. Ask the way farmers really type, including short, half-finished questions.</p>
+    <p>The DST Uganda pilot serves Isingiro and Kasese districts. You are Sarah, a pastoralist with Ankole-cross cows for milk, who also grows maize and beans. DST Uganda only needs your name and your farm's coordinates (your phone's GPS, typed numbers or a Google Maps link); everything else is worked out from that point. You're chatting on WhatsApp. Your neighbour Okello has a basic phone and uses SMS. DST Uganda is a predictive tool: it forecasts the season, the start of the rains, grass and feed for the herd, disease risk and prices, with a probability and an action. Ask the way farmers really type, including short, half-finished questions.</p>
     <p class="ai-mode" id="ai-mode">Smart replies: connecting…</p>
   </section>
 
@@ -385,16 +385,18 @@ function lsDiseaseIn(N){ for (const [k,al] of Object.entries(LS_ALIASES)) if (al
 function lsZoneKey(district){ const z=lsZone(district); return z ? z.key : "_none"; }
 function recGrass(district, rain, use){
   const G=LS.grassRec, zk=lsZoneKey(district), cut=/^cut/.test(use||"");
-  const r0 = rain==null ? (G.zoneTypical[zk] ?? 950) : rain;
+  if (rain==null && zk==="_none") return null;
+  const r0 = rain==null ? G.zoneTypical[zk] : rain;
   let i=G.bands.findIndex(u=>u!==null && r0 < u); if (i<0) i = r0<=1800 ? G.bands.indexOf(1800) : G.bands.length-1;
   const row=(G.byZoneUse[zk+"|"+(cut?"cut-and-carry":"grazing")]||G.byZoneUse["_none|grazing"])[i];
   const r=JSON.parse(JSON.stringify(row.rec)); const R=Math.round(r0);
   r.best.why=r.best.why.split(`About ${row.rep} mm`).join(`About ${R} mm`).split(`about ${row.rep} mm`).join(`about ${R} mm`);
-  r.rainfall_mm_per_year=R; r.rainfall_from = rain==null ? (zk==="_none" ? "typical for Uganda's cattle corridor (location not known)" : `typical for the ${lsZone(district).name}`) : "your farm's 20-year average";
+  r.rainfall_mm_per_year=R; r.rainfall_from = rain==null ? `typical for the ${lsZone(district).name}` : "your farm's 20-year average";
   r.district=district||null; return r;
 }
 function recBreed(district, rain, goal){
-  const zk=lsZoneKey(district), dry = zk==="karamoja" || (rain!=null ? rain<700 : (LS.grassRec.zoneTypical[zk]??950)<700);
+  const zk=lsZoneKey(district); if (rain==null && zk==="_none") return null;
+  const dry = zk==="karamoja" || (rain!=null ? rain<700 : LS.grassRec.zoneTypical[zk]<700);
   const g=/beef|meat/.test(goal||"")?"beef":"milk";
   return {...LS.breedRec[`${zk}|${dry?"dry":"ok"}|${g}`], district:district||null, rainfall_mm_per_year: rain!=null?Math.round(rain):null};
 }
@@ -434,7 +436,7 @@ function mkCategory(text){ const t=String(text||"").toLowerCase(); for (const k 
 const ugx = n => n>=1e6 ? `UGX ${(n/1e6).toFixed(2).replace(/0$/,"")}m` : `UGX ${Math.round(n).toLocaleString("en-UG")}`;
 function myPlace(){ if (S.farm && Number.isFinite(S.farm.lat)) return {lat:S.farm.lat, lon:S.farm.lon, from:S.farm.name};
   if (S.gps) return {lat:S.gps.latitude, lon:S.gps.longitude, from:"your GPS"};
-  const t=DISTRICT_TOWNS.find(x=>x[0]===S.district) || ["Isingiro",-0.843,30.802]; return {lat:t[1], lon:t[2], from:`${t[0]} town`}; }
+  return null; }
 function mkNearest(limit=3, district){
   const me=myPlace(); let pool=SAMPLE_MARKETS; if (district){ const d=pool.filter(m=>m.district.toLowerCase().startsWith(district.toLowerCase())); if (d.length) pool=d; }
   return {from:me.from, markets:pool.map(m=>({market_id:m.id,name:m.name,district:m.district,days:m.days,distance_km:Math.round(mkKm(me.lat,me.lon,m.lat,m.lon)),prices:mkPrices(m)})).sort((a,b)=>a.distance_km-b.distance_km).slice(0,limit)};
@@ -706,7 +708,7 @@ const inUganda = (lat,lon) => lat>-1.6 && lat<4.4 && lon>29.4 && lon<35.2;
 const placeCache={};
 async function placeInfo(lat, lon){
   const key=lat.toFixed(4)+","+lon.toFixed(4); if (placeCache[key]) return placeCache[key];
-  const ug=inUganda(lat,lon), nd=ug?nearestDistrict(lat,lon):null;
+  const ug=inUganda(lat,lon), nt=ug?nearestDistrict(lat,lon):null, nd = nt && nt.km<=25 ? nt : null;
   let out={in_uganda:ug, district:nd?nd.name:null, district_source:nd?`approximate: nearest district town, ${nd.km<1?"under 1":nd.km} km away`:null, place:null, osm:false};
   try {
     const ctl=new AbortController(), tm=setTimeout(()=>ctl.abort(),6000);
@@ -714,13 +716,13 @@ async function placeInfo(lat, lon){
     clearTimeout(tm); if (!r.ok) throw new Error("http "+r.status);
     const a=(await r.json()).address||{};
     const d=Object.values(a).find(v=>typeof v==="string" && /\bDistrict$/i.test(v.trim()));
-    out.in_uganda = a.country_code ? a.country_code==="ug" : ug;
+    out.in_uganda = ug && (a.country_code ? a.country_code==="ug" : true);   // inside Uganda's box AND, when known, Uganda per OpenStreetMap
     if (d) { out.district=d.trim().replace(/\s+District$/i,""); out.district_source="OpenStreetMap"; }
     out.place=a.village||a.hamlet||a.town||a.city||a.suburb||a.neighbourhood||null; out.osm=true;
   } catch(e) { /* offline or blocked: keep the approximate answer */ }
   return (placeCache[key]=out);
 }
-function setDistrictFrom(info){ if (info && info.district && lsZone(info.district)) S.district=info.district; }
+function setDistrictFrom(info){ if (info && info.district) S.district=info.district; }
 function placeLine(lat, lon, info, extra){
   const where = !info.in_uganda ? " · outside Uganda"
     : info.district ? ` · <b>${esc(info.district)} District</b>${info.place?`, near ${esc(info.place)}`:""} <small>(${esc(info.district_source)})</small>` : "";
@@ -744,10 +746,10 @@ async function useRealLocation(viaAI){
       : e.code==="timeout" ? "Your device took too long to find a GPS fix. Try again outdoors."
       : "This browser cannot provide a location.";
     addBubble("sys", esc(why));
-    return botSay(["No problem. Send your farm's GPS coordinates (e.g. *-0.8430, 30.8020*) or a Google Maps link, or tap *📍 Share my location* to use the sample pin."]);
+    return botSay(["No problem. Send your farm's coordinates instead (in Google Maps, press and hold on your farm and copy the numbers, like *-0.84330, 30.80190*), or a Google Maps link."]);
   }
   const info = await placeInfo(g.lat, g.lon); const ug = info.in_uganda; const nd = info.district ? {name:info.district} : null;
-  setDistrictFrom(info);
+  if (ug){ S.district=null; setDistrictFrom(info); }
   S.gps = {latitude:+g.lat.toFixed(6), longitude:+g.lon.toFixed(6), accuracy_m:g.acc, district: info.district, district_source: info.district_source, place: info.place, in_uganda: ug};
   addBubble("sys", "Real location: " + placeLine(g.lat, g.lon, info, ` (±${g.acc} m)`));
   if (g.acc > 100) addBubble("sys", esc(`Your phone is only sure of this point to within ${g.acc} m, so it may not be on your farm. For a precise pin, switch on GPS / high-accuracy location, stand outside on the farm and tap 📍 Use my real location again, or press and hold your farm in Google Maps and send the coordinates it shows.`));
@@ -755,13 +757,14 @@ async function useRealLocation(viaAI){
     const ok = await aiAssistant(`[Shared live GPS location: latitude ${g.lat.toFixed(6)}, longitude ${g.lon.toFixed(6)}, accuracy ${g.acc} m${nd?`, ${info.district} District (${info.district_source})`:ug?"":", outside Uganda"}] This is my farm.`);
     if (ok) return;
   }
+  if (!ug){ S.stage = S.farm ? "main" : "location"; return botSay(["This point is outside Uganda. DST Uganda covers farms in Uganda only, so I haven't registered it. Use your location while you're on the farm, or send the farm's coordinates."]); }
   S.draft = {lat:g.lat, lon:g.lon, label:`${g.lat.toFixed(5)}, ${g.lon.toFixed(5)}`};
-  return autoRegister(null, null, !ug ? ["This point is outside Uganda, so seasonal and pasture advice will use Isingiro as the example area."] : []);
+  return autoRegister(null, null, []);
 }
 
 const STEPS = [
   {id:"terms", t:"Get started", d:"Ask anything. DST Uganda only needs your name and your farm's location.", tries:["which acaricide should I use for my ticks?","Sarah","📍 Use my real location"]},
-  {id:"farm", t:"Register your farm", d:"Share a location and say how big the farm is, in your own words.", tries:["📍 Use my real location","📍 Share my location","it's about 8 acres","call it Home Farm"]},
+  {id:"farm", t:"Register your farm", d:"Share the farm's coordinates (GPS, typed, or a Google Maps link). The size is optional.", tries:["📍 Use my real location","it's about 8 acres","call it Home Farm"]},
   {id:"predict", t:"Look ahead: predictions", d:"What is likely next: the season, the start of the rains, feed for your herd.", tries:["will the coming season be dry?","when will the rains start?","enough grass for 12 cows of 300kg?","disease risk next weeks?","can i trust this?"]},
   {id:"rain", t:"Check the rain outlook", d:"Ask half a question, then follow up.", tries:["rains when?","and feb?","so should i store hay?"]},
   {id:"stock", t:"How many cows can I keep?", d:"Carrying capacity with the LAPIG formula.", tries:["how many cows can it carry","12 of them, ~300kg each","what if 20?"]},
@@ -783,7 +786,7 @@ let S;
 function fresh(){
   return {
     stage:"terms", name:"", role:"", farm:null, pending:null, draft:{}, lastAnswer:"",
-    done:new Set(), smsCount:0, okelloOptOut:false, last:{}, district:"Isingiro", gps:null, alertsOn:false,
+    done:new Set(), smsCount:0, okelloOptOut:false, last:{}, district:null, gps:null, okLoc:null, okQ:null, alertsOn:false,
     groups:[{name:"Kasese Cattle Keepers", code:"K7P2QX", sample:true,
       members:[{name:"Grace (sample)",phone:"256752000101",channel:"whatsapp"},{name:"Musa (sample)",phone:"256782000102",channel:"sms"}],
       messages:[{from:"Grace (sample)",text:"Spraying schedule shared at the co-op office."}]}]
@@ -1006,7 +1009,7 @@ async function assistant(raw){
   /* onboarding: only a name and the farm's location */
   if (S.stage==="terms" || S.stage==="name"){
     const greet = /^(hi+|hello|hey|hallo|good (morning|afternoon|evening)|habari|oli otya|agandi|start|menu)\b[\s!.]*$/i.test(t);
-    const isLoc = parseCoords(t) || isShortMapLink(t) || /📍|share my location|\bmy location\b/i.test(t);
+    const isLoc = parseCoords(t) || isShortMapLink(t) || /📍|\bmy location\b/i.test(t);
     const nm = (!greet && !isLoc) ? nameFromIntro(t) : null;
     if (nm){
       S.name=nm; S.role=S.role||"Farmer"; S.stage="location";
@@ -1021,12 +1024,13 @@ async function assistant(raw){
   }
   if (S.stage==="location"){
     if (/use my real location/i.test(t)){ S.stage="main"; mark("terms"); return useRealLocation(false); }
-    const isLoc = parseCoords(t) || isShortMapLink(t) || /📍|share my location|\bmy location\b/i.test(t) || (districtIn(norm(t)) && /\b(in|at|from|near|district)\b/i.test(t));
-    if (!isLoc){ if (!S.queued) S.queued=t;
-      return botSay([`Thanks, ${S.name}. I just need your farm's location first: tap *📍 Use my real location* on the farm, or send coordinates (e.g. *-0.84330, 30.80190*) or a Google Maps link. No coordinates? Tell me your district, e.g. _I'm in Kasese_.`]); }
-    if (!isShortMapLink(t)){ S.stage="main"; mark("terms");
-      const dn = !parseCoords(t) && !/📍|share my location|\bmy location\b/i.test(t) ? districtIn(norm(t)) : null;
-      if (dn) return assistant("my farm is in " + dn); }
+    if (isShortMapLink(t) && !parseCoords(t)) return botSay(["I can't open short Google Maps links from here. In Google Maps, *press and hold on your farm*: its coordinates (like *-0.84330, 30.80190*) appear at the top or in the search box. Copy them and send them here."]);
+    const c = parseCoords(t);
+    if (!c){ if (!S.queued && !districtIn(norm(t))) S.queued=t;
+      return botSay([`Thanks, ${S.name}. I need your farm's exact coordinates first, nothing else: tap *📍 Use my real location* while you're on the farm, or in Google Maps press and hold on your farm and send the numbers (like *-0.84330, 30.80190*), or send a Google Maps link.`]); }
+    const info = await placeInfo(c.lat, c.lon);
+    if (!info.in_uganda) return botSay(["This point is outside Uganda. Check the numbers: Ugandan farms are roughly between latitude -1.5 and 4.2 and longitude 29.6 and 35.0."]);
+    S.stage="main"; mark("terms");
   }
 
   /* pending flows */
@@ -1267,14 +1271,14 @@ async function smartMain(t, N){
     g.members.push(me); renderGroups(); return botSay([`You've joined *${g.name}* (${g.members.length} members).`]);
   }
   if (isShortMapLink(t) && !parseCoords(t)) return botSay(["I can't open short Google Maps links from here, so I can't read the exact point. In Google Maps, *press and hold on your farm*: a red pin drops and its coordinates (like *-0.84330, 30.80190*) appear at the top or in the search box. Copy them and send them here."]);
-  if (/share my location|📍|\bmy location\b|^location$/i.test(t) || parseCoords(t) || (/\b(my farm is|farm is in|farm in|located)\b/.test(N) && !S.farm)){
-    const c = parseCoords(t); const named = !c ? districtIn(N) : null; const town = named ? DISTRICT_TOWNS.find(x=>x[0]===named) : null;
-    if (town && lsZone(named)) S.district = named;
-    S.draft={lat:c?.lat??(town?town[1]:-0.843), lon:c?.lon??(town?town[2]:30.802)};
-    if (c){ const info=await placeInfo(c.lat,c.lon); setDistrictFrom(info); S.draft.label=`${c.lat.toFixed(5)}, ${c.lon.toFixed(5)}`;
-      addBubble("sys", "Location: " + placeLine(c.lat, c.lon, info, c.swapped?" <small>(latitude and longitude were the wrong way round, so I swapped them)</small>":""));
-      if (!info.in_uganda) addBubble("sys", "This point is outside Uganda. Check the numbers: Ugandan farms are roughly between latitude -1.5 and 4.2 and longitude 29.6 and 35.0."); }
-    if (!c) addBubble("sys", town ? `📍 Location: ${esc(named)} District (sample pin at the district town, ${town[1].toFixed(4)}, ${town[2].toFixed(4)}). Send your farm's exact coordinates for a precise pin.` : "📍 Location shared: Isingiro District (sample pin -0.8430, 30.8020, Isingiro town)");
+  if (parseCoords(t) || /share my location|📍|\bmy location\b|^location$/i.test(t) || (/\b(my farm is|farm is in|farm in|located)\b/.test(N) && !S.farm)){
+    const c = parseCoords(t);
+    if (!c) return botSay(["I need your farm's exact coordinates. Tap *📍 Use my real location* while you're on the farm, or in Google Maps press and hold on your farm and send the numbers that appear (like *-0.84330, 30.80190*), or send a Google Maps link."]);
+    S.draft={lat:c.lat, lon:c.lon};
+    const info=await placeInfo(c.lat,c.lon);
+    if (!info.in_uganda) return botSay(["This point is outside Uganda. Check the numbers: Ugandan farms are roughly between latitude -1.5 and 4.2 and longitude 29.6 and 35.0. DST Uganda covers farms in Uganda only."]);
+    S.district=null; setDistrictFrom(info); S.draft.label=`${c.lat.toFixed(5)}, ${c.lon.toFixed(5)}`;
+    addBubble("sys", "Location: " + placeLine(c.lat, c.lon, info, c.swapped?" <small>(latitude and longitude were the wrong way round, so I swapped them)</small>":""));
     return autoRegister(parseArea(N), nameFrom(t));
   }
   const contact = /\bokello\b/.test(N) && /\b(text|sms|message|tell|send|remind|ask)\b/.test(N);
@@ -1292,7 +1296,7 @@ async function smartMain(t, N){
   }
   if (/\b(create|make|start|open|form|set up|new)\b.*\bgroup\b/.test(N)){
     const nm = groupNameFrom(t); if (nm) return createGroup(nm);
-    S.pending="group_name"; return botSay(["Happy to. What should the group be called? For example *Isingiro Dairy Farmers*."]);
+    S.pending="group_name"; return botSay([`Happy to. What should the group be called? For example *${S.district?S.district+" ":""}Dairy Farmers*.`]);
   }
   const post = t.match(/^(?:pls\s+|please\s+)?(?:tell|post to|post in|send to|message|inform|remind|let)\s+(.+?)(?:\s+(?:that|know that|know)\s+|\s*[:,-]\s*|\s+(?=the\s|milk|meeting|we|our|tomorrow|tmrw|dip))(.+)$/i)
             || t.match(/^(?:post|share)\s*:?\s*(?:to\s+(.+?)\s*:\s*)?(.+)$/i);
@@ -1592,7 +1596,10 @@ const srcLinks = list => list.map(x=>`<a href="${esc(x.url)}" target="_blank" re
 async function grassAnswer(N){
   const named=districtIn(N), dist=named || (S.farm?S.district:null);
   const cut=/cut[- ]?and[- ]?carry|zero[- ]?graz|for cutting|to cut/.test(N);
-  const fr=await farmRain(named); const g=recGrass(dist, fr.rain, cut?"cut-and-carry":"grazing"); if (fr.from) g.rainfall_from=fr.from;
+  if (!named && !S.farm) return needFarm();
+  const fr=await farmRain(named); const g=recGrass(dist, fr.rain, cut?"cut-and-carry":"grazing");
+  if (!g) return botSay(["I couldn't get your farm's rainfall here, and the district for your coordinates isn't known, so I can't pick a grass reliably yet. Try again with an internet connection, or send coordinates for a point inside your farm."]);
+  if (fr.from) g.rainfall_from=fr.from;
   remember("pasture"); mark("herd_p"); checkHerd();
   const alt=g.also_good.map(a=>a.name).join(" or ");
   S.lastAnswer=smsFit(`Plant ${g.best.name}${g.add_legume?` with ${shortName(g.add_legume.name)}`:""}. ${g.best.manage}`);
@@ -1603,7 +1610,9 @@ async function grassAnswer(N){
 }
 async function breedAnswer(N){
   const named=districtIn(N), dist=named || (S.farm?S.district:null);
+  if (!named && !S.farm) return needFarm();
   const fr=await farmRain(named); const b=recBreed(dist, fr.rain, /beef|meat/.test(N)?"beef":"milk");
+  if (!b) return botSay(["I couldn't get your farm's rainfall here, and the district for your coordinates isn't known, so I can't pick a breed reliably yet. Try again with an internet connection."]);
   remember("breed"); mark("herd_b");
   S.lastAnswer=smsFit(`Breed for ${dist||"your area"}: ${b.best}. Avoid: ${b.avoid}`);
   return botSay([`*${b.best}*${dist?` for ${dist}`:""}${b.goal==="milk"?" (for milk)":""}. ${b.why}`,
@@ -1611,9 +1620,10 @@ async function breedAnswer(N){
     {html:`<span class="srcs">${fr.rain!=null?`Your farm's rain: about ${Math.round(fr.rain)} mm a year. `:""}Evidence: ${srcLinks(b.sources)}.</span>`}]);
 }
 function tickAnswer(named){
-  const dist = named || (S.farm ? S.district : null) || null; const r=lsTick(thisMonth(), dist, true), rec=r.recommended;
+  if (!named && !S.farm) return needFarm();
+  const dist = named || S.district || null; const r=lsTick(thisMonth(), dist, true), rec=r.recommended;
   remember("tick"); mark("herd_t"); checkHerd();
-  const where = dist ? `in *${dist} District*` : "in Uganda (send your farm's location for advice for your exact area)";
+  const where = dist ? `in *${dist} District*` : "for your farm (its district couldn't be found from the coordinates, so this is the advice that holds across Uganda's studies)";
   const brands = rec.brands && rec.brands.length ? `*NDA-registered products:* ${rec.brands.map(b=>`${b.brand} (${b.strength}, NDA ${b.nda_reg_no})`).join(", ")}.` : rec.brands_note;
   S.lastAnswer=smsFit(`Ticks${dist?" ("+dist+")":""}: use ${rec.use_now.product}. If ticks survive 2 correct sprays, switch to ${rec.if_ticks_survive.active_ingredient}. Don't rely on cypermethrin/deltamethrin. Spray ${r.spray_interval_now}. Ask DVO for a resistance test.`);
   const src = rec.sources.map(x=>`<a href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.cite)}</a>`).join("; ");
@@ -1764,23 +1774,23 @@ function smsAssistant(text){
   if (blocked(text)) return "For your safety, DST Uganda cannot process ID numbers or PINs. Please resend without them.";
   const N=norm(text); const c=S.okCtx||{}; const mi=monthIn(N);
   const set = last => { S.okCtx={last}; };
-  if (mi!==null && (c.last==="rain" || has(N,"rain","weather","forecast","season") || N.split(" ").length<=3)){
+  if (mi!==null && !has(N,"disease","diseases","sick","sickness","tick","ticks","grass","pasture","breed") && (c.last==="rain" || has(N,"rain","weather","forecast","season") || N.split(" ").length<=3)){
     const r=rainFor(mi); set("rain");
     const rr = r || RAIN[0];
-    return `${r?"":"The forecast starts in Nov 2026. "}Isingiro ${rr[0]}: about ${rr[1]} mm of rain forecast (sample). ${rr[1]<60?"Dry month: store fodder and water.":rr[1]>=100?"Wet month: good grass growth.":"Moderate rain."}`;
+    return `${r?"":"The forecast starts in Nov 2026. "}SAMPLE outlook, not your farm's data: ${rr[0]} about ${rr[1]} mm. ${rr[1]<60?"Dry month: store fodder and water.":rr[1]>=100?"Wet month: good grass growth.":"Moderate rain."}`;
   }
   if (has(N,"store","hay","fodder","feed","silage") && (c.last==="rain" || has(N,"dry","season","should"))){ set("dryfeed"); return "Yes, store fodder now. Jan and Feb are driest (38 and 52 mm, sample) and rains return about 12 Mar. Make hay or silage from the Nov grass while it is green."; }
-  if (has(N,"rain","forecast","weather","season")){ set("rain"); return "Isingiro rain outlook (sample): Dec 64mm, Jan 38mm, Feb 52mm. Next rains expected about 12 Mar 2027. Keep fodder for Jan-Feb."; }
+  if (has(N,"rain","forecast","weather","season")){ set("rain"); return "SAMPLE rain outlook, not your farm's data: Dec 64mm, Jan 38mm, Feb 52mm, rains about 12 Mar 2027. On WhatsApp I give your farm's real forecast."; }
   if (has(N,"map","image","pdf","report","photo","picture","satellite")) return "Maps, photos and PDF reports are on WhatsApp only. By SMS I answer short questions on rain, cattle, pasture and groups.";
   const dz=lsDiseaseIn(N);
   if (dz){ set("disease"); return smsFit(`${shortName(dz.name)}: ${dz.signs.split(",").slice(0,2).join(",")}. Prevent: ${dz.prevention.split(";")[0]}.${dz.notifiable?" Report to the DVO.":" Call a vet early."}`); }
-  if (has(N,"diseases","disease","sickness","outbreak") || (c.last==="diseases" && mi!==null)){ const m=mi!==null?mi+1:thisMonth(); const r=lsDiseases(m,"Isingiro"); set("diseases");
-    return smsFit(`${r.month}, Isingiro (${r.season}): watch ${r.higher_risk.slice(0,3).map(d=>shortName(d.name)).join(", ")}. ${r.tick_borne_peak?"Spray ticks every 7-14 days.":"Vaccinate and limit movement."}`); }
-  if (has(N,"acaricide","acaricides","tick","ticks","spray","dip")){ set("tick"); const r=lsTick(thisMonth(),"Isingiro"), rec=r.recommended;
-    return smsFit(`Ticks (Isingiro): use ${rec.use_now.product}. If ticks survive 2 correct sprays use ${rec.if_ticks_survive.active_ingredient}. Avoid cypermethrin alone. Spray ${r.spray_interval_now}. Ask DVO for a resistance test.`); }
-  if (has(N,"which grass","what grass","best grass","plant","pasture","forage","more milk","legume")){ const d=districtIn(N)||"Isingiro"; const r=lsPasture(d); set("pasture");
-    if (r.needs) return "Which district do you graze in? e.g. Isingiro, Nakasongola, Mbarara, Moroto.";
-    const g=r.recommended.find(f=>f.type==="grass"), l=r.recommended.find(f=>f.type==="legume"); return smsFit(`${d}: plant ${shortName(g.name)} with ${shortName(l.name)}. Legumes add protein for more milk. Store hay in the rains for the dry season.`); }
+  if (has(N,"diseases","disease","sickness","outbreak") || (c.last==="diseases" && mi!==null)){ const m=mi!==null?mi+1:thisMonth(); const OD=S.okLoc&&S.okLoc.district; const r=lsDiseases(m,OD); set("diseases");
+    return smsFit(`${r.month}${OD?", "+OD:""} (${r.season}): watch ${r.higher_risk.slice(0,3).map(d=>shortName(d.name)).join(", ")}. ${r.tick_borne_peak?"Spray ticks every 7-14 days.":"Vaccinate and limit movement."}`); }
+  if (has(N,"acaricide","acaricides","tick","ticks","spray","dip")){ set("tick"); const OD=S.okLoc&&S.okLoc.district; const r=lsTick(thisMonth(),OD), rec=r.recommended;
+    return smsFit(`Ticks${OD?" ("+OD+")":""}: use ${rec.use_now.product}. If ticks survive 2 correct sprays use ${rec.if_ticks_survive.active_ingredient}. Avoid cypermethrin alone. Spray ${r.spray_interval_now}. Ask DVO for a resistance test.`); }
+  if (has(N,"which grass","what grass","best grass","plant","pasture","forage","more milk","legume")){ const d=districtIn(N)||(S.okLoc&&S.okLoc.district); const g=recGrass(d, null, "grazing"); set("pasture");
+    if (!g) return "I couldn't find the district for your coordinates, so I can't pick a grass reliably. Ask your extension officer, or try again later.";
+    return smsFit(`${d}: plant ${shortName(g.best.name)}${g.add_legume?" with "+shortName(g.add_legume.name):""} (for about ${g.rainfall_mm_per_year} mm rain a year, typical for the area). ${g.best.manage}`); }
 
   if (has(N,"how many","carry","capacity","stocking")){ set("capacity"); return "Register your farm on WhatsApp once and I can calculate it exactly. Rough guide: 1 local cow needs about 1-2 acres of good pasture in the rains, more in the dry season."; }
   let best=null, bs=0;
@@ -1793,6 +1803,14 @@ async function okelloSends(text){
   lcdAdd(text,true); await sleep(reduced?50:700);
   let reply = smsCommand(text);
   if (reply===null && !blocked(text) && aiState==="on") reply = await smsAI(text);
+  if (reply===null && !S.okLoc){
+    const c=parseCoords(text);
+    if (!c){ if (!/^(hi|hello|help)\b/i.test(text.trim())) S.okQ=text; reply="Send your farm's coordinates first, e.g. -0.84331 30.80194 (in Google Maps, press and hold your farm). Then I answer for your exact farm."; }
+    else { const info=await placeInfo(c.lat,c.lon);
+      if (!info.in_uganda) reply="These coordinates are outside Uganda. Please check them; DST Uganda covers Ugandan farms only.";
+      else { S.okLoc={lat:c.lat, lon:c.lon, district:info.district};
+        reply=`Farm saved: ${c.lat.toFixed(5)}, ${c.lon.toFixed(5)}${info.district?", "+info.district+" District":""}.`;
+        if (S.okQ){ const q=S.okQ; S.okQ=null; lcdAdd(toSms(reply).slice(0,459)); await sleep(reduced?50:500); reply = (aiState==="on" && !blocked(q) ? await smsAI(q) : null) || smsAssistant(q); } } } }
   if (reply===null) reply = smsAssistant(text);
   if (S.okelloOptOut && !/no longer receive/.test(reply)) { /* replies to the farmer's own question are still sent */ }
   lcdAdd(toSms(reply).slice(0,459));
@@ -1834,13 +1852,13 @@ function renderQuick(){
   let opts;
   if (S.stage==="terms") opts=["Hello","which acaricide should I use for my ticks?"];
   else if (S.stage==="name") opts=["Sarah"];
-  else if (S.stage==="location") opts=["📍 Use my real location","📍 Share my location","I'm in Kasese"];
+  else if (S.stage==="location") opts=["📍 Use my real location"];
   else if (S.pending==="farm_size") opts=["About 8 acres","3 hectares"];
   else if (S.pending==="farm_confirm"||S.pending==="sms_confirm") opts=["Yes","Cancel"];
-  else if (S.pending==="farm_name") opts=["Isingiro Home Farm"];
+  else if (S.pending==="farm_name") opts=["Home Farm"];
   else if (S.pending==="herd") opts=["12 cows of about 300 kg","25 cows of 350 kg"];
-  else if (S.pending==="group_name") opts=["Isingiro Dairy Farmers"];
-  else if (!S.farm) opts=["📍 Use my real location","📍 Share my location","What can you do?"];
+  else if (S.pending==="group_name") opts=[(S.district?S.district+" ":"")+"Dairy Farmers"];
+  else if (!S.farm) opts=["📍 Use my real location","What can you do?"];
   else if (aiState==="on") opts=["season dry?","rains start when?","enough grass for 12 cows?","disease risk next weeks?","best month to sell?","can i trust this?","sms me that","my groups"];
   else opts=["Will the season be dry?","When will the rains start?","Enough grass for my cows?","Disease risk next weeks?","How many cows can my farm carry?","Show my farm","Send me that by SMS","My groups"];
   for (const o of opts){ const b=document.createElement("button"); b.type="button"; b.className="chip"; b.textContent=o; b.addEventListener("click",()=>send(o)); q.appendChild(b); }
@@ -1867,7 +1885,7 @@ function renderAiMode(){
   renderAiMode(); if (typeof S !== "undefined" && S) renderQuick();
 })();
 
-const PIN_TEXT = "[Shared WhatsApp location pin: latitude -0.8430, longitude 30.8020, Isingiro District]";
+
 
 const RULES = `You are DST Uganda, WWF Uganda's decision-support assistant for pastoralists, replying on WhatsApp. The users are cattle keepers in Uganda's rangelands and cattle corridor who also grow some crops: livestock, milk and herd health come first, and crops matter as food and fodder. This is a demo that runs on sample data.
 
@@ -1933,8 +1951,11 @@ const TOOLS = [
         const radius = Math.round(Math.sqrt(ha*10000/Math.PI));
         if (radius<50 || radius>1000) throw new Error(`A circular area must have a radius of 50-1000 m; ${fmt(ha)} ha gives ${radius} m. Suggest sending a map file of the boundary instead.`);
         const hasXY = Number.isFinite(Number(i.latitude)) && Number.isFinite(Number(i.longitude)) && i.latitude!==undefined;
-        const label = hasXY ? `${Number(i.latitude).toFixed(4)}, ${Number(i.longitude).toFixed(4)}` : (i.place ? `${i.place} (sample pin)` : "sample pin -0.8430, 30.8020 (Isingiro)");
-        S.draft={ha, radius, label, lat: hasXY?Number(i.latitude):(S.gps?S.gps.latitude:-0.843), lon: hasXY?Number(i.longitude):(S.gps?S.gps.longitude:30.802)}; S.pending="farm_confirm";
+        if (!hasXY && !S.gps) throw new Error("No coordinates: ask the farmer to share the farm's location (GPS or coordinates). Never use a place name or a default point.");
+        const lat0 = hasXY?Number(i.latitude):S.gps.latitude, lon0 = hasXY?Number(i.longitude):S.gps.longitude;
+        if (!inUganda(lat0, lon0)) throw new Error("These coordinates are outside Uganda; DST Uganda covers Ugandan farms only. Ask the farmer to check them.");
+        const label = `${lat0.toFixed(5)}, ${lon0.toFixed(5)}`;
+        S.draft={ha, radius, label, lat:lat0, lon:lon0}; S.pending="farm_confirm";
         if (hasXY) placeInfo(S.draft.lat, S.draft.lon).then(setDistrictFrom);
         const el=addBubble("in", wa(`Proposed farm area: radius *${radius} m*, about *${fmt(ha)} ha* (${fmt(ha/0.404686,1)} acres) around ${label}.`)); el.insertBefore(farmMap(), el.firstChild);
         return {status:"awaiting_user_confirmation", radius_m:radius, area_ha:+ha.toFixed(2), area_acres:+(ha/0.404686).toFixed(1), location:label, note:"No registered land parcel exists in Uganda's case, so a circle is drawn."};
@@ -1986,7 +2007,7 @@ const TOOLS = [
     description:"Pastoralist herd-health and feed guide for Uganda. kind 'disease_calendar' (diseases to expect in a month and district, with spread, signs, prevention, vaccines), 'disease_info' (one named disease), 'tick_control' (the acaricide to use now for the district, with why, fallback and sources; spray interval; all chemical groups), 'pasture' (grasses, legumes and fodder for more milk in a district). Shows the user a table and returns the facts.",
     inputSchema:{type:"object",properties:{kind:{type:"string",enum:["disease_calendar","disease_info","tick_control","pasture"]}, month:{type:"number",description:"1-12; omit for this month"}, district:{type:"string"}, disease:{type:"string"}, milking_cows:{type:"boolean"}},required:["kind"]},
     execute(i){
-      const k=String(i.kind||""); const district=String(i.district||S.district||"Isingiro"); const m=Number(i.month)>=1&&Number(i.month)<=12?Number(i.month):thisMonth();
+      const k=String(i.kind||""); const district=String(i.district||S.district||""); const m=Number(i.month)>=1&&Number(i.month)<=12?Number(i.month):thisMonth();
       if (k==="disease_calendar"){ const r=lsDiseases(m,district); showDiseaseCalendar(r); mark("herd_d"); checkHerd(); S.last={...S.last,diseases:r}; return r; }
       if (k==="disease_info"){ const d=lsDiseaseIn(norm(String(i.disease||""))); if(!d) return {found:false, advice:"Describe the signs; call a vet."}; mark("herd_d"); checkHerd(); return lsBrief(d); }
       if (k==="tick_control"){ const r=lsTick(m,district,i.milking_cows!==false); showAcaricides(r); mark("herd_t"); checkHerd(); return r; }
@@ -2124,15 +2145,16 @@ async function aiAssistant(userText){
 }
 
 /* Okello's free-text SMS, answered by Claude when available */
-const SMS_RULES = `You are DST Uganda (WWF Uganda) answering a farmer by SMS on a basic phone in Isingiro District, Uganda. Demo with sample data.
+const SMS_RULES = `You are DST Uganda (WWF Uganda) answering a farmer by SMS on a basic phone in Uganda. Demo with sample data. The farmer's farm is only known from the coordinates they sent (in the STATE as farm_location); never assume a district or place.
 Reply in plain text only, at most 300 characters, no emojis, no markdown. Answer every question directly and correctly in context, whatever its topic; understand short or half-finished messages from the conversation. If live data is needed (market prices, news), say so briefly and still give concrete guidance. For rain or season questions call area_rain_outlook and use only its numbers. Give practical, specific advice; refer animal health or chemical questions to a vet or extension officer. Maps, photos and PDF reports are only on WhatsApp. Group commands: JOIN code, POST code message, LEAVE code, GROUPS, STOP, HELP.`;
-const SMS_TOOLS=[{name:"area_rain_outlook", description:"Monthly rain forecast (mm) for Isingiro District and the expected start of the next rainy season. Sample figures.",
+const SMS_TOOLS=[{name:"area_rain_outlook", description:"SAMPLE monthly rain figures (mm) and the expected start of the next rainy season. Not the farmer's own data: always say they are sample figures.",
   execute(){ return {monthly_mm:Object.fromEntries(RAIN), next_rainy_season_start:"2027-03-12"}; }}];
 async function smsAI(text){
   AI.okTurns.push({role:"user", content:text}); if (AI.okTurns.length>12) AI.okTurns=AI.okTurns.slice(-12);
   while (AI.okTurns.length && AI.okTurns[0].role!=="user") AI.okTurns.shift();
   try {
-    const {text:out} = await sampleFn([{role:"user",content:SMS_RULES}, ...AI.okTurns], {tools:SMS_TOOLS, modelTier:"quick"});
+    const loc = S.okLoc ? `STATE: farm_location ${S.okLoc.lat.toFixed(5)}, ${S.okLoc.lon.toFixed(5)}${S.okLoc.district?`, district ${S.okLoc.district} (from the coordinates)`:", district unknown"}.` : "STATE: farm_location unknown.";
+    const {text:out} = await sampleFn([{role:"user",content:SMS_RULES+"\n"+loc}, ...AI.okTurns], {tools:SMS_TOOLS, modelTier:"quick"});
     const reply=toSms(out); AI.okTurns.push({role:"assistant", content:reply}); return reply;
   } catch(e){ AI.okTurns.pop(); if (AI_OFF_CODES.includes(e && e.code)) { aiState="off"; renderAiMode(); } return null; }
 }
@@ -2234,7 +2256,6 @@ async function send(text){
     else if (/use my real location/i.test(t)) { await useRealLocation(true); }
     else {
       let msg=t;
-      if (/^📍|share my location$/i.test(t)) { addBubble("sys","📍 Location shared: Isingiro District (sample pin -0.8430, 30.8020)"); msg=PIN_TEXT+(t.replace(/^📍\s*share my location/i,"").trim()?" "+t:""); }
       const ok = await aiAssistant(msg);
       if (!ok) await assistant(t);
     }
