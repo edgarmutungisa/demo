@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-02T11:40Z",
+ "generated_at": "2026-11-02T11:43Z",
  "note": "Titles, dates and links exactly as published by each source. Always open the source and follow your District Veterinary Officer.",
  "kept_previous": false,
  "sources": [
@@ -7,15 +7,32 @@
    "id": "maaif",
    "name": "MAAIF (agriculture.go.ug)",
    "url": "https://www.agriculture.go.ug/feed/",
-   "ok": false,
-   "error": "TimeoutError: The read operation timed out"
+   "ok": true,
+   "items_read": 10,
+   "kept": 2,
+   "too_old": 0,
+   "undated": 0,
+   "untrusted_publisher": 0,
+   "not_animal_health": 8,
+   "duplicate": 0,
+   "untrusted_names": [],
+   "newest_seen": "2026-01-12"
   },
   {
    "id": "maaif_p2",
    "name": "MAAIF (agriculture.go.ug), older posts page 2",
    "url": "https://www.agriculture.go.ug/feed/?paged=2",
-   "ok": false,
-   "error": "HTTPError: HTTP Error 502: Bad Gateway"
+   "ok": true,
+   "items_read": 10,
+   "kept": 0,
+   "too_old": 0,
+   "undated": 0,
+   "untrusted_publisher": 0,
+   "not_animal_health": 5,
+   "duplicate": 0,
+   "untrusted_names": [],
+   "newest_seen": "2025-08-21",
+   "older_than_latest": 5
   },
   {
    "id": "maaif_p3",
@@ -87,11 +104,11 @@
    "url": "https://www.agriculture.go.ug/?s=livestock&feed=rss2",
    "ok": true,
    "items_read": 10,
-   "kept": 4,
+   "kept": 0,
    "too_old": 0,
    "undated": 0,
    "untrusted_publisher": 0,
-   "not_animal_health": 5,
+   "not_animal_health": 9,
    "duplicate": 1,
    "untrusted_names": [],
    "newest_seen": "2026-04-09"
@@ -100,33 +117,15 @@
    "id": "maaif_s2",
    "name": "MAAIF (agriculture.go.ug), site search: cattle",
    "url": "https://www.agriculture.go.ug/?s=cattle&feed=rss2",
-   "ok": true,
-   "items_read": 10,
-   "kept": 1,
-   "too_old": 0,
-   "undated": 0,
-   "untrusted_publisher": 0,
-   "not_animal_health": 1,
-   "duplicate": 1,
-   "untrusted_names": [],
-   "newest_seen": "2025-10-24",
-   "older_than_latest": 7
+   "ok": false,
+   "error": "TimeoutError: The read operation timed out"
   },
   {
    "id": "maaif_s3",
    "name": "MAAIF (agriculture.go.ug), site search: vaccination",
    "url": "https://www.agriculture.go.ug/?s=vaccination&feed=rss2",
-   "ok": true,
-   "items_read": 10,
-   "kept": 0,
-   "too_old": 0,
-   "undated": 0,
-   "untrusted_publisher": 0,
-   "not_animal_health": 0,
-   "duplicate": 1,
-   "untrusted_names": [],
-   "newest_seen": "2025-10-20",
-   "older_than_latest": 9
+   "ok": false,
+   "error": "TimeoutError: The read operation timed out"
   },
   {
    "id": "maaif_s4",
@@ -134,7 +133,7 @@
    "url": "https://www.agriculture.go.ug/?s=quarantine&feed=rss2",
    "ok": true,
    "items_read": 10,
-   "kept": 0,
+   "kept": 1,
    "too_old": 0,
    "undated": 0,
    "untrusted_publisher": 0,
@@ -142,7 +141,7 @@
    "duplicate": 1,
    "untrusted_names": [],
    "newest_seen": "2025-10-20",
-   "older_than_latest": 9
+   "older_than_latest": 8
   },
   {
    "id": "maaif_s5",
@@ -150,15 +149,15 @@
    "url": "https://www.agriculture.go.ug/?s=animal+disease&feed=rss2",
    "ok": true,
    "items_read": 10,
-   "kept": 0,
+   "kept": 2,
    "too_old": 0,
    "undated": 0,
    "untrusted_publisher": 0,
-   "not_animal_health": 0,
-   "duplicate": 1,
+   "not_animal_health": 1,
+   "duplicate": 2,
    "untrusted_names": [],
    "newest_seen": "2025-10-20",
-   "older_than_latest": 9
+   "older_than_latest": 5
   },
   {
    "id": "gnews_fmd",
@@ -166,12 +165,12 @@
    "url": "https://news.google.com/rss/search?q=Uganda+%28%22foot+and+mouth%22+OR+%22foot-and-mouth%22+OR+FMD%29+when%3A90d&hl=en-UG&gl=UG&ceid=UG%3Aen",
    "ok": true,
    "items_read": 10,
-   "kept": 3,
+   "kept": 2,
    "too_old": 0,
    "undated": 0,
    "untrusted_publisher": 3,
    "not_animal_health": 4,
-   "duplicate": 0,
+   "duplicate": 1,
    "untrusted_names": [
     "3tres3.com",
     "Dairy Business Middle East & Africa",
@@ -215,26 +214,28 @@
    "name": "Google News: livestock quarantines and vaccination in Uganda",
    "url": "https://news.google.com/rss/search?q=Uganda+%28livestock+OR+cattle+OR+animals%29+%28quarantine+OR+vaccination+OR+%22movement+ban%22+OR+outbreak+OR+MAAIF%29+when%3A90d&hl=en-UG&gl=UG&ceid=UG%3Aen",
    "ok": true,
-   "items_read": 25,
-   "kept": 4,
+   "items_read": 65,
+   "kept": 6,
    "too_old": 0,
    "undated": 0,
-   "untrusted_publisher": 13,
-   "not_animal_health": 6,
-   "duplicate": 2,
+   "untrusted_publisher": 33,
+   "not_animal_health": 18,
+   "duplicate": 8,
    "untrusted_names": [
     "Centers for Disease Control and Prevention | CDC (.gov)",
+    "CIDRAP",
     "NICD",
+    "PM News Nigeria",
+    "BBC",
+    "AOL.com",
     "World Vision",
     "GOV.UK blogs",
-    "BBC",
-    "Barbados Today",
-    "CABI Digital Library",
-    "PBS",
-    "Global Biodefense",
     "Al Jazeera",
-    "thecitizen.co.tz",
-    "Internazionale",
+    "Red Pepper",
+    "National Geographic",
+    "SoftPower News",
+    "People Daily",
+    "Anadolu Ajansı",
     "Outbreak News Today"
    ],
    "newest_seen": "2026-11-02"
@@ -270,13 +271,13 @@
    ]
   },
   {
-   "id": "e13fa6ae93a7",
-   "title": "Nakasongola Farmers Raise Alarm Over FMD Vaccine, Demand Government Explanation",
-   "url": "https://news.google.com/rss/articles/CBMivAFBVV95cUxONVJydEQ2UVZMdUljOEpRZnk2RzlyV3lVLVR5b0IxVU1aVVV4VFUteDRjRnNjUDZJRTZHMHBIZ1lXZGloYWhHU01QZm1ud2NyWFFjU1lDekFZcjNSUlJoTHI5cFlZbmpUT3Vrd2lfYzRxYm9EWS1oZUMzVmVHZGMwR1gyUEQ2TkNCOU1valhXYU5uM0cxcVgxakk2d19nQ2lFVml0eXhNVEVoaDEyX0l1VVZ3RmRfZVpfRDA4VNIBxAFBVV95cUxPYWdPcnNXSkYwbGhZTVg2TlJmVVRWQmZ2dVg1ZGhxYU5COVVCT1J5R2tTVTFZX1I3R0txMjFCcFY5bm1YamFNU1dqV3lCeXpCMjZrNlctRmp2X054LVZaMjFvQlRGT0dCdHlDMjVBcEFDMWRqcV9FWWNBOHpkaUl2bFVwYkt3dlZSMWRPeHMwSkItNDYwb0JWTDZ1dk9XR1lFYzBERXQxQzdCT0p5YmJuTTFIeEtOZWlEaTRQX25rSXkzNV9v?oc=5",
-   "published": "2026-10-29T12:24Z",
-   "source": "Google News: FMD in Uganda",
+   "id": "2770f0357738",
+   "title": "Nakasongola Pastoralists Alarmed by FMD Infections in Immunized Cattle, Doubt Vaccine Effectiveness",
+   "url": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE5SMWRQSXRpSmllZ3djV1RRa01MQnZ1c2J1M0NvSGVGQjM0N2RnMm9rbFBjaGtMRFZDRTR1UF9BVFl4dk9MTE92RXY3RXFkekZjb19Rb0tTNTJ3U1owaEJsOTFRWEZGdkl4?oc=5",
+   "published": "2026-10-29T13:37Z",
+   "source": "Google News: livestock quarantines and vaccination in Uganda",
    "source_kind": "news",
-   "publisher": "Nilepost",
+   "publisher": "Uganda Radionetwork",
    "category": "advisory",
    "districts": [
     "Nakasongola"
@@ -351,6 +352,19 @@
    "publisher": "Nilepost",
    "category": "outbreak",
    "districts": []
+  },
+  {
+   "id": "9248b776cd49",
+   "title": "Foot and mouth disease hits Nakasongola",
+   "url": "https://news.google.com/rss/articles/CBMinwFBVV95cUxQeUFyT21XOTRsczhMazZzS3BUNDZWSUw0X21BSWFOU2Itc0RKQmlodlQ0WWlwNlY3VnJ6UVdFYnA1OWw0RFRpMUxMS2J5c29WQ3FvVEdwcS15RU1vY0hxVzI2ejFhdG1rU3dWU1p5UTJXTGU5ODlTNU8zOVlTdDNQNUFnNmdEUkVMbjBnbnFjOWcwZ3ZyOGhHak5tNDdGdVk?oc=5",
+   "published": "2026-09-17T07:00Z",
+   "source": "Google News: livestock quarantines and vaccination in Uganda",
+   "source_kind": "news",
+   "publisher": "NewVision.co.ug",
+   "category": "outbreak",
+   "districts": [
+    "Nakasongola"
+   ]
   },
   {
    "id": "1832a1cfe876",
@@ -442,59 +456,61 @@
    ]
   },
   {
-   "id": "98096305734b",
-   "title": "Guidelines for provision of Artificial Insemination (AI) services in dairy and beef cattle under UCSATP E-voucher system",
-   "url": "https://www.agriculture.go.ug/sdm_downloads/guidelines-ai-services/?utm_source=rss&utm_medium=rss&utm_campaign=guidelines-ai-services",
-   "published": "2025-10-24T15:32Z",
-   "source": "MAAIF (agriculture.go.ug), site search: cattle",
-   "source_kind": "official",
-   "publisher": "MAAIF (agriculture.go.ug), site search: cattle",
-   "category": "livestock",
-   "districts": []
-  },
-  {
    "id": "7dc85db4a750",
    "title": "MAAIF Activates Emergency Response Measures to Isolated Suspected Anthrax Outbreak in Rwambu Parish of Ibanda District",
    "url": "https://www.agriculture.go.ug/2025/10/20/maaif-activates-emergency-response-measures-to-isolated-suspected-anthrax-outbreak-in-rwambu-parish-of-ibanda-district/?utm_source=rss&utm_medium=rss&utm_campaign=maaif-activates-emergency-response-measures-to-isolated-suspected-anthrax-outbreak-in-rwambu-parish-of-ibanda-district",
    "published": "2025-10-20T13:15Z",
-   "source": "MAAIF (agriculture.go.ug), site search: livestock",
+   "source": "MAAIF (agriculture.go.ug)",
    "source_kind": "official",
-   "publisher": "MAAIF (agriculture.go.ug), site search: livestock",
+   "publisher": "MAAIF (agriculture.go.ug)",
    "category": "outbreak",
    "districts": [
     "Ibanda"
    ]
   },
   {
-   "id": "8997e502dca5",
-   "title": "APPLICATION FOR ACCREDITATION UNDER THE LIVESTOCK VALUE CHAIN",
-   "url": "https://www.agriculture.go.ug/sdm_downloads/application-for-accreditation-under-the-livestock-value-chain-2/?utm_source=rss&utm_medium=rss&utm_campaign=application-for-accreditation-under-the-livestock-value-chain-2",
-   "published": "2025-08-04T09:34Z",
-   "source": "MAAIF (agriculture.go.ug), site search: livestock",
+   "id": "9ecb1bd391d0",
+   "title": "Clarification on False Reports Regarding Alleged Burning of a Tractor in Buvuma District Issued by the Ministry of Agriculture, Animal Industry and Fisheries (MAAIF)",
+   "url": "https://www.agriculture.go.ug/2025/10/13/clarification-of-false-reports-regarding-alleged-burning-of-a-tractor-in-buvuma-district-issued-by-the-ministry-of-agriculture-animal-industry-and-fisheries-maaif/?utm_source=rss&utm_medium=rss&utm_campaign=clarification-of-false-reports-regarding-alleged-burning-of-a-tractor-in-buvuma-district-issued-by-the-ministry-of-agriculture-animal-industry-and-fisheries-maaif",
+   "published": "2025-10-13T08:26Z",
+   "source": "MAAIF (agriculture.go.ug)",
    "source_kind": "official",
-   "publisher": "MAAIF (agriculture.go.ug), site search: livestock",
+   "publisher": "MAAIF (agriculture.go.ug)",
+   "category": "livestock",
+   "districts": [
+    "Buvuma"
+   ]
+  },
+  {
+   "id": "7efea1c6cd50",
+   "title": "Keeping Animal Diseases in Check: How ELISA Kits Make a Difference",
+   "url": "https://www.agriculture.go.ug/event-venue/keeping-animal-diseases-in-check-how-elisa-kits-make-a-difference/?utm_source=rss&utm_medium=rss&utm_campaign=keeping-animal-diseases-in-check-how-elisa-kits-make-a-difference",
+   "published": "2024-12-24T08:19Z",
+   "source": "MAAIF (agriculture.go.ug), site search: animal disease",
+   "source_kind": "official",
+   "publisher": "MAAIF (agriculture.go.ug), site search: animal disease",
    "category": "livestock",
    "districts": []
   },
   {
-   "id": "ea7fd2fb86fa",
-   "title": "ITEM SPECIFICATION FOR THE PRODUCTION INPUTS AND AGRICULTURAL EQUIPMENT FOR LIVESTOCK VALUE CHAINS UNDER THE UCSATP",
-   "url": "https://www.agriculture.go.ug/sdm_downloads/item-specification-for-the-production-inputs-and-agricultural-equipment-for-livestock-value-chains-under-the-ucsatp/?utm_source=rss&utm_medium=rss&utm_campaign=item-specification-for-the-production-inputs-and-agricultural-equipment-for-livestock-value-chains-under-the-ucsatp",
-   "published": "2025-08-01T13:52Z",
-   "source": "MAAIF (agriculture.go.ug), site search: livestock",
+   "id": "17feafe0530d",
+   "title": "Veterinary Practitioners’ Act 2024",
+   "url": "https://www.agriculture.go.ug/veterinary-practitioners-act-2024/?utm_source=rss&utm_medium=rss&utm_campaign=veterinary-practitioners-act-2024",
+   "published": "2024-09-26T07:37Z",
+   "source": "MAAIF (agriculture.go.ug), site search: quarantine",
    "source_kind": "official",
-   "publisher": "MAAIF (agriculture.go.ug), site search: livestock",
+   "publisher": "MAAIF (agriculture.go.ug), site search: quarantine",
    "category": "livestock",
    "districts": []
   },
   {
-   "id": "a0298b0aa33d",
-   "title": "Process Development of Veterinary APIs and Intermediates",
-   "url": "https://www.agriculture.go.ug/event-venue/process-development-of-veterinary-apis-and-intermediates/?utm_source=rss&utm_medium=rss&utm_campaign=process-development-of-veterinary-apis-and-intermediates",
-   "published": "2025-01-24T06:04Z",
-   "source": "MAAIF (agriculture.go.ug), site search: livestock",
+   "id": "8c0b89ca6e76",
+   "title": "Animal Feeds Act 2024",
+   "url": "https://www.agriculture.go.ug/animal-feeds-act-2024/?utm_source=rss&utm_medium=rss&utm_campaign=animal-feeds-act-2024",
+   "published": "2024-09-24T10:39Z",
+   "source": "MAAIF (agriculture.go.ug), site search: animal disease",
    "source_kind": "official",
-   "publisher": "MAAIF (agriculture.go.ug), site search: livestock",
+   "publisher": "MAAIF (agriculture.go.ug), site search: animal disease",
    "category": "livestock",
    "districts": []
   }
