@@ -27,6 +27,7 @@ import html
 import json
 import re
 import sys
+import time
 import urllib.parse
 import urllib.request
 import xml.etree.ElementTree as ET
@@ -163,6 +164,7 @@ _LIVESTOCK_TITLE = re.compile(r"\b(cattle|cows?|calves|bulls?|livestock|animals?
                               r"ticks?|fodder|hides|animal feeds?|breeding|artificial insemination)\b", re.I)
 
 
+_MINISTRY_NAME = re.compile(r"(the\s+)?Ministry of Agriculture,?\s+Animal Industry,?\s+and\s+Fisheries(\s*\(MAAIF\))?", re.I)
 # Administrative posts are not farmer notices.
 _ADMIN = re.compile(r"\b(job|jobs|advert\w*|recruitment|recruit\w*|vacanc\w*|tenders?|procurement|bids?|pre[- ]bid|"
                     r"expression of interest|shortlist\w*|interviews?|consultan\w*|terms of reference|internship|"
@@ -175,7 +177,9 @@ def classify(title: str, summary: str = "", official: bool = False) -> Optional[
     News must be about animal health in Uganda. A MAAIF post counts when it is about animal
     health or its headline is about livestock. The label comes from the headline only."""
     if official:
-        # The ministry's posts are judged on the headline alone; summaries mention many topics.
+        # The ministry's posts are judged on the headline alone (without the ministry's own name,
+        # "...Animal Industry and Fisheries"), because summaries mention many topics.
+        title = _MINISTRY_NAME.sub(" ", title)
         if _ADMIN.search(title):
             return None
         summary = ""
@@ -286,10 +290,32 @@ def build_notices(feeds: Dict[str, str], now: Optional[dt.datetime] = None, stat
     return sorted(official_items + news, key=lambda n: n["published"], reverse=True)
 
 
-def fetch(url: str, timeout: int = 30) -> str:
+def fetch(url: str, timeout: int = 45, attempts: int = 2) -> str:
+    """Fetch a feed, trying once more after a pause if the site is slow or fails."""
     req = urllib.request.Request(url, headers={"User-Agent": _UA, "Accept": "application/rss+xml, application/xml, text/xml, */*"})
-    with urllib.request.urlopen(req, timeout=timeout) as r:
-        return r.read().decode(r.headers.get_content_charset() or "utf-8", errors="replace")
+    for attempt in range(attempts):
+        try:
+            with urllib.request.urlopen(req, timeout=timeout) as r:
+                return r.read().decode(r.headers.get_content_charset() or "utf-8", errors="replace")
+        except Exception:
+            if attempt == attempts - 1:
+                raise
+            time.sleep(5)
+    raise RuntimeError("unreachable")
+
+
+def _carry_forward_official(notices: List[dict], previous: Optional[dict]) -> List[dict]:
+    """Keep MAAIF livestock posts found on earlier runs, so a slow site can't make them disappear.
+
+    Earlier posts are re-checked with today's rules; the newest MAX_OFFICIAL are kept."""
+    old = [n for n in (previous or {}).get("notices", []) if n.get("source_kind") == "official"
+           and classify(n.get("title", ""), official=True) is not None]
+    official = [n for n in notices if n.get("source_kind") == "official"]
+    have = {n["url"] for n in official} | {n["title"].lower() for n in official}
+    official += [n for n in old if n["url"] not in have and n["title"].lower() not in have]
+    official = sorted(official, key=lambda n: n["published"], reverse=True)[:MAX_OFFICIAL]
+    news = [n for n in notices if n.get("source_kind") != "official"]
+    return sorted(official + news, key=lambda n: n["published"], reverse=True)
 
 
 def collect(sources: Iterable[dict] = SOURCES, fetcher=fetch, previous: Optional[dict] = None) -> dict:
@@ -304,6 +330,7 @@ def collect(sources: Iterable[dict] = SOURCES, fetcher=fetch, previous: Optional
             status.append({"id": s["id"], "name": s["name"], "url": s["url"], "ok": False, "error": f"{type(exc).__name__}: {exc}"[:200]})
     stats: dict = {}
     notices = build_notices(feeds, stats=stats)
+    notices = _carry_forward_official(notices, previous)
     for st in status:
         if st["ok"]:
             st.update(stats.get(st["id"], {}))
