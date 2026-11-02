@@ -96,8 +96,9 @@ _CATEGORY = [
     ("outbreak", re.compile(r"outbreak|confirm\w* (case|cases)|suspected|\bhits?\b|\bkills?\b|\bdead\b|deaths?|strikes?|spread", re.I)),
 ]
 
-MAX_AGE_DAYS = 90
-MAX_ITEMS = 40
+MAX_AGE_DAYS = 90      # news items only
+MAX_ITEMS = 40         # news items only
+MAX_OFFICIAL = 5       # the latest posts from each official source (MAAIF), however old
 _UA = "DSTUganda-notices/1.0 (+https://github.com/edgarmutungisa/demo)"
 
 
@@ -197,7 +198,7 @@ def build_notices(feeds: Dict[str, str], now: Optional[dt.datetime] = None, stat
     stats = {} if stats is None else stats
     def count(sid: str, why: str, publisher: str = "") -> None:
         st = stats.setdefault(sid, {"kept": 0, "too_old": 0, "undated": 0, "untrusted_publisher": 0, "not_animal_health": 0, "duplicate": 0, "untrusted_names": [], "newest_seen": None})
-        st[why] += 1
+        st[why] = st.get(why, 0) + 1
         if why == "untrusted_publisher" and publisher and publisher not in st["untrusted_names"] and len(st["untrusted_names"]) < 15:
             st["untrusted_names"].append(publisher)
     now = now or dt.datetime.now(dt.timezone.utc)
@@ -220,20 +221,27 @@ def build_notices(feeds: Dict[str, str], now: Optional[dt.datetime] = None, stat
             iso = pub.astimezone(dt.timezone.utc).strftime("%Y-%m-%d")
             if not st["newest_seen"] or iso > st["newest_seen"]:
                 st["newest_seen"] = iso
+        official = meta["kind"] == "official"
         if pub is None:
             count(sid, "undated"); continue
-        if (now - pub).days > MAX_AGE_DAYS or pub > now + dt.timedelta(days=1):
+        if pub > now + dt.timedelta(days=1) or (not official and (now - pub).days > MAX_AGE_DAYS):
             count(sid, "too_old"); continue
+        if official and stats.get(sid, {}).get("kept", 0) >= MAX_OFFICIAL:
+            count(sid, "older_than_latest"); continue
         title, publisher = _clean_title(it["title"], it["publisher"])
         if sid.startswith("gnews") and not _trusted(publisher):
             count(sid, "untrusted_publisher", publisher); continue
-        c = classify(title, it["summary"] if meta["kind"] == "official" else "")
+        c = classify(title, it["summary"] if official else "")
+        if c is None and official:
+            # The ministry's own latest posts are always shown, whatever the topic.
+            c = {"category": "ministry", "districts": sorted(set(_DISTRICT_RE.findall(f"{title} {it['summary']}")))}
         if c is None:
             count(sid, "not_animal_health"); continue
         key, words = re.sub(r"[^a-z0-9]+", " ", title.lower()).strip(), _words(title)
         # Same story: very similar headline, or the same district(s) and kind of notice within 3 days.
-        twin = any(_same_story(words, w) or (c["districts"] and c["districts"] == d and c["category"] == cat and abs((pub - p).days) <= 3)
-                   for w, d, cat, p in stories)
+        # The ministry's own posts are only merged when the title is identical.
+        twin = not official and any(_same_story(words, w) or (c["districts"] and c["districts"] == d and c["category"] == cat and abs((pub - p).days) <= 3)
+                                    for w, d, cat, p in stories)
         if key in seen or twin:
             count(sid, "duplicate"); continue
         seen.add(key); stories.append((words, c["districts"], c["category"], pub)); count(sid, "kept")
@@ -248,8 +256,9 @@ def build_notices(feeds: Dict[str, str], now: Optional[dt.datetime] = None, stat
             "category": c["category"],
             "districts": c["districts"],
         })
-    out.sort(key=lambda n: n["published"], reverse=True)
-    return out[:MAX_ITEMS]
+    official_items = sorted((n for n in out if n["source_kind"] == "official"), key=lambda n: n["published"], reverse=True)
+    news = sorted((n for n in out if n["source_kind"] != "official"), key=lambda n: n["published"], reverse=True)[:MAX_ITEMS]
+    return sorted(official_items + news, key=lambda n: n["published"], reverse=True)
 
 
 def fetch(url: str, timeout: int = 30) -> str:

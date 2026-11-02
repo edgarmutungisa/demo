@@ -847,7 +847,7 @@ function loadNotices(){
 const lsGet = k => { try { return localStorage.getItem(k); } catch(e){ return null; } };
 const lsSet = (k,v) => { try { localStorage.setItem(k,v); } catch(e){} };
 const nDate = iso => { const d=new Date(iso); return isNaN(d) ? "" : d.toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"}); };
-const NCAT = {quarantine:"Quarantine", vaccination:"Vaccination", outbreak:"Outbreak", advisory:"Notice"};
+const NCAT = {quarantine:"Quarantine", vaccination:"Vaccination", outbreak:"Outbreak", advisory:"Notice", ministry:"MAAIF"};
 function noticeMine(n){ const d=(S.farm&&S.district||"").toLowerCase(); return !!d && (n.districts||[]).some(x=>x.toLowerCase()===d); }
 function unseen(){ const seen=lsGet("dst-notices-seen")||""; return (NOTICES&&NOTICES.notices||[]).filter(n=>n.published>seen); }
 function updateNoticeCount(){ const c=$("notices-cnt"), k=unseen().length; c.hidden=!k; c.textContent=k>9?"9+":String(k); }
@@ -856,12 +856,14 @@ async function showNotices(){
   if (all.length) lsSet("dst-notices-seen", all[0].published); updateNoticeCount();
   if (j.failed) return botSay(["I couldn't load the notices here (no internet, or blocked in this viewer). On the public link they update every 3 hours. For an urgent question, call your District Veterinary Officer."]);
   if (!all.length) return botSay([`No livestock-disease notices for Uganda in the last 90 days from the sources I check (MAAIF, Ugandan news). Checked ${nDate(j.generated_at)}. Your District Veterinary Officer has the latest.`]);
-  const mine=all.filter(noticeMine), rest=all.filter(n=>!noticeMine(n)).slice(0, mine.length?5:8);
+  const maaif=all.filter(n=>n.source_kind==="official"), news=all.filter(n=>n.source_kind!=="official");
+  const mine=news.filter(noticeMine), rest=news.filter(n=>!noticeMine(n)).slice(0, mine.length?5:8);
   const li = n => `<li><a href="${esc(n.url)}" target="_blank" rel="noopener">${esc(n.title)}</a><small>${esc(NCAT[n.category]||"Notice")} · ${esc(n.publisher)} · ${esc(nDate(n.published))}${(n.districts||[]).length?" · "+esc(n.districts.join(", ")):""}</small></li>`;
   S.lastAnswer = smsFit(all.slice(0,2).map(n=>`${n.title} (${n.publisher}, ${nDate(n.published)})`).join(". "));
   return botSay([{html:`<b>Notices${S.farm&&S.district?` · ${esc(S.district)} first`:""}</b>`
+      + (maaif.length?`<p><b>Latest from MAAIF</b></p><ul class="nlist">${maaif.map(li).join("")}</ul>`:"")
       + (mine.length?`<p><b>In your district</b></p><ul class="nlist">${mine.map(li).join("")}</ul>`:(S.farm&&S.district?`<p>Nothing named for ${esc(S.district)} District.</p>`:""))
-      + `${mine.length?"<p><b>Elsewhere in Uganda</b></p>":""}<ul class="nlist">${rest.map(li).join("")}</ul>`
+      + `${mine.length||maaif.length?`<p><b>${mine.length?"Elsewhere in Uganda":"Livestock news"}</b></p>`:""}<ul class="nlist">${rest.map(li).join("")}</ul>`
       + `<span class="srcs">Exactly as published by MAAIF and Ugandan news. Last changed ${esc(nDate(j.generated_at))}. Open the source, and follow your District Veterinary Officer.</span>`}]);
 }
 async function noticePopup(){
