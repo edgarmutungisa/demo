@@ -32,16 +32,20 @@ import urllib.request
 import xml.etree.ElementTree as ET
 from typing import Dict, Iterable, List, Optional, Tuple
 
-_GNEWS_Q = ('Uganda ("foot and mouth" OR FMD OR anthrax OR "lumpy skin" OR CBPP OR "East Coast Fever" '
-            'OR "Rift Valley" OR rabies OR "swine fever" OR "bird flu" OR quarantine OR "livestock vaccination" '
-            'OR MAAIF) when:60d')
+def _gnews(q: str) -> str:
+    return "https://news.google.com/rss/search?" + urllib.parse.urlencode({"q": q + " when:90d", "hl": "en-UG", "gl": "UG", "ceid": "UG:en"})
+
 
 SOURCES: List[Dict[str, str]] = [
     {"id": "maaif", "name": "MAAIF (agriculture.go.ug)", "kind": "official",
      "url": "https://www.agriculture.go.ug/feed/"},
-    {"id": "gnews", "name": "Google News: Uganda livestock disease", "kind": "news",
-     "url": "https://news.google.com/rss/search?" + urllib.parse.urlencode(
-         {"q": _GNEWS_Q, "hl": "en-UG", "gl": "UG", "ceid": "UG:en"})},
+    {"id": "gnews_fmd", "name": "Google News: FMD in Uganda", "kind": "news",
+     "url": _gnews('Uganda ("foot and mouth" OR "foot-and-mouth" OR FMD)')},
+    {"id": "gnews_diseases", "name": "Google News: other animal diseases in Uganda", "kind": "news",
+     "url": _gnews('Uganda (anthrax OR "lumpy skin" OR CBPP OR "East Coast Fever" OR "Rift Valley fever" OR "swine fever" '
+                   'OR "bird flu" OR "avian influenza" OR PPR OR rabies OR trypanosomiasis)')},
+    {"id": "gnews_control", "name": "Google News: livestock quarantines and vaccination in Uganda", "kind": "news",
+     "url": _gnews('Uganda (livestock OR cattle OR animals) (quarantine OR vaccination OR "movement ban" OR outbreak OR MAAIF)')},
     {"id": "allafrica", "name": "allAfrica: Uganda", "kind": "news",
      "url": "https://allafrica.com/tools/headlines/rdf/uganda/headlines.rdf"},
 ]
@@ -186,8 +190,15 @@ def _same_story(a: set, b: set) -> bool:
     return bool(a and b) and len(a & b) / len(a | b) >= 0.5
 
 
-def build_notices(feeds: Dict[str, str], now: Optional[dt.datetime] = None) -> List[dict]:
-    """feeds: {source_id: xml_text}. Returns filtered, de-duplicated notices, newest first."""
+def build_notices(feeds: Dict[str, str], now: Optional[dt.datetime] = None, stats: Optional[dict] = None) -> List[dict]:
+    """feeds: {source_id: xml_text}. Returns filtered, de-duplicated notices, newest first.
+    If stats is a dict, it is filled per source with how many items were kept and why others were dropped."""
+    stats = {} if stats is None else stats
+    def count(sid: str, why: str, publisher: str = "") -> None:
+        st = stats.setdefault(sid, {"kept": 0, "too_old_or_undated": 0, "untrusted_publisher": 0, "not_animal_health": 0, "duplicate": 0, "untrusted_names": []})
+        st[why] += 1
+        if why == "untrusted_publisher" and publisher and publisher not in st["untrusted_names"] and len(st["untrusted_names"]) < 15:
+            st["untrusted_names"].append(publisher)
     now = now or dt.datetime.now(dt.timezone.utc)
     src = {s["id"]: s for s in SOURCES}
     seen, out, stories = set(), [], []
@@ -204,17 +215,17 @@ def build_notices(feeds: Dict[str, str], now: Optional[dt.datetime] = None) -> L
             continue
         pub = it["published"]
         if pub is None or (now - pub).days > MAX_AGE_DAYS or pub > now + dt.timedelta(days=1):
-            continue
+            count(sid, "too_old_or_undated"); continue
         title, publisher = _clean_title(it["title"], it["publisher"])
-        if sid == "gnews" and not _trusted(publisher):
-            continue
+        if sid.startswith("gnews") and not _trusted(publisher):
+            count(sid, "untrusted_publisher", publisher); continue
         c = classify(title, it["summary"] if meta["kind"] == "official" else "")
         if c is None:
-            continue
+            count(sid, "not_animal_health"); continue
         key, words = re.sub(r"[^a-z0-9]+", " ", title.lower()).strip(), _words(title)
         if key in seen or any(_same_story(words, w) for w in stories):
-            continue
-        seen.add(key); stories.append(words)
+            count(sid, "duplicate"); continue
+        seen.add(key); stories.append(words); count(sid, "kept")
         out.append({
             "id": hashlib.sha1(it["link"].encode()).hexdigest()[:12],
             "title": title,
@@ -246,7 +257,11 @@ def collect(sources: Iterable[dict] = SOURCES, fetcher=fetch, previous: Optional
             status.append({"id": s["id"], "name": s["name"], "url": s["url"], "ok": True, "items_read": n})
         except Exception as exc:  # network, HTTP or XML error: report it and carry on
             status.append({"id": s["id"], "name": s["name"], "url": s["url"], "ok": False, "error": f"{type(exc).__name__}: {exc}"[:200]})
-    notices = build_notices(feeds)
+    stats: dict = {}
+    notices = build_notices(feeds, stats=stats)
+    for st in status:
+        if st["ok"]:
+            st.update(stats.get(st["id"], {}))
     kept_previous = False
     if not feeds and previous and previous.get("notices"):
         notices, kept_previous = previous["notices"], True
@@ -278,7 +293,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     except (OSError, ValueError):
         previous = None
     data = collect(previous=previous)
-    sig = lambda d: json.dumps([d.get("notices"), [(x["id"], x["ok"]) for x in d.get("sources", [])]], sort_keys=True)
+    sig = lambda d: json.dumps([d.get("notices"), [(x["id"], x["ok"]) for x in d.get("sources", [])]], sort_keys=True)  # counts alone don't trigger a commit
     if previous and sig(previous) == sig(data):
         print("unchanged: notices and source status are the same as last time")
         return 0
@@ -287,7 +302,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     ok = sum(s["ok"] for s in data["sources"])
     print(f"{len(data['notices'])} notices from {ok}/{len(data['sources'])} sources" + (" (kept previous)" if data["kept_previous"] else ""))
     for s in data["sources"]:
-        print(f"  {'ok ' if s['ok'] else 'ERR'} {s['name']}: {s.get('items_read', s.get('error'))}")
+        print(f"  {'ok ' if s['ok'] else 'ERR'} {s['name']}: " + (f"read {s['items_read']}, kept {s.get('kept', 0)}, untrusted {s.get('untrusted_publisher', 0)} {s.get('untrusted_names', [])}, not animal health {s.get('not_animal_health', 0)}, duplicate {s.get('duplicate', 0)}, old {s.get('too_old_or_undated', 0)}" if s['ok'] else s['error']))
     return 0
 
 
