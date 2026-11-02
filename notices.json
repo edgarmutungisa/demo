@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-02T11:35Z",
+ "generated_at": "2026-11-02T11:37Z",
  "note": "Titles, dates and links exactly as published by each source. Always open the source and follow your District Veterinary Officer.",
  "kept_previous": false,
  "sources": [
@@ -9,14 +9,15 @@
    "url": "https://www.agriculture.go.ug/feed/",
    "ok": true,
    "items_read": 10,
-   "kept": 1,
+   "kept": 2,
    "too_old": 0,
    "undated": 0,
    "untrusted_publisher": 0,
-   "not_animal_health": 9,
+   "not_animal_health": 6,
    "duplicate": 0,
    "untrusted_names": [],
-   "newest_seen": "2026-01-12"
+   "newest_seen": "2026-01-12",
+   "older_than_latest": 2
   },
   {
    "id": "maaif_p2",
@@ -28,10 +29,11 @@
    "too_old": 0,
    "undated": 0,
    "untrusted_publisher": 0,
-   "not_animal_health": 10,
+   "not_animal_health": 0,
    "duplicate": 0,
    "untrusted_names": [],
-   "newest_seen": "2025-08-21"
+   "newest_seen": "2025-08-21",
+   "older_than_latest": 10
   },
   {
    "id": "maaif_p3",
@@ -43,10 +45,11 @@
    "too_old": 0,
    "undated": 0,
    "untrusted_publisher": 0,
-   "not_animal_health": 10,
+   "not_animal_health": 0,
    "duplicate": 0,
    "untrusted_names": [],
-   "newest_seen": "2022-08-02"
+   "newest_seen": "2022-08-02",
+   "older_than_latest": 10
   },
   {
    "id": "maaif_p4",
@@ -54,15 +57,15 @@
    "url": "https://www.agriculture.go.ug/feed/?paged=4",
    "ok": true,
    "items_read": 10,
-   "kept": 4,
+   "kept": 0,
    "too_old": 0,
    "undated": 0,
    "untrusted_publisher": 0,
-   "not_animal_health": 4,
+   "not_animal_health": 0,
    "duplicate": 0,
    "untrusted_names": [],
    "newest_seen": "2021-10-01",
-   "older_than_latest": 2
+   "older_than_latest": 10
   },
   {
    "id": "maaif_p5",
@@ -90,11 +93,11 @@
    "too_old": 0,
    "undated": 0,
    "untrusted_publisher": 0,
-   "not_animal_health": 1,
-   "duplicate": 1,
+   "not_animal_health": 0,
+   "duplicate": 0,
    "untrusted_names": [],
    "newest_seen": "2022-04-25",
-   "older_than_latest": 8
+   "older_than_latest": 10
   },
   {
    "id": "maaif_s1",
@@ -102,14 +105,15 @@
    "url": "https://www.agriculture.go.ug/?s=livestock&feed=rss2",
    "ok": true,
    "items_read": 10,
-   "kept": 0,
+   "kept": 2,
    "too_old": 0,
    "undated": 0,
    "untrusted_publisher": 0,
-   "not_animal_health": 9,
+   "not_animal_health": 1,
    "duplicate": 1,
    "untrusted_names": [],
-   "newest_seen": "2026-04-09"
+   "newest_seen": "2026-04-09",
+   "older_than_latest": 6
   },
   {
    "id": "maaif_s2",
@@ -117,14 +121,15 @@
    "url": "https://www.agriculture.go.ug/?s=cattle&feed=rss2",
    "ok": true,
    "items_read": 10,
-   "kept": 0,
+   "kept": 1,
    "too_old": 0,
    "undated": 0,
    "untrusted_publisher": 0,
-   "not_animal_health": 7,
-   "duplicate": 3,
+   "not_animal_health": 0,
+   "duplicate": 1,
    "untrusted_names": [],
-   "newest_seen": "2025-10-24"
+   "newest_seen": "2025-10-24",
+   "older_than_latest": 8
   },
   {
    "id": "maaif_s3",
@@ -137,10 +142,10 @@
    "undated": 0,
    "untrusted_publisher": 0,
    "not_animal_health": 0,
-   "duplicate": 3,
+   "duplicate": 1,
    "untrusted_names": [],
    "newest_seen": "2025-10-20",
-   "older_than_latest": 7
+   "older_than_latest": 9
   },
   {
    "id": "maaif_s4",
@@ -152,11 +157,11 @@
    "too_old": 0,
    "undated": 0,
    "untrusted_publisher": 0,
-   "not_animal_health": 3,
+   "not_animal_health": 0,
    "duplicate": 1,
    "untrusted_names": [],
    "newest_seen": "2025-10-20",
-   "older_than_latest": 6
+   "older_than_latest": 9
   },
   {
    "id": "maaif_s5",
@@ -168,10 +173,11 @@
    "too_old": 0,
    "undated": 0,
    "untrusted_publisher": 0,
-   "not_animal_health": 9,
+   "not_animal_health": 0,
    "duplicate": 1,
    "untrusted_names": [],
-   "newest_seen": "2025-10-20"
+   "newest_seen": "2025-10-20",
+   "older_than_latest": 9
   },
   {
    "id": "gnews_fmd",
@@ -197,25 +203,31 @@
    "name": "Google News: other animal diseases in Uganda",
    "url": "https://news.google.com/rss/search?q=Uganda+%28anthrax+OR+%22lumpy+skin%22+OR+CBPP+OR+%22East+Coast+Fever%22+OR+%22Rift+Valley+fever%22+OR+%22swine+fever%22+OR+%22bird+flu%22+OR+%22avian+influenza%22+OR+PPR+OR+rabies+OR+trypanosomiasis%29+when%3A90d&hl=en-UG&gl=UG&ceid=UG%3Aen",
    "ok": true,
-   "items_read": 27,
+   "items_read": 32,
    "kept": 8,
    "too_old": 0,
    "undated": 0,
-   "untrusted_publisher": 13,
+   "untrusted_publisher": 18,
    "not_animal_health": 6,
    "duplicate": 0,
    "untrusted_names": [
-    "Food and Agriculture Organization",
+    "Devdiscourse",
     "IndexBox",
-    "ReliefWeb",
+    "Mirage News",
     "Free Press Journal",
     "Health Policy Watch",
+    "Food and Agriculture Organization",
+    "All about feed",
+    "3tres3.com",
     "People Daily",
     "Anadolu Ajansı",
-    "3tres3.com",
-    "Centers for Disease Control and Prevention | CDC (.gov)"
+    "kare11.com",
+    "Українські Національні Новини (УНН)",
+    "Centers for Disease Control and Prevention | CDC (.gov)",
+    "Facebook",
+    "The Davis Enterprise"
    ],
-   "newest_seen": "2026-10-30"
+   "newest_seen": "2026-10-31"
   },
   {
    "id": "gnews_control",
@@ -449,6 +461,39 @@
    ]
   },
   {
+   "id": "100c07c69991",
+   "title": "Job Advert for the Resilient Livestock Value Chain Project (ReLIV)",
+   "url": "https://www.agriculture.go.ug/?post_type=job_listing&p=29783&utm_source=rss&utm_medium=rss&utm_campaign=job-advert-for-the-resilient-livestock-value-chain-project-reliv",
+   "published": "2026-01-21T15:20Z",
+   "source": "MAAIF (agriculture.go.ug), site search: livestock",
+   "source_kind": "official",
+   "publisher": "MAAIF (agriculture.go.ug), site search: livestock",
+   "category": "livestock",
+   "districts": []
+  },
+  {
+   "id": "63ee4046d3b0",
+   "title": "RECRUITMENT OF STAFF FOR THE RESILIENT LIVESTOCK VALUE CHAIN PROJECT (ReLIV).",
+   "url": "https://www.agriculture.go.ug/sdm_downloads/recruitment-of-staff-for-the-resilient-livestock-value-chain-project-reliv/?utm_source=rss&utm_medium=rss&utm_campaign=recruitment-of-staff-for-the-resilient-livestock-value-chain-project-reliv",
+   "published": "2026-01-21T15:11Z",
+   "source": "MAAIF (agriculture.go.ug), site search: livestock",
+   "source_kind": "official",
+   "publisher": "MAAIF (agriculture.go.ug), site search: livestock",
+   "category": "livestock",
+   "districts": []
+  },
+  {
+   "id": "98096305734b",
+   "title": "Guidelines for provision of Artificial Insemination (AI) services in dairy and beef cattle under UCSATP E-voucher system",
+   "url": "https://www.agriculture.go.ug/sdm_downloads/guidelines-ai-services/?utm_source=rss&utm_medium=rss&utm_campaign=guidelines-ai-services",
+   "published": "2025-10-24T15:32Z",
+   "source": "MAAIF (agriculture.go.ug), site search: cattle",
+   "source_kind": "official",
+   "publisher": "MAAIF (agriculture.go.ug), site search: cattle",
+   "category": "livestock",
+   "districts": []
+  },
+  {
    "id": "7dc85db4a750",
    "title": "MAAIF Activates Emergency Response Measures to Isolated Suspected Anthrax Outbreak in Rwambu Parish of Ibanda District",
    "url": "https://www.agriculture.go.ug/2025/10/20/maaif-activates-emergency-response-measures-to-isolated-suspected-anthrax-outbreak-in-rwambu-parish-of-ibanda-district/?utm_source=rss&utm_medium=rss&utm_campaign=maaif-activates-emergency-response-measures-to-isolated-suspected-anthrax-outbreak-in-rwambu-parish-of-ibanda-district",
@@ -462,54 +507,17 @@
    ]
   },
   {
-   "id": "6130062f2629",
-   "title": "One-two people die as a result of rabies every month in Arua District",
-   "url": "https://www.agriculture.go.ug/2021/10/02/one-two-people-die-as-a-result-of-rabies-every-month-in-arua-district/?utm_source=rss&utm_medium=rss&utm_campaign=one-two-people-die-as-a-result-of-rabies-every-month-in-arua-district",
-   "published": "2021-10-01T23:04Z",
-   "source": "MAAIF (agriculture.go.ug), older posts page 4",
+   "id": "9ecb1bd391d0",
+   "title": "Clarification on False Reports Regarding Alleged Burning of a Tractor in Buvuma District Issued by the Ministry of Agriculture, Animal Industry and Fisheries (MAAIF)",
+   "url": "https://www.agriculture.go.ug/2025/10/13/clarification-of-false-reports-regarding-alleged-burning-of-a-tractor-in-buvuma-district-issued-by-the-ministry-of-agriculture-animal-industry-and-fisheries-maaif/?utm_source=rss&utm_medium=rss&utm_campaign=clarification-of-false-reports-regarding-alleged-burning-of-a-tractor-in-buvuma-district-issued-by-the-ministry-of-agriculture-animal-industry-and-fisheries-maaif",
+   "published": "2025-10-13T08:26Z",
+   "source": "MAAIF (agriculture.go.ug)",
    "source_kind": "official",
-   "publisher": "MAAIF (agriculture.go.ug), older posts page 4",
-   "category": "advisory",
+   "publisher": "MAAIF (agriculture.go.ug)",
+   "category": "livestock",
    "districts": [
-    "Arua"
-   ]
-  },
-  {
-   "id": "66209ff196e2",
-   "title": "MAAIF to boost indigenous acaricides producer",
-   "url": "https://www.agriculture.go.ug/2021/09/23/maaif-to-boost-indigenous-acaricides-producer/?utm_source=rss&utm_medium=rss&utm_campaign=maaif-to-boost-indigenous-acaricides-producer",
-   "published": "2021-09-23T17:02Z",
-   "source": "MAAIF (agriculture.go.ug), older posts page 4",
-   "source_kind": "official",
-   "publisher": "MAAIF (agriculture.go.ug), older posts page 4",
-   "category": "outbreak",
-   "districts": []
-  },
-  {
-   "id": "ab6c5be4b882",
-   "title": "Sembabule gets 20,000 vaccines to eliminate FMD",
-   "url": "https://www.agriculture.go.ug/2021/08/11/sembabule-gets-20000-vaccines-to-eliminate-fmd/?utm_source=rss&utm_medium=rss&utm_campaign=sembabule-gets-20000-vaccines-to-eliminate-fmd",
-   "published": "2021-08-11T10:14Z",
-   "source": "MAAIF (agriculture.go.ug), older posts page 4",
-   "source_kind": "official",
-   "publisher": "MAAIF (agriculture.go.ug), older posts page 4",
-   "category": "advisory",
-   "districts": [
-    "Lyantonde",
-    "Sembabule"
-   ]
-  },
-  {
-   "id": "7699706c8b7a",
-   "title": "Hon Tumwebaze roots for quarantine policy to combat FMD",
-   "url": "https://www.agriculture.go.ug/2021/08/11/hon-tumwebaze-roots-for-quarantine-policy-to-combat-fmd/?utm_source=rss&utm_medium=rss&utm_campaign=hon-tumwebaze-roots-for-quarantine-policy-to-combat-fmd",
-   "published": "2021-08-11T10:03Z",
-   "source": "MAAIF (agriculture.go.ug), older posts page 4",
-   "source_kind": "official",
-   "publisher": "MAAIF (agriculture.go.ug), older posts page 4",
-   "category": "quarantine",
-   "districts": [
-    "Mbarara"
+    "Buvuma",
+    "Kampala"
    ]
   }
  ]
