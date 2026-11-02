@@ -44,17 +44,16 @@ def _gnews(q: str) -> str:
 OFFICIAL_BODIES: List[Dict] = [
     {"id": "maaif", "body": "MAAIF", "site": "https://www.agriculture.go.ug", "pages": 4,
      "search": ["foot and mouth", "livestock", "cattle", "vaccination", "quarantine", "animal disease"]},
-    {"id": "moh", "body": "Ministry of Health", "site": "https://www.health.go.ug", "pages": 1,
+    {"id": "moh", "body": "Ministry of Health", "site": "https://health.go.ug", "pages": 1,
      "search": ["anthrax", "rabies", "rift valley fever", "zoonotic"]},
     {"id": "dda", "body": "Dairy Development Authority", "site": "https://www.dda.go.ug", "pages": 1, "search": ["milk", "dairy"]},
     {"id": "nagrc", "body": "NAGRC&DB", "site": "https://www.nagrc.go.ug", "pages": 1, "search": ["cattle", "insemination"]},
-    {"id": "nda", "body": "National Drug Authority", "site": "https://www.nda.or.ug", "pages": 1,
-     "search": ["veterinary", "acaricide", "ticks"]},
+    # The National Drug Authority's site refuses automated requests (HTTP 403), so it is not read.
     {"id": "naro", "body": "NARO", "site": "https://www.naro.go.ug", "pages": 1, "search": ["livestock", "cattle"]},
     {"id": "uwa", "body": "Uganda Wildlife Authority", "site": "https://www.ugandawildlife.org", "pages": 1,
      "search": ["livestock", "cattle", "anthrax"]},
-    {"id": "umc", "body": "Uganda Media Centre", "site": "https://www.mediacentre.go.ug", "pages": 1,
-     "search": ["livestock", "cattle", "foot and mouth", "anthrax"]},
+    # The Media Centre's search feed returns malformed XML, so only its main feed is read.
+    {"id": "umc", "body": "Uganda Media Centre", "site": "https://www.mediacentre.go.ug", "pages": 1, "search": []},
 ]
 
 
@@ -128,7 +127,9 @@ _DISTRICT_RE = re.compile(r"\b(" + "|".join(re.escape(d) for d in UGANDA_DISTRIC
 _CATEGORY = [
     ("quarantine", re.compile(r"quarantine|movement ban|bans? .{0,25}movement|ban on .{0,25}movement|markets? (closed|closure)|clos\w* .{0,25}markets?", re.I)),
     ("vaccination", re.compile(r"vaccinat|\bjabs?\b", re.I)),
-    ("outbreak", re.compile(r"outbreak|confirm\w* (case|cases)|suspected|\bhits?\b|\bkills?\b|\bdead\b|deaths?|strikes?|spread", re.I)),
+    ("outbreak", re.compile(r"outbreak|confirm\w* (case|cases)|suspected|(foot[- ]and[- ]mouth|\bFMD\b|anthrax|lumpy skin|rabies|"
+                            r"swine fever|\bASF\b|\bPPR\b|CBPP|rift valley|bird flu|avian influenza).{0,40}(\bhits?\b|\bkills?\b|"
+                            r"\bdead\b|deaths?|strikes?|spread|cases)|(\bdead\b|deaths?|\bkills?\b).{0,40}(cattle|cows|animals|pigs|goats|people)", re.I)),
 ]
 
 MAX_AGE_DAYS = 90      # news items only
@@ -197,7 +198,8 @@ _MINISTRY_NAME = re.compile(r"(the\s+)?Ministry of Agriculture,?\s+Animal Indust
 # Administrative posts are not farmer notices.
 _ADMIN = re.compile(r"\b(job|jobs|advert\w*|recruitment|recruit\w*|vacanc\w*|tenders?|procurement|bids?|pre[- ]bid|"
                     r"expression of interest|shortlist\w*|interviews?|consultan\w*|terms of reference|internship|"
-                    r"accreditation|specifications?|suppliers?|vendors?|APIs?|intermediates|process development)\b", re.I)
+                    r"accreditation|specifications?|suppliers?|vendors?|APIs?|intermediates|process development|"
+                    r"call for (research )?proposals|proposals|grants? application)\b", re.I)
 
 
 def classify(title: str, summary: str = "", official: bool = False) -> Optional[dict]:
@@ -338,8 +340,11 @@ def _carry_forward_official(notices: List[dict], previous: Optional[dict]) -> Li
     """Keep MAAIF livestock posts found on earlier runs, so a slow site can't make them disappear.
 
     Earlier posts are re-checked with today's rules; the newest MAX_OFFICIAL per body are kept."""
-    old = [n for n in (previous or {}).get("notices", []) if n.get("source_kind") == "official"
-           and classify(n.get("title", ""), official=True) is not None]
+    old = []
+    for n in (previous or {}).get("notices", []):
+        c = classify(n.get("title", ""), official=True) if n.get("source_kind") == "official" else None
+        if c is not None:
+            old.append({**n, "category": c["category"], "body": n.get("body") or n.get("publisher") or "MAAIF"})
     official = [n for n in notices if n.get("source_kind") == "official"]
     have = {n["url"] for n in official} | {n["title"].lower() for n in official}
     official += [n for n in old if n["url"] not in have and n["title"].lower() not in have]
