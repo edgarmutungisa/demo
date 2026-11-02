@@ -46,15 +46,25 @@ SOURCES: List[Dict[str, str]] = [
      "url": "https://allafrica.com/tools/headlines/rdf/uganda/headlines.rdf"},
 ]
 
-# A notice must mention one of these (title or summary).
-_TOPIC = re.compile(
+# Animal diseases: naming one is enough.
+_DISEASE = re.compile(
     r"foot[- ]and[- ]mouth|\bFMD\b|anthrax|lumpy skin|\bCBPP\b|contagious bovine|east coast fever|\bECF\b|"
     r"rift valley|rabies|brucell|peste des petits|\bPPR\b|swine fever|\bASF\b|avian influenza|bird flu|"
-    r"newcastle disease|trypanosom|sleeping sickness|tsetse|acaricide|\bticks?\b|quarantine|"
-    r"vaccinat\w*.{0,40}(cattle|livestock|animals|goats|pigs|poultry|dogs)|(cattle|livestock|animal).{0,40}vaccinat|"
-    r"livestock (market|movement)s?|cattle market|animal movement|disease outbreak.{0,40}(cattle|livestock|animals)|"
-    r"(cattle|livestock|animals).{0,40}outbreak",
+    r"newcastle disease|trypanosom|tsetse|acaricide|\bticks?\b|nagana|redwater|heartwater",
     re.I)
+# General control words count only when the headline is about animals (a travel
+# quarantine for people is not a livestock notice).
+_CONTROL = re.compile(r"quarantine|vaccinat|outbreak|movement ban|bans? .{0,20}movement|market closure|clos\w* .{0,25}markets?", re.I)
+_ANIMAL = re.compile(r"\b(cattle|cows?|calves|bulls?|livestock|animals?|herds?|pigs?|piggery|goats?|sheep|poultry|chickens?|birds?|"
+                     r"dogs?|farmers?|veterinar\w*|vets?|MAAIF|dairy|milk|abattoirs?|slaughter)\b", re.I)
+# Google News items are kept only from these publishers (official bodies, Ugandan
+# outlets and international wires). allAfrica and the MAAIF feed are sources in their own right.
+TRUSTED_PUBLISHERS = (
+    "monitor", "new vision", "newvision", "nile post", "nilepost", "uganda radio network", "uganda radionetwork",
+    "chimpreports", "independent", "uganda media centre", "ubc", "kampala post", "pml daily", "observer",
+    "ntv uganda", "nbs", "the eastafrican", "reuters", "associated press", "xinhua", "allafrica",
+    "ministry of agriculture", "maaif", "fao", "woah", "world organisation for animal health", "who",
+)
 # Human-only health stories that share words with the topic list.
 _EXCLUDE = re.compile(r"\bebola\b|\bmpox\b|\bcholera\b|\bmalaria\b|\bpolio\b|\bmeasles\b|covid", re.I)
 
@@ -77,9 +87,9 @@ UGANDA_DISTRICTS = [
 _DISTRICT_RE = re.compile(r"\b(" + "|".join(re.escape(d) for d in UGANDA_DISTRICTS) + r")\b")
 
 _CATEGORY = [
-    ("quarantine", re.compile(r"quarantine|ban on (livestock|cattle|animal) movement|markets? (closed|closure)|clos\w* .{0,20}markets?", re.I)),
-    ("vaccination", re.compile(r"vaccinat", re.I)),
-    ("outbreak", re.compile(r"outbreak|confirm\w* (case|cases)|deaths? of (cattle|animals)|spread", re.I)),
+    ("quarantine", re.compile(r"quarantine|movement ban|bans? .{0,25}movement|ban on .{0,25}movement|markets? (closed|closure)|clos\w* .{0,25}markets?", re.I)),
+    ("vaccination", re.compile(r"vaccinat|\bjabs?\b", re.I)),
+    ("outbreak", re.compile(r"outbreak|confirm\w* (case|cases)|suspected|\bhits?\b|\bkills?\b|\bdead\b|deaths?|strikes?|spread", re.I)),
 ]
 
 MAX_AGE_DAYS = 90
@@ -140,7 +150,8 @@ def parse_feed(xml_text: str) -> List[dict]:
 def classify(title: str, summary: str = "") -> Optional[dict]:
     """Return {category, districts} if this is a Ugandan animal-health notice, else None."""
     text = f"{title} {summary}"
-    if not _TOPIC.search(text) or (_EXCLUDE.search(title) and not re.search(r"cattle|livestock|animal", title, re.I)):
+    relevant = bool(_DISEASE.search(text)) or (bool(_CONTROL.search(text)) and bool(_ANIMAL.search(title)))
+    if not relevant or (_EXCLUDE.search(title) and not _ANIMAL.search(title)):
         return None
     districts = sorted(set(_DISTRICT_RE.findall(text)))
     if not districts and not re.search(r"\bUganda\b|\bUgandan\b|\bMAAIF\b", text):
@@ -157,38 +168,64 @@ def _clean_title(title: str, publisher: str) -> Tuple[str, str]:
     return title, publisher
 
 
+_TRUSTED_RE = re.compile(r"\b(" + "|".join(re.escape(t) for t in TRUSTED_PUBLISHERS) + r")\b", re.I)
+
+
+def _trusted(publisher: str) -> bool:
+    return bool(_TRUSTED_RE.search(publisher or ""))
+
+
+_STOP = {"the", "a", "an", "of", "in", "on", "for", "to", "and", "as", "over", "after", "with", "from", "at", "by", "uganda", "ugandan", "is", "its"}
+
+
+def _words(title: str) -> set:
+    return {w for w in re.findall(r"[a-z0-9]+", title.lower()) if w not in _STOP and len(w) > 2}
+
+
+def _same_story(a: set, b: set) -> bool:
+    return bool(a and b) and len(a & b) / len(a | b) >= 0.5
+
+
 def build_notices(feeds: Dict[str, str], now: Optional[dt.datetime] = None) -> List[dict]:
     """feeds: {source_id: xml_text}. Returns filtered, de-duplicated notices, newest first."""
     now = now or dt.datetime.now(dt.timezone.utc)
     src = {s["id"]: s for s in SOURCES}
-    seen, out = set(), []
+    seen, out, stories = set(), [], []
+    rank = {"official": 0, "news": 1}
+    items = []
     for sid, xml_text in feeds.items():
         meta = src.get(sid, {"id": sid, "name": sid, "kind": "news"})
-        for it in parse_feed(xml_text):
-            if not it["title"] or not it["link"].startswith("http"):
-                continue
-            pub = it["published"]
-            if pub is None or (now - pub).days > MAX_AGE_DAYS or pub > now + dt.timedelta(days=1):
-                continue
-            title, publisher = _clean_title(it["title"], it["publisher"])
-            c = classify(title, it["summary"] if meta["kind"] == "official" else "")
-            if c is None:
-                continue
-            key = re.sub(r"[^a-z0-9]+", " ", title.lower()).strip()
-            if key in seen:
-                continue
-            seen.add(key)
-            out.append({
-                "id": hashlib.sha1(it["link"].encode()).hexdigest()[:12],
-                "title": title,
-                "url": it["link"],
-                "published": pub.astimezone(dt.timezone.utc).strftime("%Y-%m-%dT%H:%MZ"),
-                "source": meta["name"],
-                "source_kind": meta["kind"],
-                "publisher": publisher or meta["name"],
-                "category": c["category"],
-                "districts": c["districts"],
-            })
+        items += [(sid, meta, it) for it in parse_feed(xml_text)]
+    # Official items first, then newest first, so a duplicate keeps the official or most recent version.
+    epoch = dt.datetime.min.replace(tzinfo=dt.timezone.utc)
+    items.sort(key=lambda x: (rank.get(x[1]["kind"], 1), -(x[2]["published"] or epoch).timestamp()))
+    for sid, meta, it in items:
+        if not it["title"] or not it["link"].startswith("http"):
+            continue
+        pub = it["published"]
+        if pub is None or (now - pub).days > MAX_AGE_DAYS or pub > now + dt.timedelta(days=1):
+            continue
+        title, publisher = _clean_title(it["title"], it["publisher"])
+        if sid == "gnews" and not _trusted(publisher):
+            continue
+        c = classify(title, it["summary"] if meta["kind"] == "official" else "")
+        if c is None:
+            continue
+        key, words = re.sub(r"[^a-z0-9]+", " ", title.lower()).strip(), _words(title)
+        if key in seen or any(_same_story(words, w) for w in stories):
+            continue
+        seen.add(key); stories.append(words)
+        out.append({
+            "id": hashlib.sha1(it["link"].encode()).hexdigest()[:12],
+            "title": title,
+            "url": it["link"],
+            "published": pub.astimezone(dt.timezone.utc).strftime("%Y-%m-%dT%H:%MZ"),
+            "source": meta["name"],
+            "source_kind": meta["kind"],
+            "publisher": publisher or meta["name"],
+            "category": c["category"],
+            "districts": c["districts"],
+        })
     out.sort(key=lambda n: n["published"], reverse=True)
     return out[:MAX_ITEMS]
 
