@@ -10,7 +10,7 @@ job (GitHub Actions in the public demo repo):
 
     python domain/services/notices.py --out notices.json
 
-Sources (see SOURCES): the MAAIF website feed, a Google News search limited to Ugandan
+Sources (see SOURCES): the websites of MAAIF and other government bodies (OFFICIAL_BODIES), a Google News search limited to Ugandan
 livestock-disease news (which carries the Daily Monitor, New Vision, Nile Post,
 allAfrica and others), and allAfrica's Uganda headlines. A source that fails is
 reported in the output and skipped; if every source fails, the previous notices are
@@ -20,6 +20,7 @@ kept rather than replaced with an empty list.
 from __future__ import annotations
 
 import argparse
+import concurrent.futures
 import datetime as dt
 import email.utils
 import hashlib
@@ -37,14 +38,42 @@ def _gnews(q: str) -> str:
     return "https://news.google.com/rss/search?" + urllib.parse.urlencode({"q": q + " when:90d", "hl": "en-UG", "gl": "UG", "ceid": "UG:en"})
 
 
+# Government bodies whose own posts can carry livestock notices. Each is read through its
+# site feed, older feed pages and site-search feeds (standard on WordPress sites); a body
+# whose site has no feed simply shows as failing in the job's output.
+OFFICIAL_BODIES: List[Dict] = [
+    {"id": "maaif", "body": "MAAIF", "site": "https://www.agriculture.go.ug", "pages": 4,
+     "search": ["foot and mouth", "livestock", "cattle", "vaccination", "quarantine", "animal disease"]},
+    {"id": "moh", "body": "Ministry of Health", "site": "https://www.health.go.ug", "pages": 1,
+     "search": ["anthrax", "rabies", "rift valley fever", "zoonotic"]},
+    {"id": "dda", "body": "Dairy Development Authority", "site": "https://www.dda.go.ug", "pages": 1, "search": ["milk", "dairy"]},
+    {"id": "nagrc", "body": "NAGRC&DB", "site": "https://www.nagrc.go.ug", "pages": 1, "search": ["cattle", "insemination"]},
+    {"id": "nda", "body": "National Drug Authority", "site": "https://www.nda.or.ug", "pages": 1,
+     "search": ["veterinary", "acaricide", "ticks"]},
+    {"id": "naro", "body": "NARO", "site": "https://www.naro.go.ug", "pages": 1, "search": ["livestock", "cattle"]},
+    {"id": "uwa", "body": "Uganda Wildlife Authority", "site": "https://www.ugandawildlife.org", "pages": 1,
+     "search": ["livestock", "cattle", "anthrax"]},
+    {"id": "umc", "body": "Uganda Media Centre", "site": "https://www.mediacentre.go.ug", "pages": 1,
+     "search": ["livestock", "cattle", "foot and mouth", "anthrax"]},
+]
+
+
+def _official_sources() -> List[Dict[str, str]]:
+    out = []
+    for b in OFFICIAL_BODIES:
+        host = urllib.parse.urlparse(b["site"]).netloc.replace("www.", "")
+        base = {"kind": "official", "body": b["body"]}
+        out.append({**base, "id": b["id"], "name": f"{b['body']} ({host})", "url": b["site"] + "/feed/"})
+        out += [{**base, "id": f"{b['id']}_p{n}", "name": f"{b['body']} ({host}), older posts page {n}",
+                 "url": f"{b['site']}/feed/?paged={n}"} for n in range(2, b["pages"] + 2) if b["pages"] > 1]
+        out += [{**base, "id": f"{b['id']}_s{i}", "name": f"{b['body']} ({host}), site search: {q}",
+                 "url": b["site"] + "/?" + urllib.parse.urlencode({"s": q, "feed": "rss2"})}
+                for i, q in enumerate(b["search"])]
+    return out
+
+
 SOURCES: List[Dict[str, str]] = [
-    {"id": "maaif", "name": "MAAIF (agriculture.go.ug)", "kind": "official",
-     "url": "https://www.agriculture.go.ug/feed/"},
-    *[{"id": f"maaif_p{n}", "name": f"MAAIF (agriculture.go.ug), older posts page {n}", "kind": "official",
-       "url": f"https://www.agriculture.go.ug/feed/?paged={n}"} for n in range(2, 6)],
-    *[{"id": f"maaif_s{i}", "name": f"MAAIF (agriculture.go.ug), site search: {q}", "kind": "official",
-       "url": "https://www.agriculture.go.ug/?" + urllib.parse.urlencode({"s": q, "feed": "rss2"})}
-      for i, q in enumerate(["foot and mouth", "livestock", "cattle", "vaccination", "quarantine", "animal disease"])],
+    *_official_sources(),
     {"id": "gnews_fmd", "name": "Google News: FMD in Uganda", "kind": "news",
      "url": _gnews('Uganda ("foot and mouth" OR "foot-and-mouth" OR FMD)')},
     {"id": "gnews_diseases", "name": "Google News: other animal diseases in Uganda", "kind": "news",
@@ -104,7 +133,7 @@ _CATEGORY = [
 
 MAX_AGE_DAYS = 90      # news items only
 MAX_ITEMS = 40         # news items only
-MAX_OFFICIAL = 5       # the latest livestock posts from MAAIF, however old
+MAX_OFFICIAL = 5       # the latest livestock posts from each government body, however old
 _UA = "DSTUganda-notices/1.0 (+https://github.com/edgarmutungisa/demo)"
 
 
@@ -258,7 +287,7 @@ def build_notices(feeds: Dict[str, str], now: Optional[dt.datetime] = None, stat
             count(sid, "undated"); continue
         if pub > now + dt.timedelta(days=1) or (not official and (now - pub).days > MAX_AGE_DAYS):
             count(sid, "too_old"); continue
-        if official and sum(1 for n in out if n["source_kind"] == "official") >= MAX_OFFICIAL:
+        if official and sum(1 for n in out if n["source_kind"] == "official" and n.get("body") == meta.get("body")) >= MAX_OFFICIAL:
             count(sid, "older_than_latest"); continue
         title, publisher = _clean_title(it["title"], it["publisher"])
         if sid.startswith("gnews") and not _trusted(publisher):
@@ -281,7 +310,8 @@ def build_notices(feeds: Dict[str, str], now: Optional[dt.datetime] = None, stat
             "published": pub.astimezone(dt.timezone.utc).strftime("%Y-%m-%dT%H:%MZ"),
             "source": meta["name"],
             "source_kind": meta["kind"],
-            "publisher": publisher or meta["name"],
+            "publisher": meta.get("body") if official else (publisher or meta["name"]),
+            **({"body": meta.get("body")} if official else {}),
             "category": c["category"],
             "districts": c["districts"],
         })
@@ -307,27 +337,39 @@ def fetch(url: str, timeout: int = 45, attempts: int = 2) -> str:
 def _carry_forward_official(notices: List[dict], previous: Optional[dict]) -> List[dict]:
     """Keep MAAIF livestock posts found on earlier runs, so a slow site can't make them disappear.
 
-    Earlier posts are re-checked with today's rules; the newest MAX_OFFICIAL are kept."""
+    Earlier posts are re-checked with today's rules; the newest MAX_OFFICIAL per body are kept."""
     old = [n for n in (previous or {}).get("notices", []) if n.get("source_kind") == "official"
            and classify(n.get("title", ""), official=True) is not None]
     official = [n for n in notices if n.get("source_kind") == "official"]
     have = {n["url"] for n in official} | {n["title"].lower() for n in official}
     official += [n for n in old if n["url"] not in have and n["title"].lower() not in have]
-    official = sorted(official, key=lambda n: n["published"], reverse=True)[:MAX_OFFICIAL]
+    by_body: Dict[str, List[dict]] = {}
+    for n in sorted(official, key=lambda n: n["published"], reverse=True):
+        by_body.setdefault(n.get("body") or n.get("publisher") or "MAAIF", []).append(n)
+    official = [n for items in by_body.values() for n in items[:MAX_OFFICIAL]]
     news = [n for n in notices if n.get("source_kind") != "official"]
     return sorted(official + news, key=lambda n: n["published"], reverse=True)
 
 
 def collect(sources: Iterable[dict] = SOURCES, fetcher=fetch, previous: Optional[dict] = None) -> dict:
     feeds, status = {}, []
-    for s in sources:
+    sources = list(sources)
+
+    def one(s):
         try:
             xml_text = fetcher(s["url"])
-            n = len(parse_feed(xml_text))
+            return s, xml_text, len(parse_feed(xml_text)), None
+        except Exception as exc:  # network, HTTP or XML error: report it and carry on
+            return s, None, 0, f"{type(exc).__name__}: {exc}"[:200]
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=8) as pool:
+        results = list(pool.map(one, sources))       # keeps the order of SOURCES
+    for s, xml_text, n, err in results:
+        if err is None:
             feeds[s["id"]] = xml_text
             status.append({"id": s["id"], "name": s["name"], "url": s["url"], "ok": True, "items_read": n})
-        except Exception as exc:  # network, HTTP or XML error: report it and carry on
-            status.append({"id": s["id"], "name": s["name"], "url": s["url"], "ok": False, "error": f"{type(exc).__name__}: {exc}"[:200]})
+        else:
+            status.append({"id": s["id"], "name": s["name"], "url": s["url"], "ok": False, "error": err})
     stats: dict = {}
     notices = build_notices(feeds, stats=stats)
     notices = _carry_forward_official(notices, previous)
