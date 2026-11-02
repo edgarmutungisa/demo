@@ -70,7 +70,7 @@ TRUSTED_PUBLISHERS = (
     "ministry of agriculture", "maaif", "fao", "woah", "world organisation for animal health", "who",
 )
 # Human-only health stories that share words with the topic list.
-_EXCLUDE = re.compile(r"\bebola\b|\bmpox\b|\bcholera\b|\bmalaria\b|\bpolio\b|\bmeasles\b|covid", re.I)
+_EXCLUDE = re.compile(r"\bebola\b|\bmarburg\b|\bmpox\b|\bcholera\b|\bmalaria\b|\bpolio\b|\bmeasles\b|covid|\bsudan virus\b", re.I)
 
 UGANDA_DISTRICTS = [
     "Abim", "Adjumani", "Agago", "Alebtong", "Amolatar", "Amudat", "Amuria", "Amuru", "Apac", "Arua", "Budaka",
@@ -155,7 +155,7 @@ def classify(title: str, summary: str = "") -> Optional[dict]:
     """Return {category, districts} if this is a Ugandan animal-health notice, else None."""
     text = f"{title} {summary}"
     relevant = bool(_DISEASE.search(text)) or (bool(_CONTROL.search(text)) and bool(_ANIMAL.search(title)))
-    if not relevant or (_EXCLUDE.search(title) and not _ANIMAL.search(title)):
+    if not relevant or (_EXCLUDE.search(title) and not _DISEASE.search(title)):
         return None
     districts = sorted(set(_DISTRICT_RE.findall(text)))
     if not districts and not re.search(r"\bUganda\b|\bUgandan\b|\bMAAIF\b", text):
@@ -183,7 +183,8 @@ _STOP = {"the", "a", "an", "of", "in", "on", "for", "to", "and", "as", "over", "
 
 
 def _words(title: str) -> set:
-    return {w for w in re.findall(r"[a-z0-9]+", title.lower()) if w not in _STOP and len(w) > 2}
+    t = re.sub(r"foot[- ]and[- ]mouth(?: disease)?", "fmd", title.lower())
+    return {w for w in re.findall(r"[a-z0-9]+", t) if w not in _STOP and len(w) > 2}
 
 
 def _same_story(a: set, b: set) -> bool:
@@ -195,7 +196,7 @@ def build_notices(feeds: Dict[str, str], now: Optional[dt.datetime] = None, stat
     If stats is a dict, it is filled per source with how many items were kept and why others were dropped."""
     stats = {} if stats is None else stats
     def count(sid: str, why: str, publisher: str = "") -> None:
-        st = stats.setdefault(sid, {"kept": 0, "too_old_or_undated": 0, "untrusted_publisher": 0, "not_animal_health": 0, "duplicate": 0, "untrusted_names": []})
+        st = stats.setdefault(sid, {"kept": 0, "too_old": 0, "undated": 0, "untrusted_publisher": 0, "not_animal_health": 0, "duplicate": 0, "untrusted_names": [], "newest_seen": None})
         st[why] += 1
         if why == "untrusted_publisher" and publisher and publisher not in st["untrusted_names"] and len(st["untrusted_names"]) < 15:
             st["untrusted_names"].append(publisher)
@@ -214,8 +215,15 @@ def build_notices(feeds: Dict[str, str], now: Optional[dt.datetime] = None, stat
         if not it["title"] or not it["link"].startswith("http"):
             continue
         pub = it["published"]
-        if pub is None or (now - pub).days > MAX_AGE_DAYS or pub > now + dt.timedelta(days=1):
-            count(sid, "too_old_or_undated"); continue
+        if pub is not None:
+            st = stats.setdefault(sid, {"kept": 0, "too_old": 0, "undated": 0, "untrusted_publisher": 0, "not_animal_health": 0, "duplicate": 0, "untrusted_names": [], "newest_seen": None})
+            iso = pub.astimezone(dt.timezone.utc).strftime("%Y-%m-%d")
+            if not st["newest_seen"] or iso > st["newest_seen"]:
+                st["newest_seen"] = iso
+        if pub is None:
+            count(sid, "undated"); continue
+        if (now - pub).days > MAX_AGE_DAYS or pub > now + dt.timedelta(days=1):
+            count(sid, "too_old"); continue
         title, publisher = _clean_title(it["title"], it["publisher"])
         if sid.startswith("gnews") and not _trusted(publisher):
             count(sid, "untrusted_publisher", publisher); continue
@@ -223,9 +231,12 @@ def build_notices(feeds: Dict[str, str], now: Optional[dt.datetime] = None, stat
         if c is None:
             count(sid, "not_animal_health"); continue
         key, words = re.sub(r"[^a-z0-9]+", " ", title.lower()).strip(), _words(title)
-        if key in seen or any(_same_story(words, w) for w in stories):
+        # Same story: very similar headline, or the same district(s) and kind of notice within 3 days.
+        twin = any(_same_story(words, w) or (c["districts"] and c["districts"] == d and c["category"] == cat and abs((pub - p).days) <= 3)
+                   for w, d, cat, p in stories)
+        if key in seen or twin:
             count(sid, "duplicate"); continue
-        seen.add(key); stories.append(words); count(sid, "kept")
+        seen.add(key); stories.append((words, c["districts"], c["category"], pub)); count(sid, "kept")
         out.append({
             "id": hashlib.sha1(it["link"].encode()).hexdigest()[:12],
             "title": title,
@@ -302,7 +313,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     ok = sum(s["ok"] for s in data["sources"])
     print(f"{len(data['notices'])} notices from {ok}/{len(data['sources'])} sources" + (" (kept previous)" if data["kept_previous"] else ""))
     for s in data["sources"]:
-        print(f"  {'ok ' if s['ok'] else 'ERR'} {s['name']}: " + (f"read {s['items_read']}, kept {s.get('kept', 0)}, untrusted {s.get('untrusted_publisher', 0)} {s.get('untrusted_names', [])}, not animal health {s.get('not_animal_health', 0)}, duplicate {s.get('duplicate', 0)}, old {s.get('too_old_or_undated', 0)}" if s['ok'] else s['error']))
+        print(f"  {'ok ' if s['ok'] else 'ERR'} {s['name']}: " + (f"read {s['items_read']}, kept {s.get('kept', 0)}, untrusted {s.get('untrusted_publisher', 0)} {s.get('untrusted_names', [])}, not animal health {s.get('not_animal_health', 0)}, duplicate {s.get('duplicate', 0)}, old {s.get('too_old', 0)}, undated {s.get('undated', 0)}, newest {s.get('newest_seen')}" if s['ok'] else s['error']))
     return 0
 
 
