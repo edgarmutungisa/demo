@@ -165,7 +165,8 @@ _LIVESTOCK_TITLE = re.compile(r"\b(cattle|cows?|calves|bulls?|livestock|animals?
 
 # Administrative posts are not farmer notices.
 _ADMIN = re.compile(r"\b(job|jobs|advert\w*|recruitment|recruit\w*|vacanc\w*|tenders?|procurement|bids?|pre[- ]bid|"
-                    r"expression of interest|shortlist\w*|interviews?|consultan\w*|terms of reference|internship)\b", re.I)
+                    r"expression of interest|shortlist\w*|interviews?|consultan\w*|terms of reference|internship|"
+                    r"accreditation|specifications?|suppliers?|vendors?|APIs?|intermediates|process development)\b", re.I)
 
 
 def classify(title: str, summary: str = "", official: bool = False) -> Optional[dict]:
