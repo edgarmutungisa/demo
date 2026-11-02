@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-02T11:49Z",
+ "generated_at": "2026-11-02T11:53Z",
  "note": "Titles, dates and links exactly as published by each source. Always open the source and follow your District Veterinary Officer.",
  "kept_previous": false,
  "sources": [
@@ -178,59 +178,313 @@
    "older_than_latest": 6
   },
   {
+   "id": "moh",
+   "name": "Ministry of Health (health.go.ug)",
+   "url": "https://www.health.go.ug/feed/",
+   "ok": false,
+   "error": "URLError: <urlopen error [Errno -5] No address associated with hostname>"
+  },
+  {
+   "id": "moh_s0",
+   "name": "Ministry of Health (health.go.ug), site search: anthrax",
+   "url": "https://www.health.go.ug/?s=anthrax&feed=rss2",
+   "ok": false,
+   "error": "URLError: <urlopen error [Errno -5] No address associated with hostname>"
+  },
+  {
+   "id": "moh_s1",
+   "name": "Ministry of Health (health.go.ug), site search: rabies",
+   "url": "https://www.health.go.ug/?s=rabies&feed=rss2",
+   "ok": false,
+   "error": "URLError: <urlopen error [Errno -5] No address associated with hostname>"
+  },
+  {
+   "id": "moh_s2",
+   "name": "Ministry of Health (health.go.ug), site search: rift valley fever",
+   "url": "https://www.health.go.ug/?s=rift+valley+fever&feed=rss2",
+   "ok": false,
+   "error": "URLError: <urlopen error [Errno -5] No address associated with hostname>"
+  },
+  {
+   "id": "moh_s3",
+   "name": "Ministry of Health (health.go.ug), site search: zoonotic",
+   "url": "https://www.health.go.ug/?s=zoonotic&feed=rss2",
+   "ok": false,
+   "error": "URLError: <urlopen error [Errno -5] No address associated with hostname>"
+  },
+  {
+   "id": "dda",
+   "name": "Dairy Development Authority (dda.go.ug)",
+   "url": "https://www.dda.go.ug/feed/",
+   "ok": false,
+   "error": "URLError: <urlopen error timed out>"
+  },
+  {
+   "id": "dda_s0",
+   "name": "Dairy Development Authority (dda.go.ug), site search: milk",
+   "url": "https://www.dda.go.ug/?s=milk&feed=rss2",
+   "ok": false,
+   "error": "URLError: <urlopen error timed out>"
+  },
+  {
+   "id": "dda_s1",
+   "name": "Dairy Development Authority (dda.go.ug), site search: dairy",
+   "url": "https://www.dda.go.ug/?s=dairy&feed=rss2",
+   "ok": false,
+   "error": "URLError: <urlopen error timed out>"
+  },
+  {
+   "id": "nagrc",
+   "name": "NAGRC&DB (nagrc.go.ug)",
+   "url": "https://www.nagrc.go.ug/feed/",
+   "ok": true,
+   "items_read": 10,
+   "kept": 5,
+   "too_old": 0,
+   "undated": 0,
+   "untrusted_publisher": 0,
+   "not_animal_health": 1,
+   "duplicate": 0,
+   "untrusted_names": [],
+   "newest_seen": "2026-09-15",
+   "older_than_latest": 4
+  },
+  {
+   "id": "nagrc_s0",
+   "name": "NAGRC&DB (nagrc.go.ug), site search: cattle",
+   "url": "https://www.nagrc.go.ug/?s=cattle&feed=rss2",
+   "ok": true,
+   "items_read": 10,
+   "kept": 0,
+   "too_old": 0,
+   "undated": 0,
+   "untrusted_publisher": 0,
+   "not_animal_health": 0,
+   "duplicate": 2,
+   "untrusted_names": [],
+   "newest_seen": "2026-08-20",
+   "older_than_latest": 8
+  },
+  {
+   "id": "nagrc_s1",
+   "name": "NAGRC&DB (nagrc.go.ug), site search: insemination",
+   "url": "https://www.nagrc.go.ug/?s=insemination&feed=rss2",
+   "ok": true,
+   "items_read": 10,
+   "kept": 0,
+   "too_old": 0,
+   "undated": 0,
+   "untrusted_publisher": 0,
+   "not_animal_health": 0,
+   "duplicate": 2,
+   "untrusted_names": [],
+   "newest_seen": "2026-09-15",
+   "older_than_latest": 8
+  },
+  {
+   "id": "nda",
+   "name": "National Drug Authority (nda.or.ug)",
+   "url": "https://www.nda.or.ug/feed/",
+   "ok": false,
+   "error": "HTTPError: HTTP Error 403: Forbidden"
+  },
+  {
+   "id": "nda_s0",
+   "name": "National Drug Authority (nda.or.ug), site search: veterinary",
+   "url": "https://www.nda.or.ug/?s=veterinary&feed=rss2",
+   "ok": false,
+   "error": "HTTPError: HTTP Error 403: Forbidden"
+  },
+  {
+   "id": "nda_s1",
+   "name": "National Drug Authority (nda.or.ug), site search: acaricide",
+   "url": "https://www.nda.or.ug/?s=acaricide&feed=rss2",
+   "ok": false,
+   "error": "HTTPError: HTTP Error 403: Forbidden"
+  },
+  {
+   "id": "nda_s2",
+   "name": "National Drug Authority (nda.or.ug), site search: ticks",
+   "url": "https://www.nda.or.ug/?s=ticks&feed=rss2",
+   "ok": false,
+   "error": "HTTPError: HTTP Error 403: Forbidden"
+  },
+  {
+   "id": "naro",
+   "name": "NARO (naro.go.ug)",
+   "url": "https://www.naro.go.ug/feed/",
+   "ok": true,
+   "items_read": 10,
+   "kept": 0,
+   "too_old": 0,
+   "undated": 0,
+   "untrusted_publisher": 0,
+   "not_animal_health": 10,
+   "duplicate": 0,
+   "untrusted_names": [],
+   "newest_seen": "2026-10-27"
+  },
+  {
+   "id": "naro_s0",
+   "name": "NARO (naro.go.ug), site search: livestock",
+   "url": "https://www.naro.go.ug/?s=livestock&feed=rss2",
+   "ok": true,
+   "items_read": 10,
+   "kept": 4,
+   "too_old": 0,
+   "undated": 0,
+   "untrusted_publisher": 0,
+   "not_animal_health": 5,
+   "duplicate": 0,
+   "untrusted_names": [],
+   "newest_seen": "2026-08-17"
+  },
+  {
+   "id": "naro_s1",
+   "name": "NARO (naro.go.ug), site search: cattle",
+   "url": "https://www.naro.go.ug/?s=cattle&feed=rss2",
+   "ok": true,
+   "items_read": 10,
+   "kept": 1,
+   "too_old": 0,
+   "undated": 0,
+   "untrusted_publisher": 0,
+   "not_animal_health": 4,
+   "duplicate": 0,
+   "untrusted_names": [],
+   "newest_seen": "2025-08-19",
+   "older_than_latest": 5
+  },
+  {
+   "id": "uwa",
+   "name": "Uganda Wildlife Authority (ugandawildlife.org)",
+   "url": "https://www.ugandawildlife.org/feed/",
+   "ok": true,
+   "items_read": 10,
+   "kept": 0,
+   "too_old": 0,
+   "undated": 0,
+   "untrusted_publisher": 0,
+   "not_animal_health": 10,
+   "duplicate": 0,
+   "untrusted_names": [],
+   "newest_seen": "2025-10-31"
+  },
+  {
+   "id": "uwa_s0",
+   "name": "Uganda Wildlife Authority (ugandawildlife.org), site search: livestock",
+   "url": "https://www.ugandawildlife.org/?s=livestock&feed=rss2",
+   "ok": true,
+   "items_read": 0
+  },
+  {
+   "id": "uwa_s1",
+   "name": "Uganda Wildlife Authority (ugandawildlife.org), site search: cattle",
+   "url": "https://www.ugandawildlife.org/?s=cattle&feed=rss2",
+   "ok": true,
+   "items_read": 1,
+   "kept": 0,
+   "too_old": 0,
+   "undated": 0,
+   "untrusted_publisher": 0,
+   "not_animal_health": 1,
+   "duplicate": 0,
+   "untrusted_names": [],
+   "newest_seen": "2022-05-06"
+  },
+  {
+   "id": "uwa_s2",
+   "name": "Uganda Wildlife Authority (ugandawildlife.org), site search: anthrax",
+   "url": "https://www.ugandawildlife.org/?s=anthrax&feed=rss2",
+   "ok": true,
+   "items_read": 0
+  },
+  {
+   "id": "umc",
+   "name": "Uganda Media Centre (mediacentre.go.ug)",
+   "url": "https://www.mediacentre.go.ug/feed/",
+   "ok": true,
+   "items_read": 40,
+   "kept": 0,
+   "too_old": 0,
+   "undated": 0,
+   "untrusted_publisher": 0,
+   "not_animal_health": 40,
+   "duplicate": 0,
+   "untrusted_names": [],
+   "newest_seen": "2026-10-29"
+  },
+  {
+   "id": "umc_s0",
+   "name": "Uganda Media Centre (mediacentre.go.ug), site search: livestock",
+   "url": "https://www.mediacentre.go.ug/?s=livestock&feed=rss2",
+   "ok": false,
+   "error": "ParseError: not well-formed (invalid token): line 6, column 110"
+  },
+  {
+   "id": "umc_s1",
+   "name": "Uganda Media Centre (mediacentre.go.ug), site search: cattle",
+   "url": "https://www.mediacentre.go.ug/?s=cattle&feed=rss2",
+   "ok": false,
+   "error": "ParseError: not well-formed (invalid token): line 6, column 110"
+  },
+  {
+   "id": "umc_s2",
+   "name": "Uganda Media Centre (mediacentre.go.ug), site search: foot and mouth",
+   "url": "https://www.mediacentre.go.ug/?s=foot+and+mouth&feed=rss2",
+   "ok": false,
+   "error": "ParseError: not well-formed (invalid token): line 6, column 110"
+  },
+  {
+   "id": "umc_s3",
+   "name": "Uganda Media Centre (mediacentre.go.ug), site search: anthrax",
+   "url": "https://www.mediacentre.go.ug/?s=anthrax&feed=rss2",
+   "ok": false,
+   "error": "ParseError: not well-formed (invalid token): line 6, column 110"
+  },
+  {
    "id": "gnews_fmd",
    "name": "Google News: FMD in Uganda",
    "url": "https://news.google.com/rss/search?q=Uganda+%28%22foot+and+mouth%22+OR+%22foot-and-mouth%22+OR+FMD%29+when%3A90d&hl=en-UG&gl=UG&ceid=UG%3Aen",
    "ok": true,
-   "items_read": 42,
-   "kept": 8,
+   "items_read": 10,
+   "kept": 3,
    "too_old": 0,
    "undated": 0,
-   "untrusted_publisher": 17,
-   "not_animal_health": 15,
-   "duplicate": 2,
+   "untrusted_publisher": 3,
+   "not_animal_health": 4,
+   "duplicate": 0,
    "untrusted_names": [
-    "UG Diplomat",
-    "AOL.co.uk",
     "3tres3.com",
-    "Philstar.com",
-    "Manila Bulletin",
-    "Kilimo News",
     "Dairy Business Middle East & Africa",
     "Africa24 TV"
    ],
-   "newest_seen": "2026-11-02"
+   "newest_seen": "2026-10-29"
   },
   {
    "id": "gnews_diseases",
    "name": "Google News: other animal diseases in Uganda",
    "url": "https://news.google.com/rss/search?q=Uganda+%28anthrax+OR+%22lumpy+skin%22+OR+CBPP+OR+%22East+Coast+Fever%22+OR+%22Rift+Valley+fever%22+OR+%22swine+fever%22+OR+%22bird+flu%22+OR+%22avian+influenza%22+OR+PPR+OR+rabies+OR+trypanosomiasis%29+when%3A90d&hl=en-UG&gl=UG&ceid=UG%3Aen",
    "ok": true,
-   "items_read": 32,
-   "kept": 7,
+   "items_read": 27,
+   "kept": 8,
    "too_old": 0,
    "undated": 0,
-   "untrusted_publisher": 18,
+   "untrusted_publisher": 13,
    "not_animal_health": 6,
-   "duplicate": 1,
+   "duplicate": 0,
    "untrusted_names": [
-    "Devdiscourse",
+    "Food and Agriculture Organization",
     "IndexBox",
-    "Mirage News",
+    "ReliefWeb",
     "Free Press Journal",
     "Health Policy Watch",
-    "Food and Agriculture Organization",
-    "All about feed",
-    "3tres3.com",
     "People Daily",
     "Anadolu Ajansı",
-    "kare11.com",
-    "Українські Національні Новини (УНН)",
-    "Centers for Disease Control and Prevention | CDC (.gov)",
-    "Facebook",
-    "The Davis Enterprise"
+    "3tres3.com",
+    "Centers for Disease Control and Prevention | CDC (.gov)"
    ],
-   "newest_seen": "2026-10-31"
+   "newest_seen": "2026-10-30"
   },
   {
    "id": "gnews_control",
@@ -238,12 +492,12 @@
    "url": "https://news.google.com/rss/search?q=Uganda+%28livestock+OR+cattle+OR+animals%29+%28quarantine+OR+vaccination+OR+%22movement+ban%22+OR+outbreak+OR+MAAIF%29+when%3A90d&hl=en-UG&gl=UG&ceid=UG%3Aen",
    "ok": true,
    "items_read": 25,
-   "kept": 2,
+   "kept": 4,
    "too_old": 0,
    "undated": 0,
    "untrusted_publisher": 13,
    "not_animal_health": 6,
-   "duplicate": 4,
+   "duplicate": 2,
    "untrusted_names": [
     "Centers for Disease Control and Prevention | CDC (.gov)",
     "NICD",
@@ -283,7 +537,7 @@
    "title": "Rwamirama warns Kyotera farmers over low vaccination uptake",
    "url": "https://news.google.com/rss/articles/CBMiigFBVV95cUxOSi1TNjJLMUk1NVlsdDdSZzVUMUpCc1pkVGtyM2pNbTYzR3Jpb0hna2ZpazVoX01JVk1QLXF5SUVadmVtZ2RCaUVOTG9McWVLMzdRVUlUX0NrQUQ1V3RRSno2RjJJQWhBbjVVZi1rajNpWWJtTUJBWTAyOHF2N0U5Zm9zZlJxbmVVM1E?oc=5",
    "published": "2026-11-02T06:25Z",
-   "source": "Google News: FMD in Uganda",
+   "source": "Google News: livestock quarantines and vaccination in Uganda",
    "source_kind": "news",
    "publisher": "NTV Uganda",
    "category": "vaccination",
@@ -292,13 +546,13 @@
    ]
   },
   {
-   "id": "2770f0357738",
-   "title": "Nakasongola Pastoralists Alarmed by FMD Infections in Immunized Cattle, Doubt Vaccine Effectiveness",
-   "url": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE5SMWRQSXRpSmllZ3djV1RRa01MQnZ1c2J1M0NvSGVGQjM0N2RnMm9rbFBjaGtMRFZDRTR1UF9BVFl4dk9MTE92RXY3RXFkekZjb19Rb0tTNTJ3U1owaEJsOTFRWEZGdkl4?oc=5",
-   "published": "2026-10-29T13:37Z",
+   "id": "e13fa6ae93a7",
+   "title": "Nakasongola Farmers Raise Alarm Over FMD Vaccine, Demand Government Explanation",
+   "url": "https://news.google.com/rss/articles/CBMivAFBVV95cUxONVJydEQ2UVZMdUljOEpRZnk2RzlyV3lVLVR5b0IxVU1aVVV4VFUteDRjRnNjUDZJRTZHMHBIZ1lXZGloYWhHU01QZm1ud2NyWFFjU1lDekFZcjNSUlJoTHI5cFlZbmpUT3Vrd2lfYzRxYm9EWS1oZUMzVmVHZGMwR1gyUEQ2TkNCOU1valhXYU5uM0cxcVgxakk2d19nQ2lFVml0eXhNVEVoaDEyX0l1VVZ3RmRfZVpfRDA4VNIBxAFBVV95cUxPYWdPcnNXSkYwbGhZTVg2TlJmVVRWQmZ2dVg1ZGhxYU5COVVCT1J5R2tTVTFZX1I3R0txMjFCcFY5bm1YamFNU1dqV3lCeXpCMjZrNlctRmp2X054LVZaMjFvQlRGT0dCdHlDMjVBcEFDMWRqcV9FWWNBOHpkaUl2bFVwYkt3dlZSMWRPeHMwSkItNDYwb0JWTDZ1dk9XR1lFYzBERXQxQzdCT0p5YmJuTTFIeEtOZWlEaTRQX25rSXkzNV9v?oc=5",
+   "published": "2026-10-29T12:24Z",
    "source": "Google News: FMD in Uganda",
    "source_kind": "news",
-   "publisher": "Uganda Radionetwork",
+   "publisher": "Nilepost",
    "category": "advisory",
    "districts": [
     "Nakasongola"
@@ -331,17 +585,6 @@
    ]
   },
   {
-   "id": "b83b21d449b1",
-   "title": "Uganda Steps Up Rabies Elimination Efforts Ahead of 2030 Target",
-   "url": "https://news.google.com/rss/articles/CBMipAFBVV95cUxOTm5VNzRCSWtZMFJJcHUtNzduTkh5SDRDajlZd3dPdEh4U2xweXRTTkhiR3NQSTlfNUhRVWlRWTNNMnE5S0NoZWp3Q1pfUkJRdWJldjJjemhVdzJRMXZwTFVLY2tqOVNtV1RrMG1xT3JqTkRzcm9wcWFncjlPQ2FtSk1wbVNjZ0wybklJeXRjeElMSVZtUEZYakVGOW1aSV9xYnFMVNIBrAFBVV95cUxNcllOellZcnpJQVZ4eXBtRTBEdEpCMkxkUkI5YjIyUktWMTItekFFN2xGcHNSR2pJOTFhNDE1MUdCWVJlZTRuTjhWaUNjYTA2MHh5T3hIZ1lqRTRPVEYxNGNmSzNYZkZtSHJuOGNnOUtRXzJVSUZidUswcEhZeUtGMVVUTW90WEIxdWZIOXZwVEhfUEdZYTNJUGNqb0RqbnBKSkh3b0tHZjdiQ3hr?oc=5",
-   "published": "2026-09-23T07:00Z",
-   "source": "Google News: FMD in Uganda",
-   "source_kind": "news",
-   "publisher": "Nilepost",
-   "category": "advisory",
-   "districts": []
-  },
-  {
    "id": "f4585527fa11",
    "title": "Uganda celebrates world rabies week 2026",
    "url": "https://news.google.com/rss/articles/CBMigwFBVV95cUxOQlQtcFZTbUtaVjFvbDB3RHhrMmVfVHlIQWEtdE4tLWRBOWM2NkoxX3FibVFHZThBdTdxcEktdkdHeC1mX2hQbzNPbzdXczVPQ0k5UlhVZUpxdTZRcU9hMEs4Z2wtampuMTA5N0U3VDRLai1LM2htLXpoVmxUUWVWWkZrUQ?oc=5",
@@ -364,6 +607,17 @@
    "districts": []
   },
   {
+   "id": "b83b21d449b1",
+   "title": "Uganda Steps Up Rabies Elimination Efforts Ahead of 2030 Target",
+   "url": "https://news.google.com/rss/articles/CBMipAFBVV95cUxOTm5VNzRCSWtZMFJJcHUtNzduTkh5SDRDajlZd3dPdEh4U2xweXRTTkhiR3NQSTlfNUhRVWlRWTNNMnE5S0NoZWp3Q1pfUkJRdWJldjJjemhVdzJRMXZwTFVLY2tqOVNtV1RrMG1xT3JqTkRzcm9wcWFncjlPQ2FtSk1wbVNjZ0wybklJeXRjeElMSVZtUEZYakVGOW1aSV9xYnFMVNIBrAFBVV95cUxNcllOellZcnpJQVZ4eXBtRTBEdEpCMkxkUkI5YjIyUktWMTItekFFN2xGcHNSR2pJOTFhNDE1MUdCWVJlZTRuTjhWaUNjYTA2MHh5T3hIZ1lqRTRPVEYxNGNmSzNYZkZtSHJuOGNnOUtRXzJVSUZidUswcEhZeUtGMVVUTW90WEIxdWZIOXZwVEhfUEdZYTNJUGNqb0RqbnBKSkh3b0tHZjdiQ3hr?oc=5",
+   "published": "2026-09-23T07:00Z",
+   "source": "Google News: other animal diseases in Uganda",
+   "source_kind": "news",
+   "publisher": "Nilepost",
+   "category": "advisory",
+   "districts": []
+  },
+  {
    "id": "2c7c1754a864",
    "title": "Minister Warns Rabies Is a ‘Death Sentence’ as Uganda Targets 2030 Eradication",
    "url": "https://news.google.com/rss/articles/CBMitgFBVV95cUxOOUlUVzNaLTA2MEkzdnVTb0ZNdjZlVUdCc2lSNHI3aXZfMllvdm1nODVmbUtqSVlLOE5vOF9jRGRua0hEeVRLTnlrS29ONzl3eS0xUDFRemdPRDFUU0ZmWDZmLUlKWEZKMGRQaG5VV1JQQjZoaU5ZRWJsSWVqYVZiRzV4MzFPbkM0OGVrUUdGR19ndklfMU4tQXY3QThUczc3ZTBRYUNEd19EUXZXUW1UZnFZWEJtQdIBvgFBVV95cUxPTFBTcGdsY3pOYWg3cUVFelk4Tzc5NE9YU3F3Q2YzTkx4RmVrcHEtcE9GODR5eEZhT3FoR0FEQmJzUElDYURtTkI2MDk1MFozamxBTG5VSUVKV2EyYnFIaVFDLTBSQy1HMk5PSmtjUU92MnVJT3loemNOR2ZadUxRSXJhOUFRTHF2QXkxdTY1RlZmc1RfRmNBelRMX2hjQ3VSM3M4NkNJWTVQNTBfenpSZDJrbTZidXNwNUE3RWZR?oc=5",
@@ -373,19 +627,6 @@
    "publisher": "Nilepost",
    "category": "outbreak",
    "districts": []
-  },
-  {
-   "id": "9248b776cd49",
-   "title": "Foot and mouth disease hits Nakasongola",
-   "url": "https://news.google.com/rss/articles/CBMinwFBVV95cUxQeUFyT21XOTRsczhMazZzS3BUNDZWSUw0X21BSWFOU2Itc0RKQmlodlQ0WWlwNlY3VnJ6UVdFYnA1OWw0RFRpMUxMS2J5c29WQ3FvVEdwcS15RU1vY0hxVzI2ejFhdG1rU3dWU1p5UTJXTGU5ODlTNU8zOVlTdDNQNUFnNmdEUkVMbjBnbnFjOWcwZ3ZyOGhHak5tNDdGdVk?oc=5",
-   "published": "2026-09-17T07:00Z",
-   "source": "Google News: FMD in Uganda",
-   "source_kind": "news",
-   "publisher": "NewVision.co.ug",
-   "category": "outbreak",
-   "districts": [
-    "Nakasongola"
-   ]
   },
   {
    "id": "1832a1cfe876",
@@ -414,6 +655,18 @@
    ]
   },
   {
+   "id": "2fb98baba932",
+   "title": "NAGRC&DB Trains 50 Artificial Insemination Technicians under Green Dairy Investment Programme",
+   "url": "https://nagrc.go.ug/2026/09/15/nagrcdb-trains-50-artificial-insemination-technicians-under-green-dairy-investment-programme/",
+   "published": "2026-09-15T11:57Z",
+   "source": "NAGRC&DB (nagrc.go.ug)",
+   "source_kind": "official",
+   "publisher": "NAGRC&DB",
+   "body": "NAGRC&DB",
+   "category": "livestock",
+   "districts": []
+  },
+  {
    "id": "2c10e8f7a67e",
    "title": "Rabies deaths hit seven as Adjumani records 48 dog bit",
    "url": "https://news.google.com/rss/articles/CBMipwFBVV95cUxNS0YtS2hMcHRMOGVrejF0S1dSOGxGUUlqNUFFSjFsLWV0a0VpSi1YTi1LX09SS0x0V2lyc0RuUzQ4V1Zublc1ZXBJMldQcnVaaWZUUFpzdHpVQkhoQUE1X1kwLUROS3ZBaEg3LWZCS2Q1WF93WXV3eDlNYzYxUjNzNmNES2dvT3R5Tm44amJsbmdXNk1Rckp4bzRSdEVfXzhFRmkyMUszVQ?oc=5",
@@ -427,17 +680,16 @@
    ]
   },
   {
-   "id": "ca74e54ca8d5",
-   "title": "Ntungamo Lifts Foot-and-Mouth Disease Quarantine in Most Areas",
-   "url": "https://news.google.com/rss/articles/CBMipwFBVV95cUxQSWFteWo0andHN2p3ZEJCNTFua0pzS1d5aGVXQ3ctVXF4WWVMZUNXX2w4TmM0MGlxLWh1Vy1tTjdXb3EyWi1qdGYzaHluSGNyX3BLZUJRYlR0clIxY0dwank4bHZ2c1ZJTVRpdlF5bUd3M0x5aFJtMU5sNGF1NFRZMTg2QTZDd3g2dzhYSklyX0psUS1UaGdhNzdsTmkzU1R5NGp1QjVaMNIBrwFBVV95cUxQaGZqM3JKY2JnaW1kSklHRWJiYm8xQU1uVE1mLTRmdXlxY1pkRjFSM29nQTBEcnV1QzFuVGstQzEwOTNPWVBMREtMMUlka0hSWFBFRkxaSmd4TnNROGotQWdpb0xCRXZrZEZWTnRING9SWGxqQURheU95NDVaSHNpdTcwdERoNDNPbWNmUWhIaFBJSnFESjRYamFwcHllaWtWX0JwNF96czdFWmxTZXFZ?oc=5",
-   "published": "2026-08-18T07:00Z",
-   "source": "Google News: FMD in Uganda",
-   "source_kind": "news",
-   "publisher": "Nilepost",
-   "category": "quarantine",
-   "districts": [
-    "Ntungamo"
-   ]
+   "id": "bd5e6c675271",
+   "title": "NAGRC&DB to Step Up Support for Parish Development Model Farmers with Dairy, Piggery and Poultry Breeding Stock Under New Five-Year Strategic Plan",
+   "url": "https://nagrc.go.ug/2026/08/20/nagrcdb-to-step-up-support-for-parish-development-model-farmers-with-dairy-piggery-and-poultry-breeding-stock-under-new-five-year-strategic-plan/",
+   "published": "2026-08-20T12:10Z",
+   "source": "NAGRC&DB (nagrc.go.ug)",
+   "source_kind": "official",
+   "publisher": "NAGRC&DB",
+   "body": "NAGRC&DB",
+   "category": "livestock",
+   "districts": []
   },
   {
    "id": "32c8355adf5a",
@@ -481,7 +733,7 @@
    "title": "MAAIF warns Kabale farmers over compulsory FMD vaccination",
    "url": "https://news.google.com/rss/articles/CBMimAFBVV95cUxPU0NmOHhVazdTeEFPcElfUjZvZGJlakc0b0NoejNtR1N1TzFsc1FnWWVDREdRTE0wTG1fNTdxX0ZSQjR6TWZKV2NBaDRwV3dMcjQyNG1NT00yYVhfVWdEaTBVek9kbVdXRXRNM2hONmFlVDRHSlJaRnlCZl8zdWNFemhVWDlWTkd1cDdYanZvSFVITUgwdVdYX9IBoAFBVV95cUxNTGpmbHRNMDYxUnRRczdVbnptaTYzcmhkcHVTZjJUbTZWc3hocUNOejQwNVVmMm1vcFF4RGktdHFJX29WSFNEMy1KYkItRXc0SnNSbjFYYk51X0lQVHR1V183ZlZYa05PZTJyUktTLWMzUnkxSHlmNkpLRDBtcUx3X2FpRnlFY1cteXJQTkJId3gtN3NLOEc0V2dWRko2MGNC?oc=5",
    "published": "2026-08-07T07:00Z",
-   "source": "Google News: FMD in Uganda",
+   "source": "Google News: livestock quarantines and vaccination in Uganda",
    "source_kind": "news",
    "publisher": "Nilepost",
    "category": "vaccination",
@@ -490,13 +742,86 @@
    ]
   },
   {
+   "id": "e12cfea38b68",
+   "title": "Taibah International School Learners Explore Modern Cattle Breeding at NAGRC&DB and Shine at Agrofest",
+   "url": "https://nagrc.go.ug/2026/07/26/taibah-international-school-learners-explore-modern-cattle-breeding-at-nagrcdb-and-shine-at-agrofest/",
+   "published": "2026-07-26T15:47Z",
+   "source": "NAGRC&DB (nagrc.go.ug)",
+   "source_kind": "official",
+   "publisher": "NAGRC&DB",
+   "body": "NAGRC&DB",
+   "category": "livestock",
+   "districts": []
+  },
+  {
+   "id": "199b027cbf1d",
+   "title": "NAGRC&DB Supports Establishment of Farmer-Led Livestock Breed Societies",
+   "url": "https://nagrc.go.ug/2026/07/26/nagrcdb-supports-establishment-of-farmer-led-livestock-breed-societies/",
+   "published": "2026-07-26T15:41Z",
+   "source": "NAGRC&DB (nagrc.go.ug)",
+   "source_kind": "official",
+   "publisher": "NAGRC&DB",
+   "body": "NAGRC&DB",
+   "category": "livestock",
+   "districts": []
+  },
+  {
+   "id": "482c191cf556",
+   "title": "NAGRC&DB Hits 200 Technician Milestone to Transform Uganda’s Livestock Sector",
+   "url": "https://nagrc.go.ug/2026/07/26/nagrcdb-hits-200-technician-milestone-to-transform-ugandas-livestock-sector/",
+   "published": "2026-07-26T15:36Z",
+   "source": "NAGRC&DB (nagrc.go.ug)",
+   "source_kind": "official",
+   "publisher": "NAGRC&DB",
+   "body": "NAGRC&DB",
+   "category": "outbreak",
+   "districts": []
+  },
+  {
+   "id": "e6314d6b1302",
+   "title": "NARO, Chinese University Partner on Livestock Research",
+   "url": "https://news.naro.go.ug/naro-chinese-university-partner-on-livestock-research/#new_tab",
+   "published": "2026-07-22T11:25Z",
+   "source": "NARO (naro.go.ug), site search: livestock",
+   "source_kind": "official",
+   "publisher": "NARO",
+   "body": "NARO",
+   "category": "livestock",
+   "districts": []
+  },
+  {
+   "id": "5c48b0a57ee4",
+   "title": "Boosting Goat Production: NARO Bulindi Tackles Livestock Nutrition at City Farm Expo",
+   "url": "https://news.naro.go.ug/muzardi-and-university-of-burundi-collaborate-to-strengthen-coordination-among-actors-along-chicken-value-chain/#new_tab",
+   "published": "2026-06-18T16:06Z",
+   "source": "NARO (naro.go.ug), site search: livestock",
+   "source_kind": "official",
+   "publisher": "NARO",
+   "body": "NARO",
+   "category": "livestock",
+   "districts": []
+  },
+  {
+   "id": "fd0c5569f272",
+   "title": "Call for Research Proposals on Climate-Resilient and Sustainable Innovations Across Crop, Livestock, and Fisheries Value Chains",
+   "url": "https://news.naro.go.ug/2025/11/21/call-for-research-proposals-on-climate-resilient-and-sustainable-innovations-across-crop-livestock-and-fisheries-value-chains/#new_tab",
+   "published": "2025-11-26T06:27Z",
+   "source": "NARO (naro.go.ug), site search: livestock",
+   "source_kind": "official",
+   "publisher": "NARO",
+   "body": "NARO",
+   "category": "livestock",
+   "districts": []
+  },
+  {
    "id": "98096305734b",
    "title": "Guidelines for provision of Artificial Insemination (AI) services in dairy and beef cattle under UCSATP E-voucher system",
    "url": "https://www.agriculture.go.ug/sdm_downloads/guidelines-ai-services/?utm_source=rss&utm_medium=rss&utm_campaign=guidelines-ai-services",
    "published": "2025-10-24T15:32Z",
    "source": "MAAIF (agriculture.go.ug), site search: cattle",
    "source_kind": "official",
-   "publisher": "MAAIF (agriculture.go.ug), site search: cattle",
+   "publisher": "MAAIF",
+   "body": "MAAIF",
    "category": "livestock",
    "districts": []
   },
@@ -507,11 +832,24 @@
    "published": "2025-10-20T13:15Z",
    "source": "MAAIF (agriculture.go.ug)",
    "source_kind": "official",
-   "publisher": "MAAIF (agriculture.go.ug)",
+   "publisher": "MAAIF",
+   "body": "MAAIF",
    "category": "outbreak",
    "districts": [
     "Ibanda"
    ]
+  },
+  {
+   "id": "bc1aff117ad6",
+   "title": "NARO Receives Jianzhou Big Ear Goats from China for Research and Breeding",
+   "url": "https://news.naro.go.ug/2025/09/26/naro-receives-jianzhou-big-ear-goats-from-china-for-research-and-breeding/#new_tab",
+   "published": "2025-09-26T07:23Z",
+   "source": "NARO (naro.go.ug), site search: livestock",
+   "source_kind": "official",
+   "publisher": "NARO",
+   "body": "NARO",
+   "category": "livestock",
+   "districts": []
   },
   {
    "id": "7efea1c6cd50",
@@ -520,7 +858,8 @@
    "published": "2024-12-24T08:19Z",
    "source": "MAAIF (agriculture.go.ug), site search: animal disease",
    "source_kind": "official",
-   "publisher": "MAAIF (agriculture.go.ug), site search: animal disease",
+   "publisher": "MAAIF",
+   "body": "MAAIF",
    "category": "livestock",
    "districts": []
   },
@@ -531,7 +870,8 @@
    "published": "2024-09-26T07:37Z",
    "source": "MAAIF (agriculture.go.ug), site search: quarantine",
    "source_kind": "official",
-   "publisher": "MAAIF (agriculture.go.ug), site search: quarantine",
+   "publisher": "MAAIF",
+   "body": "MAAIF",
    "category": "livestock",
    "districts": []
   },
@@ -542,8 +882,21 @@
    "published": "2024-09-24T10:39Z",
    "source": "MAAIF (agriculture.go.ug), site search: cattle",
    "source_kind": "official",
-   "publisher": "MAAIF (agriculture.go.ug), site search: cattle",
+   "publisher": "MAAIF",
+   "body": "MAAIF",
    "category": "livestock",
+   "districts": []
+  },
+  {
+   "id": "5e6390c48405",
+   "title": "Developing a dual vaccine for Lumpy Skin Disease and Foot-and-Mouth Disease",
+   "url": "https://naro.go.ug/developing-a-dual-vaccine-for-lumpy-skin-disease-and-foot-and-mouth-disease/",
+   "published": "2024-05-15T06:26Z",
+   "source": "NARO (naro.go.ug), site search: cattle",
+   "source_kind": "official",
+   "publisher": "NARO",
+   "body": "NARO",
+   "category": "advisory",
    "districts": []
   }
  ]
