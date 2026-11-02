@@ -102,6 +102,13 @@ button,input{font:inherit;color:inherit}
 .msg th{font-weight:600;border-bottom:1px solid currentColor}
 .tag{display:inline-block;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;border:1px solid currentColor;border-radius:4px;padding:0 5px;margin-left:4px;vertical-align:1px;opacity:.75}
 .msg canvas{display:block;width:100%;max-width:280px;height:auto;border-radius:8px;margin:4px 0}
+.farmmap{width:100%;max-width:300px;margin:4px 0}
+.farmmap-map{height:230px;border-radius:8px;overflow:hidden;background:#6b6b6b}
+.farmmap-map .leaflet-control-attribution{font-size:9px;line-height:1.3}
+.farmmap-links{display:flex;flex-wrap:wrap;gap:2px 12px;font-size:12.5px;margin-top:5px}
+.farmmap-links a{color:inherit;font-weight:600;text-decoration:underline;text-underline-offset:2px}
+.farmmap-links .mono{font-family:var(--f-mono);font-size:11.5px;opacity:.8;flex-basis:100%}
+.farmmap small{display:block;font-size:12px;opacity:.8;margin-top:4px}
 .doc{display:flex;gap:10px;align-items:center;border:1px solid currentColor;border-radius:8px;padding:8px 10px;margin:2px 0 4px}
 .doc .ico{font-family:var(--f-mono);font-size:11px;border:1.5px solid currentColor;padding:6px 4px;border-radius:3px}
 .typing{align-self:flex-start;background:var(--in-bg);border-radius:12px;padding:10px 14px;display:flex;gap:4px}
@@ -393,8 +400,8 @@ function mkPrices(m){ const out={}; for (const [k,[lo,hi]] of Object.entries(MK_
 function mkKm(a,b,c,d){ const R=6371, p1=a*Math.PI/180, p2=c*Math.PI/180, dp=p2-p1, dl=(d-b)*Math.PI/180; const h=Math.sin(dp/2)**2+Math.cos(p1)*Math.cos(p2)*Math.sin(dl/2)**2; return 2*R*Math.asin(Math.sqrt(h)); }
 function mkCategory(text){ const t=String(text||"").toLowerCase(); for (const k of ["cross_cow","heifer","calf","local_bull","goat","sheep","local_cow"]) if (MK_WORDS[k].some(w=>new RegExp("\\b"+w).test(t))) return k; return null; }
 const ugx = n => n>=1e6 ? `UGX ${(n/1e6).toFixed(2).replace(/0$/,"")}m` : `UGX ${Math.round(n).toLocaleString("en-UG")}`;
-function myPlace(){ if (S.gps) return {lat:S.gps.latitude, lon:S.gps.longitude, from:"your GPS"};
-  if (S.farm && Number.isFinite(S.farm.lat)) return {lat:S.farm.lat, lon:S.farm.lon, from:S.farm.name};
+function myPlace(){ if (S.farm && Number.isFinite(S.farm.lat)) return {lat:S.farm.lat, lon:S.farm.lon, from:S.farm.name};
+  if (S.gps) return {lat:S.gps.latitude, lon:S.gps.longitude, from:"your GPS"};
   const t=DISTRICT_TOWNS.find(x=>x[0]===S.district) || ["Isingiro",-0.843,30.802]; return {lat:t[1], lon:t[2], from:`${t[0]} town`}; }
 function mkNearest(limit=3, district){
   const me=myPlace(); let pool=SAMPLE_MARKETS; if (district){ const d=pool.filter(m=>m.district.toLowerCase().startsWith(district.toLowerCase())); if (d.length) pool=d; }
@@ -662,6 +669,31 @@ function nearestDistrict(lat, lon){
   return {name:best, km:Math.round(bd)};
 }
 const inUganda = (lat,lon) => lat>-1.6 && lat<4.4 && lon>29.4 && lon<35.2;
+/* Real district and nearest place name from OpenStreetMap (Nominatim reverse geocoding).
+   Falls back to the nearest district town above when offline or blocked (for example inside the Claude viewer). */
+const placeCache={};
+async function placeInfo(lat, lon){
+  const key=lat.toFixed(4)+","+lon.toFixed(4); if (placeCache[key]) return placeCache[key];
+  const ug=inUganda(lat,lon), nd=ug?nearestDistrict(lat,lon):null;
+  let out={in_uganda:ug, district:nd?nd.name:null, district_source:nd?`approximate: nearest district town, ${nd.km} km away`:null, place:null, osm:false};
+  try {
+    const ctl=new AbortController(), tm=setTimeout(()=>ctl.abort(),6000);
+    const r=await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat.toFixed(6)}&lon=${lon.toFixed(6)}&zoom=14&addressdetails=1&accept-language=en`,{signal:ctl.signal});
+    clearTimeout(tm); if (!r.ok) throw new Error("http "+r.status);
+    const a=(await r.json()).address||{};
+    const d=Object.values(a).find(v=>typeof v==="string" && /\bDistrict$/i.test(v.trim()));
+    out.in_uganda = a.country_code ? a.country_code==="ug" : ug;
+    if (d) { out.district=d.trim().replace(/\s+District$/i,""); out.district_source="OpenStreetMap"; }
+    out.place=a.village||a.hamlet||a.town||a.city||a.suburb||a.neighbourhood||null; out.osm=true;
+  } catch(e) { /* offline or blocked: keep the approximate answer */ }
+  return (placeCache[key]=out);
+}
+function setDistrictFrom(info){ if (info && info.district && lsZone(info.district)) S.district=info.district; }
+function placeLine(lat, lon, info, extra){
+  const where = !info.in_uganda ? " · outside Uganda"
+    : info.district ? ` · <b>${esc(info.district)} District</b>${info.place?`, near ${esc(info.place)}`:""} <small>(${esc(info.district_source)})</small>` : "";
+  return `📍 <b>${lat.toFixed(5)}, ${lon.toFixed(5)}</b>${extra||""}${where} · <a href="${gmapsSat(lat,lon,17)}" target="_blank" rel="noopener">check on Google Maps</a>`;
+}
 function readGps(){
   return new Promise((resolve, reject) => {
     if (!("geolocation" in navigator)) return reject({code:"unsupported"});
@@ -682,15 +714,16 @@ async function useRealLocation(viaAI){
     addBubble("sys", esc(why));
     return botSay(["No problem. Send your farm's GPS coordinates (e.g. *-0.8430, 30.8020*) or a Google Maps link, or tap *📍 Share my location* to use the sample pin."]);
   }
-  const ug = inUganda(g.lat, g.lon); const nd = ug ? nearestDistrict(g.lat, g.lon) : null;
-  if (nd && lsZone(nd.name)) S.district = nd.name;
-  S.gps = {latitude:+g.lat.toFixed(5), longitude:+g.lon.toFixed(5), accuracy_m:g.acc, nearest_district_town: nd ? nd.name : null, in_uganda: ug};
-  addBubble("sys", `📍 Real location: <b>${g.lat.toFixed(5)}, ${g.lon.toFixed(5)}</b> (±${g.acc} m)${nd?` · nearest district town: <b>${esc(nd.name)}</b> (about ${nd.km} km, approximate)`:" · outside Uganda"}`);
+  const info = await placeInfo(g.lat, g.lon); const ug = info.in_uganda; const nd = info.district ? {name:info.district} : null;
+  setDistrictFrom(info);
+  S.gps = {latitude:+g.lat.toFixed(6), longitude:+g.lon.toFixed(6), accuracy_m:g.acc, district: info.district, district_source: info.district_source, place: info.place, in_uganda: ug};
+  addBubble("sys", "Real location: " + placeLine(g.lat, g.lon, info, ` (±${g.acc} m)`));
+  if (g.acc > 100) addBubble("sys", esc(`Your phone is only sure of this point to within ${g.acc} m, so it may not be on your farm. For a precise pin, switch on GPS / high-accuracy location, stand outside on the farm and tap 📍 Use my real location again, or press and hold your farm in Google Maps and send the coordinates it shows.`));
   if (viaAI){
-    const ok = await aiAssistant(`[Shared live GPS location: latitude ${g.lat.toFixed(5)}, longitude ${g.lon.toFixed(5)}, accuracy ${g.acc} m${nd?`, nearest district town ${nd.name} (approximate)`:", outside Uganda"}] This is my farm.`);
+    const ok = await aiAssistant(`[Shared live GPS location: latitude ${g.lat.toFixed(6)}, longitude ${g.lon.toFixed(6)}, accuracy ${g.acc} m${nd?`, ${info.district} District (${info.district_source})`:ug?"":", outside Uganda"}] This is my farm.`);
     if (ok) return;
   }
-  S.draft = {lat:g.lat, lon:g.lon, label:`${g.lat.toFixed(4)}, ${g.lon.toFixed(4)}`}; S.pending = "farm_size";
+  S.draft = {lat:g.lat, lon:g.lon, label:`${g.lat.toFixed(5)}, ${g.lon.toFixed(5)}`}; S.pending = "farm_size";
   return botSay([`Got your real location${nd?`, near *${nd.name}*`:""}.${!ug?" It's outside Uganda, so seasonal and pasture advice will use Isingiro as the example area.":nd?" If your district is different, just tell me.":""} About how big is the farm? For example *8 acres* or *3 hectares*.`]);
 }
 
@@ -785,7 +818,51 @@ function postToGroup(group, sender, text){
   renderGroups(); return {delivered, recipients:others.length};
 }
 
-/* ---------- farm illustration ---------- */
+/* ---------- farm map: real satellite imagery (Esri World Imagery) + Google Maps links ---------- */
+const LEAFLET_JS="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js", LEAFLET_CSS="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css";
+let leafletP=null;
+function loadLeaflet(){
+  if (window.L && window.L.map) return Promise.resolve(window.L); if (leafletP) return leafletP;
+  leafletP=new Promise((res,rej)=>{
+    const l=document.createElement("link"); l.rel="stylesheet"; l.href=LEAFLET_CSS; document.head.appendChild(l);
+    const sc=document.createElement("script"); sc.src=LEAFLET_JS; sc.async=true;
+    sc.onload=()=> window.L&&window.L.map ? res(window.L) : rej(new Error("leaflet missing"));
+    sc.onerror=()=>rej(new Error("leaflet blocked")); document.head.appendChild(sc);
+    setTimeout(()=>rej(new Error("leaflet timeout")),10000);
+  }).catch(e=>{ leafletP=null; throw e; });
+  return leafletP;
+}
+const gmapsPin=(lat,lon)=>`https://www.google.com/maps/search/?api=1&query=${lat.toFixed(6)}%2C${lon.toFixed(6)}`;
+const gmapsSat=(lat,lon,z)=>`https://www.google.com/maps/@?api=1&map_action=map&center=${lat.toFixed(6)}%2C${lon.toFixed(6)}&zoom=${z}&basemap=satellite`;
+const whenConnected=(el,fn,tries=100)=>{ if (el.isConnected) return fn(); if (tries>0) setTimeout(()=>whenConnected(el,fn,tries-1),100); };
+function farmMap(){
+  const src=S.draft&&Number.isFinite(Number(S.draft.lat)) ? S.draft : (S.farm||{});
+  const lat=Number(src.lat), lon=Number(src.lon);
+  if (!Number.isFinite(lat)||!Number.isFinite(lon)) return farmCanvas();
+  const radius=Number(src.radius)||null, z=radius>600?15:radius>250?16:17;
+  const box=document.createElement("div"); box.className="farmmap";
+  const m=document.createElement("div"); m.className="farmmap-map"; m.setAttribute("role","img");
+  m.setAttribute("aria-label",`Satellite view around ${lat.toFixed(5)}, ${lon.toFixed(5)}${radius?`, with a ${radius} m farm circle`:""}`);
+  const links=document.createElement("div"); links.className="farmmap-links";
+  links.innerHTML=`<a href="${gmapsSat(lat,lon,z)}" target="_blank" rel="noopener">Open in Google Maps (satellite)</a><a href="${gmapsPin(lat,lon)}" target="_blank" rel="noopener">Pin and directions</a><span class="mono">${lat.toFixed(5)}, ${lon.toFixed(5)}</span>`;
+  box.append(m,links);
+  const fallback=why=>{ if (box.dataset.fb) return; box.dataset.fb="1"; m.replaceWith(farmCanvas()); const n=document.createElement("small"); n.textContent=why; box.insertBefore(n,links); };
+  loadLeaflet().then(L=>whenConnected(box,()=>{ try {
+    const map=L.map(m,{scrollWheelZoom:false, attributionControl:false}).setView([lat,lon],z);
+    L.control.attribution({prefix:false}).addAttribution("Powered by Esri · Imagery: Esri, Maxar, Earthstar Geographics").addTo(map);
+    const t=L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",{maxZoom:19, maxNativeZoom:19}).addTo(map);
+    let ok=0, bad=0; t.on("tileload",()=>{ if (!ok++){ const n=document.createElement("small"); n.textContent=IMAGERY_NOTE; box.appendChild(n); } }); t.on("tileerror",()=>{ bad++; if (!ok && bad>=4) fallback("Satellite imagery is blocked here (for example inside the Claude viewer). The Google Maps links still show the real place."); });
+    setTimeout(()=>{ if (!ok) fallback("Satellite imagery did not load (no internet, or blocked here). The Google Maps links still show the real place."); },9000);
+    if (radius) L.circle([lat,lon],{radius, color:"#ffffff", weight:3, fill:false, interactive:false}).addTo(map);
+    L.circleMarker([lat,lon],{radius:5, color:"#ffffff", weight:2, fillColor:"#0A0A0A", fillOpacity:1, interactive:false}).addTo(map);
+    setTimeout(()=>map.invalidateSize(),60);
+  } catch(e){ fallback("The satellite map could not start here. The Google Maps links still show the real place."); } }))
+  .catch(()=>fallback("The satellite map could not load (no internet, or blocked here). The Google Maps links still show the real place."));
+  return box;
+}
+const IMAGERY_NOTE="Satellite photo: Esri World Imagery. The photo date varies by place and is often one to three years old; the live tool uses Sentinel-2 images from the last two months.";
+
+/* ---------- farm illustration (offline fallback) ---------- */
 function farmCanvas(){
   const c=document.createElement("canvas"); c.width=560; c.height=400; const x=c.getContext("2d");
   let seed=7; const r=()=>(seed=(seed*9301+49297)%233280)/233280;
@@ -808,7 +885,25 @@ function blocked(text){
   return null;
 }
 
-function parseCoords(t){ const m=t.match(/(-?\d{1,2}\.\d+)\s*[, ]\s*(-?\d{1,3}\.\d+)/); return m?{lat:+m[1],lon:+m[2]}:null; }
+/* Coordinates in any common form: "-0.84330, 30.80190", "0.8433 S 30.8019 E", 0°50'36"S 30°48'07"E,
+   or a full Google Maps link (pin !3d!4d, ?q= / query= / ll=, or @lat,lon). Swapped lat/lon inside Uganda is corrected. */
+function parseCoords(t){
+  const s=String(t).replace(/%2C/gi,",").replace(/%20|\+/g," ").replace(/[−–—]/g,"-");
+  const fin=(a,b)=>{ if (!Number.isFinite(a)||!Number.isFinite(b)||Math.abs(a)>90||Math.abs(b)>180) return null;
+    if (!inUganda(a,b) && inUganda(b,a)) return {lat:b, lon:a, swapped:true}; return {lat:a, lon:b}; };
+  const NUM="(-?\\d{1,3}(?:\\.\\d+)?)"; let m;
+  if ((m=s.match(new RegExp("!3d"+NUM+"!4d"+NUM)))) return fin(+m[1],+m[2]);
+  if ((m=s.match(new RegExp("[?&](?:q|query|ll|center|destination|daddr|sll)=(?:loc:)?\\s*"+NUM+"\\s*,\\s*"+NUM)))) return fin(+m[1],+m[2]);
+  if ((m=s.match(new RegExp("@"+NUM+","+NUM)))) return fin(+m[1],+m[2]);
+  const dms=[...s.matchAll(/(\d{1,3}(?:\.\d+)?)\s*[°º]\s*(?:(\d{1,2}(?:\.\d+)?)\s*['′’]\s*)?(?:(\d{1,2}(?:\.\d+)?)\s*(?:["″”]|''|′′)\s*)?([NSEW])\b/gi)];
+  if (dms.length>=2){ let la=null, lo=null; for (const d of dms){ const v=(+d[1])+(+(d[2]||0))/60+(+(d[3]||0))/3600, h=d[4].toUpperCase();
+      if (h==="N"||h==="S") la = h==="S"?-v:v; else lo = h==="W"?-v:v; } if (la!=null && lo!=null) return fin(la,lo); }
+  if ((m=s.match(/(\d{1,2}(?:\.\d+)?)\s*°?\s*([NS])\b[\s,;]*(\d{1,3}(?:\.\d+)?)\s*°?\s*([EW])\b/i))) return fin((m[2].toUpperCase()==="S"?-1:1)*m[1], (m[4].toUpperCase()==="W"?-1:1)*m[3]);
+  if ((m=s.match(/\b([NS])\s*(\d{1,2}(?:\.\d+)?)°?[\s,;]*([EW])\s*(\d{1,3}(?:\.\d+)?)/i))) return fin((m[1].toUpperCase()==="S"?-1:1)*m[2], (m[3].toUpperCase()==="W"?-1:1)*m[4]);
+  if ((m=s.match(/(-?\d{1,2}\.\d+)\s*[,; ]\s*(-?\d{1,3}\.\d+)/))) return fin(+m[1],+m[2]);
+  return null;
+}
+const isShortMapLink = t => /\b(maps\.app\.goo\.gl|goo\.gl\/maps)\//i.test(t);
 function parseArea(t){
   const m=t.match(/(\d+(?:\.\d+)?)\s*(acres?|ac|hectares?|ha)\b/i); if(!m) return null;
   const v=+m[1]; return /^h/i.test(m[2]) ? v : v*0.404686;
@@ -843,7 +938,10 @@ async function assistant(raw){
 
   /* pending flows */
   const N = norm(t);
+  // A new location while registering a farm replaces the old one instead of being ignored
+  if ((S.pending==="farm_size"||S.pending==="farm_confirm") && (parseCoords(t) || isShortMapLink(t) || /📍|share my location|\bmy location\b/i.test(t))){ S.pending=null; S.draft={}; }
   if (S.pending==="farm_size"){
+    if (/^(no|cancel|stop|wrong)\b/.test(N)){ S.pending=null; S.draft={}; return botSay(["No problem, I've cancelled it. Share the location again when you're ready."]); }
     const ha = parseArea(N) ?? (/^\D*(\d+(\.\d+)?)\D*$/.test(N) ? +N.match(/(\d+(\.\d+)?)/)[1]*0.404686 : null);
     if (!ha) return botSay(["Roughly how big is the farm? For example *8 acres* or *3 hectares*."]);
     return proposeArea(ha, nameFrom(t));
@@ -949,7 +1047,7 @@ async function proposeArea(ha, name){
   const radius=Math.round(Math.sqrt(ha*10000/Math.PI));
   if (radius<50||radius>1000) return botSay([`A circular area can have a radius of 50–1000 m. ${fmt(ha)} ha gives ${radius} m, so please send a map file of the farm boundary instead.`]);
   S.draft={...S.draft, ha, radius, name: name||S.draft.name}; S.pending="farm_confirm";
-  return botSay([{canvas:farmCanvas(), caption:`No registered land parcel was found at this point, so I've drawn a circular farm area around it: *radius ${radius} m*, about *${fmt(ha)} ha* (${fmt(ha/0.404686,0)} acres). Is this your farm? Reply *Yes*${name?"":", and tell me its name"}, or *Cancel*.`}]);
+  return botSay([{canvas:farmMap(), caption:`No registered land parcel was found at this point, so I've drawn a circular farm area around it: *radius ${radius} m*, about *${fmt(ha)} ha* (${fmt(ha/0.404686,0)} acres). Is this your farm? Reply *Yes*${name?"":", and tell me its name"}, or *Cancel*.`}]);
 }
 async function completeFarm(nm){
   S.farm={...S.draft, name:nm}; S.pending=null; S.draft={}; mark("farm"); remember("farm","capacity");
@@ -1004,11 +1102,15 @@ async function smartMain(t, N){
     if(g.members.some(m=>m.phone===SARAH.phone)) return botSay([`You're already in *${g.name}*.`]);
     g.members.push(me); renderGroups(); return botSay([`You've joined *${g.name}* (${g.members.length} members).`]);
   }
+  if (isShortMapLink(t) && !parseCoords(t)) return botSay(["I can't open short Google Maps links from here, so I can't read the exact point. In Google Maps, *press and hold on your farm*: a red pin drops and its coordinates (like *-0.84330, 30.80190*) appear at the top or in the search box. Copy them and send them here."]);
   if (/share my location|📍|\bmy location\b|^location$/i.test(t) || parseCoords(t) || (/\b(my farm is|farm is in|farm in|located)\b/.test(N) && !S.farm)){
     const c = parseCoords(t); const named = !c ? districtIn(N) : null; const town = named ? DISTRICT_TOWNS.find(x=>x[0]===named) : null;
     if (town && lsZone(named)) S.district = named;
     S.draft={lat:c?.lat??(town?town[1]:-0.843), lon:c?.lon??(town?town[2]:30.802)};
-    if (!c) addBubble("sys", town ? `📍 Location: ${esc(named)} District (sample pin at the district town, ${town[1].toFixed(4)}, ${town[2].toFixed(4)})` : "📍 Location shared: Isingiro District (sample pin -0.8430, 30.8020)");
+    if (c){ const info=await placeInfo(c.lat,c.lon); setDistrictFrom(info); S.draft.label=`${c.lat.toFixed(5)}, ${c.lon.toFixed(5)}`;
+      addBubble("sys", "Location: " + placeLine(c.lat, c.lon, info, c.swapped?" <small>(latitude and longitude were the wrong way round, so I swapped them)</small>":""));
+      if (!info.in_uganda) addBubble("sys", "This point is outside Uganda. Check the numbers: Ugandan farms are roughly between latitude -1.5 and 4.2 and longitude 29.6 and 35.0."); }
+    if (!c) addBubble("sys", town ? `📍 Location: ${esc(named)} District (sample pin at the district town, ${town[1].toFixed(4)}, ${town[2].toFixed(4)}). Send your farm's exact coordinates for a precise pin.` : "📍 Location shared: Isingiro District (sample pin -0.8430, 30.8020, Isingiro town)");
     const ha=parseArea(N); if (ha) return proposeArea(ha, nameFrom(t));
     S.pending="farm_size"; return botSay(["Got your location. About how big is the farm? For example *8 acres* or *3 hectares*."]);
   }
@@ -1378,7 +1480,7 @@ async function answerIntent(id, N, t){
       return botSay([{html:`<b>Dry pasture biomass, ${esc(f.name)}</b> <span class="tag">sample</span><table><thead><tr><th>Year</th><th>Mean</th></tr></thead><tbody>${BIOMASS_HISTORY.map(([y,v])=>`<tr><td>${y}</td><td>${fmt(v)} t/ha</td></tr>`).join("")}</tbody></table>`},
         `*Slightly worse.* Biomass fell from ${fmt(BIOMASS_HISTORY[0][1])} t/ha in 2016 to ${fmt(SAMPLE_BIOMASS)} t/ha in 2024, about 11% lower, with dips in 2019 and 2021. Rotating paddocks and resting them 4–6 weeks in the rains usually turns this around.`]);
     case "image": remember("image");
-      return botSay([{canvas:farmCanvas(), caption:`*${f.name}*: the white outline is the registered area. In the live tool this is a real Sentinel-2 image from the last two months.`}]);
+      return botSay([{canvas:farmMap(), caption:`*${f.name}*: the white circle is the registered area.`}]);
     case "report": remember("report");
       return botSay([{html:`<div class="doc"><span class="ico">PDF</span><div><b>farm_report_${esc(f.name.replace(/\s+/g,"_"))}.pdf</b><br><small>6 pages · sample, not downloadable in the demo</small></div></div>`},
         `The PDF report for *${f.name}* is ready to share with your extension officer. It covers location, biomass history, elevation and slope, and the climate outlook.`]);
@@ -1624,7 +1726,8 @@ const TOOLS = [
         const hasXY = Number.isFinite(Number(i.latitude)) && Number.isFinite(Number(i.longitude)) && i.latitude!==undefined;
         const label = hasXY ? `${Number(i.latitude).toFixed(4)}, ${Number(i.longitude).toFixed(4)}` : (i.place ? `${i.place} (sample pin)` : "sample pin -0.8430, 30.8020 (Isingiro)");
         S.draft={ha, radius, label, lat: hasXY?Number(i.latitude):(S.gps?S.gps.latitude:-0.843), lon: hasXY?Number(i.longitude):(S.gps?S.gps.longitude:30.802)}; S.pending="farm_confirm";
-        const el=addBubble("in", wa(`Proposed farm area: radius *${radius} m*, about *${fmt(ha)} ha* (${fmt(ha/0.404686,1)} acres) around ${label}.`)); el.insertBefore(farmCanvas(), el.firstChild);
+        if (hasXY) placeInfo(S.draft.lat, S.draft.lon).then(setDistrictFrom);
+        const el=addBubble("in", wa(`Proposed farm area: radius *${radius} m*, about *${fmt(ha)} ha* (${fmt(ha/0.404686,1)} acres) around ${label}.`)); el.insertBefore(farmMap(), el.firstChild);
         return {status:"awaiting_user_confirmation", radius_m:radius, area_ha:+ha.toFixed(2), area_acres:+(ha/0.404686).toFixed(1), location:label, note:"No registered land parcel exists in Uganda's case, so a circle is drawn."};
       }
       if (a==="confirm"){
@@ -1666,7 +1769,7 @@ const TOOLS = [
         const out={cattle_count:n, avg_weight_kg:w, pasture_ha:+ha.toFixed(2), forage_t_dm_per_year:+forage.toFixed(2), ideal_au:+idealAU.toFixed(2), herd_au:+actualAU.toFixed(2), ideal_head_at_this_weight:idealHead, within_capacity:actualAU<=idealAU, method:"LAPIG: AU = live weight/450; ideal AU = forage/8.2 (half the grass kept for trampling losses). Annual average; dry months are tighter."};
         S.last={...S.last, capacity:out}; return out;
       }
-      if (k==="satellite_image"){ const el=addBubble("in", wa(`*${S.farm.name}*: the white outline is the registered area.`)); el.insertBefore(farmCanvas(), el.firstChild); return {shown:true, note:"Demo illustration; the live tool shows a Sentinel-2 image from the last two months."}; }
+      if (k==="satellite_image"){ const el=addBubble("in", wa(`*${S.farm.name}*: the white circle is the registered area.`)); el.insertBefore(farmMap(), el.firstChild); return {shown:true, note:"Real satellite photo (Esri World Imagery, date varies, often 1-3 years old) with Google Maps links; falls back to an illustration where imagery is blocked. The live tool shows a Sentinel-2 image from the last two months."}; }
       if (k==="pdf_report"){ addBubble("in", `<div class="doc"><span class="ico">PDF</span><div><b>farm_report_${esc(S.farm.name.replace(/\s+/g,"_"))}.pdf</b><br><small>6 pages · sample, not downloadable in the demo</small></div></div>`); return {created:true, sections:["location","biomass history","elevation and slope","climate outlook"]}; }
       throw new Error("Unknown kind.");
     }},
