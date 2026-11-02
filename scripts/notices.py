@@ -163,11 +163,21 @@ _LIVESTOCK_TITLE = re.compile(r"\b(cattle|cows?|calves|bulls?|livestock|animals?
                               r"ticks?|fodder|hides|animal feeds?|breeding|artificial insemination)\b", re.I)
 
 
+# Administrative posts are not farmer notices.
+_ADMIN = re.compile(r"\b(job|jobs|advert\w*|recruitment|recruit\w*|vacanc\w*|tenders?|procurement|bids?|pre[- ]bid|"
+                    r"expression of interest|shortlist\w*|interviews?|consultan\w*|terms of reference|internship)\b", re.I)
+
+
 def classify(title: str, summary: str = "", official: bool = False) -> Optional[dict]:
     """Return {category, districts} if this is a Ugandan livestock notice, else None.
 
     News must be about animal health in Uganda. A MAAIF post counts when it is about animal
     health or its headline is about livestock. The label comes from the headline only."""
+    if official:
+        # The ministry's posts are judged on the headline alone; summaries mention many topics.
+        if _ADMIN.search(title):
+            return None
+        summary = ""
     text = f"{title} {summary}"
     relevant = bool(_DISEASE.search(text)) or (bool(_CONTROL.search(text)) and bool(_ANIMAL.search(title)))
     if official and not relevant:
