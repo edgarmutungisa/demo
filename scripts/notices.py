@@ -39,6 +39,11 @@ def _gnews(q: str) -> str:
 SOURCES: List[Dict[str, str]] = [
     {"id": "maaif", "name": "MAAIF (agriculture.go.ug)", "kind": "official",
      "url": "https://www.agriculture.go.ug/feed/"},
+    *[{"id": f"maaif_p{n}", "name": f"MAAIF (agriculture.go.ug), older posts page {n}", "kind": "official",
+       "url": f"https://www.agriculture.go.ug/feed/?paged={n}"} for n in range(2, 6)],
+    *[{"id": f"maaif_s{i}", "name": f"MAAIF (agriculture.go.ug), site search: {q}", "kind": "official",
+       "url": "https://www.agriculture.go.ug/?" + urllib.parse.urlencode({"s": q, "feed": "rss2"})}
+      for i, q in enumerate(["foot and mouth", "livestock", "cattle", "vaccination", "quarantine", "animal disease"])],
     {"id": "gnews_fmd", "name": "Google News: FMD in Uganda", "kind": "news",
      "url": _gnews('Uganda ("foot and mouth" OR "foot-and-mouth" OR FMD)')},
     {"id": "gnews_diseases", "name": "Google News: other animal diseases in Uganda", "kind": "news",
@@ -98,7 +103,7 @@ _CATEGORY = [
 
 MAX_AGE_DAYS = 90      # news items only
 MAX_ITEMS = 40         # news items only
-MAX_OFFICIAL = 5       # the latest posts from each official source (MAAIF), however old
+MAX_OFFICIAL = 5       # the latest livestock posts from MAAIF, however old
 _UA = "DSTUganda-notices/1.0 (+https://github.com/edgarmutungisa/demo)"
 
 
@@ -226,15 +231,12 @@ def build_notices(feeds: Dict[str, str], now: Optional[dt.datetime] = None, stat
             count(sid, "undated"); continue
         if pub > now + dt.timedelta(days=1) or (not official and (now - pub).days > MAX_AGE_DAYS):
             count(sid, "too_old"); continue
-        if official and stats.get(sid, {}).get("kept", 0) >= MAX_OFFICIAL:
+        if official and sum(1 for n in out if n["source_kind"] == "official") >= MAX_OFFICIAL:
             count(sid, "older_than_latest"); continue
         title, publisher = _clean_title(it["title"], it["publisher"])
         if sid.startswith("gnews") and not _trusted(publisher):
             count(sid, "untrusted_publisher", publisher); continue
         c = classify(title, it["summary"] if official else "")
-        if c is None and official:
-            # The ministry's own latest posts are always shown, whatever the topic.
-            c = {"category": "ministry", "districts": sorted(set(_DISTRICT_RE.findall(f"{title} {it['summary']}")))}
         if c is None:
             count(sid, "not_animal_health"); continue
         key, words = re.sub(r"[^a-z0-9]+", " ", title.lower()).strip(), _words(title)
