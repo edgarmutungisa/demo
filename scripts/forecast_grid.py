@@ -164,6 +164,75 @@ def point_forecast(lat: float, lon: float, daily, ens_rain, today: dt.date, temp
     return rec
 
 
+# ---------------------------------------------------------------- reading it back (the farm tool's fallback)
+PUBLISHED_URL = "https://raw.githubusercontent.com/edgarmutungisa/demo/main/forecasts.json"
+FRESH_DAYS = 31
+_EQ = {"below_normal": 0.33, "near_normal": 0.34, "above_normal": 0.33}
+
+
+def _km(lat1, lon1, lat2, lon2):
+    import math
+    p1, p2 = math.radians(lat1), math.radians(lat2)
+    a = math.sin((p2 - p1) / 2) ** 2 + math.cos(p1) * math.cos(p2) * math.sin(math.radians(lon2 - lon1) / 2) ** 2
+    return 6371.0088 * 2 * math.asin(math.sqrt(a))
+
+
+def nearest(data: dict, lat: float, lon: float) -> Optional[Tuple[dict, float]]:
+    pts = data.get("points") or []
+    if not pts:
+        return None
+    best = min(pts, key=lambda q: _km(lat, lon, q["lat"], q["lon"]))
+    return best, round(_km(lat, lon, best["lat"], best["lon"]))
+
+
+def regional_answer(data: dict, lat: float, lon: float, kind: str, today: Optional[dt.date] = None) -> Optional[dict]:
+    """The prepared forecast ("season" or "onset") of the grid point nearest the farm, or, when that
+    forecast is older than FRESH_DAYS, the usual pattern there. Same rules as the demo's gridPredict."""
+    today = today or dt.date.today()
+    hit = nearest(data, lat, lon)
+    if not hit:
+        return None
+    rec, km = hit
+    fc = rec.get("forecast")
+    fresh = bool(fc) and (today - dt.date.fromisoformat(fc["issued"])).days <= FRESH_DAYS
+    basis = {"basis": "regional forecast" if fresh else "usual pattern (no current forecast)", "grid_point_km": km,
+             "grid_point": [rec["lat"], rec["lon"]], "issued": fc["issued"] if fresh else None, "records": f"NASA POWER {rec['period']}",
+             "note": ("ECMWF forecast for the 50 km area around the farm, judged against that area's rainfall; the farm's own records could not be reached"
+                      if fresh else "No current forecast could be reached: this is the usual pattern for the 50 km area around the farm, not this year's forecast")}
+    if kind == "season":
+        if fresh:
+            months = [m for m in fc["months"] if tuple(map(int, m["month"].split("-"))) >= (today.year, today.month)]
+            return {**basis, "months": months, "next_3_months": fc.get("next_3_months"), "combined_next_3_months": fc.get("combined_next_3_months"),
+                    "local_records_outlook": fc.get("local_records_outlook")}
+        months = []
+        for i in range(4):
+            y, m = today.year + (today.month - 1 + i) // 12, (today.month - 1 + i) % 12 + 1
+            n = round(rec["normals_mm"][m - 1])
+            months.append({"month": f"{y}-{m:02d}", "probabilities": _EQ, "headline": f"no current forecast: expect about the usual {n} mm",
+                           "forecast_median_mm": n, "normal_mm": n, "confidence": "low"})
+        return {**basis, "months": months}
+    if fresh:
+        return {**basis, **fc["onset"]}
+    name, start, end = pm.season_target(today, SEASONS[rec.get("pattern", "bimodal")])
+    h = rec["onset_history"].get(name, {"doys": [], "failed_years": []})
+    n = len(h["doys"]) + len(h["failed_years"])
+    out = {**basis, "status": "not_started", "season": name, "climatology": True,
+           "probability_no_clear_start": round(len(h["failed_years"]) / n, 2) if n else None}
+    if len(h["doys"]) >= 4:
+        q = statistics.quantiles(h["doys"], n=4)
+        to = lambda d: (dt.date(start.year, 1, 1) + dt.timedelta(days=int(round(d)) - 1)).isoformat()
+        out.update({"most_likely": to(statistics.median(h["doys"])), "likely_window": [to(q[0]), to(q[2])]})
+    return out
+
+
+def fetch_published(timeout: float = 15.0) -> dict:
+    import httpx
+
+    r = httpx.get(PUBLISHED_URL, timeout=timeout, headers=UA)
+    r.raise_for_status()
+    return r.json()
+
+
 # ---------------------------------------------------------------- fetching
 def _get(url: str, params: dict, timeout: float = 90.0, tries: int = 4) -> dict:
     import httpx

@@ -600,7 +600,7 @@ function summarizeClimate(days, source, pattern="bimodal"){
 }
 
 const climateCache={};
-async function climateFor(lat, lon){
+async function climateLive(lat, lon){
   const key=lat.toFixed(2)+","+lon.toFixed(2); if (climateCache[key]) return climateCache[key];
   const today=new Date(); const end=new Date(today.getTime()-7*864e5).toISOString().slice(0,10); const start=CLIMATE_START+"-01-01";
   const url=`https://archive-api.open-meteo.com/v1/archive?latitude=${lat.toFixed(4)}&longitude=${lon.toFixed(4)}&start_date=${start}&end_date=${end}&daily=temperature_2m_max,temperature_2m_min,precipitation_sum&timezone=Africa%2FKampala`;
@@ -615,6 +615,70 @@ async function climateFor(lat, lon){
   }
   climateCache[key]=summary; return summary;
 }
+/* ---------- always an answer, fast: prepared forecasts for a 0.5° grid over Uganda ----------
+   forecasts.json is made every day by the scheduled job in the public demo repo (scripts/forecast_grid.py,
+   mirrored from domain/services/forecast_grid.py: NASA POWER history since 1981 + the ECMWF seasonal ensemble).
+   A copy is built into this page (fc-snapshot) for places where outside files are blocked. The farm's own
+   records are fetched in the background and used as soon as they arrive. */
+const FC_URLS=["https://raw.githubusercontent.com/edgarmutungisa/demo/main/forecasts.json", "forecasts.json"];
+const FAST_MS=1200, FC_FRESH_DAYS=31;
+const within=(pr,ms)=>Promise.race([pr, new Promise(r=>setTimeout(()=>r(null),ms))]);
+const pending={}; const once=(k,f)=>pending[k]||(pending[k]=f().finally(()=>{ delete pending[k]; }));
+let fcGridP=null;
+function fcGrid(){ if (fcGridP) return fcGridP;
+  fcGridP=(async()=>{ let best=null;
+    for (const u of FC_URLS){ try { const ctl=new AbortController(); const tm=setTimeout(()=>ctl.abort(),8000); const r=await fetch(u,{signal:ctl.signal, cache:"no-store"}); clearTimeout(tm);
+      if (!r.ok) continue; const j=await r.json(); if (j && j.points && j.points.length){ best=j; break; } } catch(e){} }
+    let snap=null; try { snap=JSON.parse(document.getElementById("fc-snapshot")?.textContent||"null"); } catch(e){}
+    if (snap && snap.points && snap.points.length && (!best || snap.generated_at>best.generated_at)) best=snap;
+    return best; })();
+  return fcGridP; }
+async function gridPoint(lat, lon){ const g=await fcGrid(); if (!g) return null; let b=null, bk=1e9;
+  for (const q of g.points){ const k=mkKm(lat,lon,q.lat,q.lon); if (k<bk){ bk=k; b=q; } } return b ? {rec:b, km:Math.round(bk), grid:g} : null; }
+const doyToIso=(y,n)=>new Date(Date.UTC(y,0,Math.round(n))).toISOString().slice(0,10);
+function gridOnsetStats(h){ if (!h || h.doys.length<4) return {typical:null, no_clear_onset_years:h?h.failed_years:[]}; const q=quart(h.doys);
+  return {typical:doyLabel(Math.round(q[1])), usual_range:[doyLabel(Math.round(q[0])),doyLabel(Math.round(q[2]))], earliest:doyLabel(Math.min(...h.doys)), latest:doyLabel(Math.max(...h.doys)), no_clear_onset_years:h.failed_years}; }
+function gridClim(gp){ const r=gp.rec; const m=(arr)=>(arr||[]).map((v,i)=>v==null?null:{month:FD_MONTHS[i], mean:v}).filter(Boolean);
+  const onsets=Object.fromEntries(Object.entries(r.onset_history||{}).map(([k,h])=>[k, gridOnsetStats(h)]));
+  const lr=onsets.long_rains||onsets.rains; const usual = lr&&lr.typical ? (()=>{ const [d,mon]=lr.typical.split(" "); return doy(new Date(Date.UTC(2001,FD_MONTHS.indexOf(mon),+d))); })() : null;
+  return {real:true, regional:{km:gp.km, lat:r.lat, lon:r.lon, observed_to:r.observed_to, generated_at:gp.grid.generated_at}, period:r.period, records_from:r.records_from,
+    rain_monthly_normal_mm:m(r.normals_mm), temp_max_monthly_normal_c:m(r.tmax_normal_c), temp_min_monthly_normal_c:m(r.tmin_normal_c), rh_normal_pct:r.rh_normal_pct||[],
+    rain_last_30_days: r.last_30_days ? {...r.last_30_days} : {value:r.rain_last_30_days_mm, normal:null, difference_pct:0, condition:"unknown"},
+    rain_onset:onsets, usual_onset_doy:usual, warming_trend_c_per_decade:null, changes:{statements:[], ...(r.changes||{})}, monthly_by_year:{}, daily:[], pattern:r.pattern,
+    source:`NASA POWER records since ${r.records_from} for the 50 km area around your farm (grid point ${gp.km} km away)`}; }
+const regionTag = c => `(records for the 50 km area around your farm, grid point ${c.regional.km} km away, normals over ${c.period}; your farm's own records are loading)`;
+function gridPredict(gp){
+  const r=gp.rec, clim=gridClim(gp), fc=r.forecast, today=new Date(); const age = fc ? (today-new Date(fc.issued+"T00:00:00Z"))/864e5 : 1e9;
+  const nowKey=today.getUTCFullYear()*12+today.getUTCMonth()+1, mk=k=>{ const [y,mm]=k.split("-").map(Number); return y*12+mm; };
+  let outlook, onset, fresh = fc && age<=FC_FRESH_DAYS;
+  if (fresh){
+    const months=fc.months.filter(m=>mk(m.month)>=nowKey).map(m=>({...m, label:MON_NAME[+m.month.split("-")[1]-1], confidence:m.confidence==="high"?"medium":m.confidence}));
+    const s3=fc.next_3_months; const ms=s3?s3.months.map(k=>+k.split("-")[1]):[];
+    outlook={regional_records:true, months, members:fc.members, next_3_months: s3 && mk(s3.months[0])>=nowKey-1 ? {...s3, target:s3.months.map(k=>k.split("-").map(Number)), label:`${MON_NAME[ms[0]-1]}–${MON_NAME[ms[2]-1]}`} : null,
+      local_records_outlook:fc.local_records_outlook, combined_next_3_months:fc.combined_next_3_months};
+    onset={...fc.onset};
+    if (!months.length) fresh=false;
+  }
+  if (!fresh){ /* the usual pattern at this place: a climatological prediction, said as such */
+    const eq={below_normal:0.33, near_normal:0.34, above_normal:0.33};
+    const months=[0,1,2,3].map(i=>{ const d=new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth()+i, 1)), mi=d.getUTCMonth(); const n=Math.round(r.normals_mm[mi]);
+      return {month:`${d.getUTCFullYear()}-${mi+1}`, label:MON_NAME[mi], probabilities:eq, headline:`no current forecast: expect about the usual ${n} mm`, forecast_median_mm:n, normal_mm:n, likely_range_mm:null, confidence:"low"}; });
+    outlook={months, next_3_months:{label:`${months[0].label}–${months[2].label}`, target:months.slice(0,3).map(m=>m.month.split("-").map(Number)), probabilities:eq, headline:"no current forecast: plan for a usual season", forecast_median_mm:months.slice(0,3).reduce((q,m)=>q+m.normal_mm,0), normal_mm:months.slice(0,3).reduce((q,m)=>q+m.normal_mm,0)}, local_records_outlook:null, combined_next_3_months:null};
+    const win=seasonWindow(today, r.pattern||"bimodal"), h=(r.onset_history||{})[win.name]||{doys:[],failed_years:[]}, n=h.doys.length+h.failed_years.length, yr=win.s.getUTCFullYear();
+    onset={status:"not_started", season:win.name, climatology:true, members:n, probability_no_clear_start: n? +(h.failed_years.length/n).toFixed(2) : 0, probability_by_date:[]};
+    if (h.doys.length>=4){ const q=quart(h.doys); Object.assign(onset,{most_likely:doyToIso(yr,q[1]), likely_window:[doyToIso(yr,q[0]),doyToIso(yr,q[2])], timing:"the usual time"});
+      for (let t=new Date(Math.max(today.getTime(), win.s.getTime())+14*864e5), k=0; t<=win.e && k<7; t=new Date(t.getTime()+14*864e5), k++) onset.probability_by_date.push({by:t.toISOString().slice(0,10), probability:+(h.doys.filter(x=>x<=doy(t)).length/n).toFixed(2)}); }
+  }
+  return {regional:{km:gp.km, issued:fresh?fc.issued:null, climatology:!fresh, generated_at:gp.grid.generated_at, observed_to:r.observed_to, last30:r.rain_last_30_days_mm},
+    clim, live:{daily:[], today}, outlook, onset, ens:null, real:{forecast:!!fresh, history:true, live:false}}; }
+const fcBadge = r => r.regional ? (r.real.forecast ? "regional forecast" : "usual pattern") : (r.real.forecast ? "real forecast" : "sample");
+function now30(r){ return r.regional ? `${Math.round(r.regional.last30)} mm of rain in the 30 days to ${fmtD(r.regional.observed_to)} in your area` : `${Math.round(r.live.daily.filter(x=>x.d<=r.live.today).slice(-30).reduce((q,x)=>q+(+x.p||0),0))} mm of rain in the last 30 days`; }
+async function climateFor(lat, lon){ const key=lat.toFixed(2)+","+lon.toFixed(2); if (climateCache[key]) return climateCache[key];
+  const live=once("c"+key,()=>climateLive(lat,lon)); const c=await within(live, FAST_MS); if (c && !c.unavailable) return c;
+  const gp=await gridPoint(lat,lon); if (gp) return gridClim(gp); return live; }
+async function liveFor(lat, lon){ return once("l"+lat.toFixed(2)+","+lon.toFixed(2),()=>liveLive(lat,lon)); }
+async function ensembleFor(lat, lon){ return once("e"+lat.toFixed(2)+","+lon.toFixed(2),()=>ensembleLive(lat,lon)); }
+function prefetchFarm(p){ if (!p) return; climateFor(p.lat,p.lon); liveFor(p.lat,p.lon); ensembleFor(p.lat,p.lon); fcGrid(); }
 function farmPoint(){ const p=myPlace(); return {lat:p.lat, lon:p.lon}; }
 
 /* SAMPLE land cover, soil and NDVI (need Earth Engine in the real tool) */
@@ -662,7 +726,7 @@ function seasonStatus(past, today, pattern, rainNormal, tmaxNormal){
   out.alerts=a; return out;
 }
 const liveCache={};
-async function liveFor(lat, lon){
+async function liveLive(lat, lon){
   const key=lat.toFixed(2)+","+lon.toFixed(2); const c=liveCache[key]; if (c && Date.now()-c.at<15*60e3) return c.v;
   let v;
   try { const ctl=new AbortController(); const tm=setTimeout(()=>ctl.abort(),15000);
@@ -771,7 +835,13 @@ async function pastureNear(lat, lon){ const g=await realPastureCells(lat,lon,3);
   return {r:rankPastureCells(samplePastureCells(lat,lon),lat,lon,3), real:false, why:g.status}; }
 async function answerGrazeTime(N, quiet){
   if (!S.farm) return needFarm(); const p=farmPoint();
-  const h=await withThinking("Checking today's heat at your farm, hour by hour…", ()=>hourlyFor(p.lat,p.lon)); if (!h) return noData("hourly forecast");
+  const h=await withThinking("Checking today's heat at your farm, hour by hour…", ()=>within(hourlyFor(p.lat,p.lon), 6000));
+  if (!h){ const gp=await gridPoint(p.lat,p.lon); const mi=new Date().getUTCMonth(); const tx=gp&&(gp.rec.tmax_normal_c||[])[mi], rh=gp&&(gp.rec.rh_normal_pct||[])[mi];
+    if (tx==null||rh==null) return noData("hourly forecast"); const v=r1(gzThi(tx,rh)); remember("graze"); mark("graze");
+    const hot=v>=THI_MODERATE; S.lastAnswer=smsFit(hot?"Graze early (07-11) and late (16-18); shade and water at midday.":"Graze through the day; heat stress unlikely this month.");
+    return botSay([hot?`*Graze early, about 07:00–11:00, and again from about 16:00.* Keep the herd in shade with water over midday: on a usual ${MON_NAME[mi]} afternoon here the heat index reaches about ${v} (79 and above is heat stress).`
+      :`*You can graze through the day.* On a usual ${MON_NAME[mi]} afternoon here the heat index is about ${v}, below the heat-stress level of 79. Still give water at midday.`,
+      `_Today's hourly forecast could not be reached, so this uses the usual ${MON_NAME[mi]} afternoon temperature (${tx} °C) and humidity (${rh}%) for the 50 km area around your farm (NASA POWER ${gp.rec.period}, grid point ${gp.km} km away). Heat bands: Armstrong (1994). Ask again when online for today's hours._`]); }
   const tomorrow=/\btomorrow|tmrw\b/.test(N); const day=tomorrow? new Date(Date.parse(gzToday())+864e5).toISOString().slice(0,10) : gzToday();
   const g=grazingHours(h, day); if (!g) return noData("hourly forecast");
   remember("graze"); mark("graze"); S.ctx={...(S.ctx||{}), graze:g};
@@ -900,7 +970,7 @@ function prDiseaseRisk(weekly, wetSeasonNow){ const L={1:"low",2:"medium",3:"hig
 
 /* inputs */
 const ensCache={};
-async function ensembleFor(lat, lon){
+async function ensembleLive(lat, lon){
   const key=lat.toFixed(2)+","+lon.toFixed(2); if (ensCache[key]) return ensCache[key];
   let v; try { const ctl=new AbortController(); const tm=setTimeout(()=>ctl.abort(),30000);
     const r=await fetch(`https://seasonal-api.open-meteo.com/v1/seasonal?latitude=${lat.toFixed(4)}&longitude=${lon.toFixed(4)}&daily=precipitation_sum,temperature_2m_mean&forecast_days=183&timezone=Africa%2FKampala`,{signal:ctl.signal}); clearTimeout(tm);
@@ -917,7 +987,11 @@ function seasonWindow(today, pattern){ /* mirrors models.season_target: a window
   const W=SEASON_WIN[pattern]||SEASON_WIN.bimodal; const c=[]; for (const y of [today.getUTCFullYear()-1, today.getUTCFullYear(), today.getUTCFullYear()+1]) for (const [name,[m,d]] of Object.entries(W)){ const s=new Date(Date.UTC(y,m,d)), e=new Date(s.getTime()+120*864e5); if (e>=today && (s>=today || (today-s)/864e5<=45)) c.push({name,s,e}); } return c.sort((a,b)=>a.s-b.s)[0]; }
 function usualDoyFor(clim, season){ const o=clim.rain_onset[season]; if (!o||!o.typical) return null; const [d,mon]=o.typical.split(" "); return doy(new Date(Date.UTC(2001,FD_MONTHS.indexOf(mon),+d))); }
 async function predictAll(pt){
-  const p=pt||farmPoint(); const [ens, clim, live]=await Promise.all([ensembleFor(p.lat,p.lon), climateFor(p.lat,p.lon), liveFor(p.lat,p.lon)]);
+  const p=pt||farmPoint(), key=p.lat.toFixed(2)+","+p.lon.toFixed(2);
+  const all=Promise.all([ensembleFor(p.lat,p.lon), once("c"+key,()=>climateLive(p.lat,p.lon)).then(c=>c&&!c.unavailable?c:(climateCache[key]||c)), liveFor(p.lat,p.lon)]);
+  let got=await within(all, FAST_MS);
+  if (!got || got.some(x=>!x||x.unavailable)){ const gp=await gridPoint(p.lat,p.lon); if (gp) return gridPredict(gp); got=await all; }
+  const [ens, clim, live]=got;
   if (ens.unavailable || clim.unavailable || live.unavailable) return {unavailable:true};
   const pattern=lsZone(S.district)?.rain_pattern||"bimodal"; const outlook=prSeasonOutlook(ens.rain, clim.monthly_by_year);
   if (outlook.next_3_months){ const local=prLocalOutlook(clim.daily.filter(x=>x.p!=null), outlook.next_3_months.target); outlook.local_records_outlook=local; outlook.combined_next_3_months=prCombine(outlook.next_3_months.probabilities, local); }
@@ -929,11 +1003,14 @@ function localSummary(o){ const L=o.local_records_outlook; if (!L) return null;
   return {outlook:L.headline, probabilities:L.probabilities, rain_last_60_days_mm:L.rain_last_30_days_mm+L.rain_30_to_60_days_ago_mm, similar_past_years:L.analogue_years.map(a=>a.year),
     tested_on_past_years:L.skill.years_tested, right_in_years:L.skill.hits, right_by_chance_in_years:Math.round(L.skill.years_tested/3), skill_rpss:L.skill.rpss, used_in_combined:L.usable}; }
 function localLine(o){ const L=o.local_records_outlook, s=o.next_3_months; if (!L || !s) return null;
-  const test=`Tested on ${L.skill.years_tested} past years at your farm, this method picked the right outcome ${L.skill.hits} times (chance alone: about ${Math.round(L.skill.years_tested/3)})`;
-  return `*Your farm's own records since 1981:* the ${L.analogue_years.length} past years whose last 60 days looked most like now (about ${L.rain_last_30_days_mm+L.rain_30_to_60_days_ago_mm} mm) point to ${s.label}: ${L.headline}. ${test}, ${L.usable?"so it counts in the outlook above.":"so I don't rely on it for these months."}`; }
+  const test=`Tested on ${L.skill.years_tested} past years ${o.regional_records?"in your area":"at your farm"}, this method picked the right outcome ${L.skill.hits} times (chance alone: about ${Math.round(L.skill.years_tested/3)})`;
+  return `*${o.regional_records?"Your area's own records since 1981":"Your farm's own records since 1981"}:* the ${L.analogue_years.length} past years whose last 60 days looked most like now (about ${L.rain_last_30_days_mm+L.rain_30_to_60_days_ago_mm} mm) point to ${s.label}: ${L.headline}. ${test}, ${L.usable?"so it counts in the outlook above.":"so I don't rely on it for these months."}`; }
 const SEASON_WORD={long_rains:"long rains", short_rains:"short rains", rains:"rains"};
 const fmtD = iso => { const d=new Date(iso+"T00:00:00Z"); return d.getUTCDate()+" "+FD_MONTHS[d.getUTCMonth()]; };
-function srcLine(r){ return `Real ECMWF 51-member forecast for this exact location, judged against this farm's own rainfall in ${r.clim.period}`; }
+function srcLine(r){
+  if (r.regional && r.regional.climatology) return `No current seasonal forecast could be reached, so this is the usual pattern for the 50 km area around your farm (NASA POWER rainfall ${r.clim.period}, grid point ${r.regional.km} km away), not this year's forecast. Ask again when online for your farm's own forecast`;
+  if (r.regional) return `ECMWF 51-member forecast issued ${fmtD(r.regional.issued)} for the 50 km area around your farm (grid point ${r.regional.km} km away), judged against that area's rainfall in ${r.clim.period} (NASA POWER). Your farm's own records are loading and will be used next time`;
+  return `Real ECMWF 51-member forecast for this exact location, judged against this farm's own rainfall in ${r.clim.period}`; }
 const changeLine = c => c && c.changes && c.changes.statements.length ? `How the weather has changed here: ${c.changes.statements.slice(0,2).join(" ")}` : "";
 const TRACK_LINE = "This is a new forecast for your area, not yet checked against what happened here. Accuracy will be shown once forecasts are verified.";
 
@@ -1065,7 +1142,7 @@ async function botSay(parts){
   for (const p of parts){
     const ty = document.createElement("div"); ty.className="typing"; ty.innerHTML="<i></i><i></i><i></i>";
     chat.appendChild(ty); chat.scrollTop=chat.scrollHeight; $("status").textContent="typing…";
-    await sleep(reduced?60:Math.min(1100, 380 + (typeof p==="string"?p.length*4:500)));
+    await sleep(reduced?40:Math.min(450, 150 + (typeof p==="string"?p.length:250)));   /* short typing pause: answers must feel instant */
     ty.remove(); statusIdle();
     if (typeof p === "string") addBubble("in", wa(p));
     else if (p.html) addBubble(p.kind||"in", p.html, p.extra);
@@ -1445,7 +1522,7 @@ async function autoRegister(ha, name, lead){
   if (!approx && (radius<50 || radius>1000)) return botSay([`A circular area can have a radius of 50–1000 m. ${fmt(ha)} ha gives ${radius} m, so please send a map file of the farm boundary instead.`]);
   const area = approx ? Math.PI*radius*radius/10000 : ha; const hadFarm = !!S.farm;
   S.farm = {...S.draft, ha:area, radius, approx, district:S.district||null, name: name || (S.farm&&S.farm.name) || (S.name?`${S.name}'s farm`:"Your farm")};   /* the farmer's own name, only once they have given it */
-  S.pending=null; S.draft={}; mark("farm"); remember("farm","capacity");
+  S.pending=null; S.draft={}; mark("farm"); remember("farm","capacity"); prefetchFarm(S.farm);   /* start loading the farm's own records now */
   await botSay([...(lead||[]), {canvas:farmMap(), caption:`*${S.farm.name}* is set${S.district?` in *${S.district} District*`:""}. ${approx?`I've drawn about *${fmt(area)} ha* around your pin. Send the size (e.g. _8 acres_) to make it exact.`:`The white circle is *${fmt(area)} ha* (${fmt(area/0.404686,0)} acres).`}`}]);
   noticesForDistrict();
   if (S.queued){ const q=S.queued; S.queued=null; addBubble("sys", `Your question: “${esc(q)}”`); return assistant(q); }
@@ -1700,10 +1777,10 @@ async function answerFarmData(kind, N){
   if (!c.real) return noData("daily rainfall and temperature records");
   remember("climate"); mark("fd_clim"); checkFarmData();
   S.last={...S.last, climate:c};
-  const tag = `(this farm's own daily records, normals over ${c.period})`;
+  const tag = c.regional ? regionTag(c) : `(this farm's own daily records, normals over ${c.period})`;
   if (kind==="changes"){ const ch=c.changes; remember("changes"); S.lastAnswer=smsFit(ch.statements.join(" ")||"No clear change in rain or heat at this farm since 1981.");
     return botSay([ch.statements.length ? `*Yes, the weather at your farm has changed since the 1980s.* ${ch.statements.join(" ")}` : `*No clear change at your farm since 1981.* Rain, the start of the seasons, dry spells and heat in ${ch.recent_period} are within normal year-to-year swings of ${ch.early_period}.`,
-      `Compared from ${ch.years_analysed} years of daily records at your exact location; only changes that are larger than normal year-to-year swings are reported. ${ch.statements.length?"Plan with the recent pattern, not the old one.":""}`]); }
+      `Compared from ${ch.years_analysed} years of daily records ${c.regional?`for the 50 km area around your farm (NASA POWER, grid point ${c.regional.km} km away)`:"at your exact location"}; only changes that are larger than normal year-to-year swings are reported. ${ch.statements.length?"Plan with the recent pattern, not the old one.":""}`]); }
   const lr=c.rain_onset.long_rains||c.rain_onset.rains, sr=c.rain_onset.short_rains;
   const r30=c.rain_last_30_days;
   if (/start|onset|begin|usually|when/.test(N) && lr){
@@ -1730,7 +1807,9 @@ async function answerLive(N){
   addBubble("sys","⏳ Checking live weather at your farm…");
   const ty=document.createElement("div"); ty.className="typing"; ty.innerHTML="<i></i><i></i><i></i>"; chat.appendChild(ty); chat.scrollTop=chat.scrollHeight;
   let r; try { r=await liveStatus(); } finally { ty.remove(); statusIdle(); }
-  if (r.unavailable) return noData("live weather");
+  if (r.unavailable){ const p=farmPoint(), gp=await gridPoint(p.lat,p.lon); if (!gp) return noData("live weather"); const l=gp.rec.last_30_days||{};
+    return botSay([`*The last 30 days to ${fmtD(gp.rec.observed_to)} brought about ${Math.round(l.value)} mm of rain* in your area, against a normal of ${Math.round(l.normal)} mm: ${l.condition}.`,
+      `_Today's live weather could not be reached, so this is from the latest published daily records for the 50 km area around your farm (NASA POWER, grid point ${gp.km} km away). Ask again when online for today's weather._`]); }
   showLive(r); remember("live"); mark("lw_now"); checkLive(); S.last={...S.last, live:r.st};
   const st=r.st, n=r.lv.now, tag=r.lv.real?"(live data for your farm, Open-Meteo)":"(sample: live weather isn't reachable from this view)";
   const vs = st.rain_30_vs_normal_pct!=null ? `, ${Math.abs(st.rain_30_vs_normal_pct)}% ${st.rain_30_vs_normal_pct<0?"below":"above"} normal` : "";
@@ -1762,16 +1841,16 @@ async function answerOutlook(N){
   const r=await withThinking("Running the seasonal forecast for your farm…", predictAll);
   if (r.unavailable) return noData("seasonal forecast and rainfall records");
   const o=r.outlook, s=o.next_3_months, cmb=o.combined_next_3_months, on=r.onset; S.pred={...S.pred, last:r}; remember("outlook","feed"); mark("pr_season"); checkPred();
-  if (o.months.length) tableBubble(`Rain outlook: chance of drier / normal / wetter than normal`, ["Month","Drier","Normal","Wetter","Likely mm"], o.months.slice(0,4).map(m=>[m.label, Math.round(m.probabilities.below_normal*100)+"%", Math.round(m.probabilities.near_normal*100)+"%", Math.round(m.probabilities.above_normal*100)+"%", `${m.forecast_median_mm} (normal ${m.normal_mm})`]), r.real.forecast?"real forecast":"sample");
+  if (o.months.length) tableBubble(`Rain outlook: chance of drier / normal / wetter than normal`, ["Month","Drier","Normal","Wetter","Likely mm"], o.months.slice(0,4).map(m=>[m.label, Math.round(m.probabilities.below_normal*100)+"%", Math.round(m.probabilities.near_normal*100)+"%", Math.round(m.probabilities.above_normal*100)+"%", `${m.forecast_median_mm} (normal ${m.normal_mm})`]), fcBadge(r));
   const onsetLine = on.status==="started" ? `The ${SEASON_WORD[on.season]} have already started (from ${fmtD(on.onset_date)}).`
     : on.probability_no_clear_start>=0.5 ? `*${Math.round(on.probability_no_clear_start*100)}% of forecast runs show no proper start of the ${SEASON_WORD[on.season]}* in the usual window at your farm: plan for a failed or very late season.`
     : on.most_likely ? `The *${SEASON_WORD[on.season]} will most likely start around ${fmtD(on.most_likely)}* (likely between ${fmtD(on.likely_window[0])} and ${fmtD(on.likely_window[1])})${on.timing?`, ${on.timing}${on.versus_usual_days&&on.timing!=="about the usual time"?` by about ${Math.abs(on.versus_usual_days)} days`:""}`:""}.${on.probability_no_clear_start>=0.2?` There's a ${Math.round(on.probability_no_clear_start*100)}% chance of no proper start.`:""}` : "";
   const best = cmb || s, dry = best && best.probabilities.below_normal>=0.5;
   S.lastAnswer=smsFit(`Outlook ${s?s.label:""}: ${best?best.headline:""}. ${on.most_likely?`Rains most likely start ~${fmtD(on.most_likely)}.`:""} ${dry?"Store feed and water now.":""}`);
   const ll=localLine(o);
-  return botSay([`*Outlook${s?` for ${s.label}`:""}: ${best?best.headline:o.months[0]?.headline||"no clear signal"}.*${cmb?` _(From ${cmb.basis}${cmb.sources_agree===false?"; the two disagree, so treat it with care":""}.)_`:""} ${onsetLine}`,
+  return botSay([`*Outlook${s?` for ${s.label}`:""}: ${best?best.headline:o.months[0]?.headline||"no clear signal"}.*${cmb?` _(From ${o.regional_records?cmb.basis.replace("the farm's own records","your area's own records").replace("your farm's own records","your area's own records"):cmb.basis}${cmb.sources_agree===false?"; the two disagree, so treat it with care":""}.)_`:""} ${onsetLine}`,
     ...(ll?[ll]:[]),
-    `*Now:* ${Math.round(r.live.daily.filter(x=>x.d<=r.live.today).slice(-30).reduce((q,x)=>q+(+x.p||0),0))} mm of rain in the last 30 days.`,
+    `*Now:* ${now30(r)}.`,
     `*What to do:* ${dry?"Plan for a hard dry season: store hay or silage now, keep water, and consider selling weaker animals early while prices hold.":"Keep normal plans, and re-check every week: the outlook can change."} Ask _will I have enough grass for 12 cows?_ to check your feed.`,
     ...(changeLine(r.clim)?[changeLine(r.clim)]:[]),
     `_Confidence: ${o.months[0]?.confidence||"medium"}. ${srcLine(r)}. ${TRACK_LINE}_`]);
@@ -1780,7 +1859,11 @@ async function answerOnsetOutlook(N){
   if (!S.farm) return needFarm();
   const r=await withThinking("Forecasting when the rains will start…", predictAll); if (r.unavailable) return noData("seasonal forecast and rainfall records"); const on=r.onset; remember("onsetfc","feed"); mark("pr_onset"); checkPred();
   if (on.status==="started"){ return botSay([`*The ${SEASON_WORD[on.season]} have already started* (from ${fmtD(on.onset_date)}). A good time to plant pasture and fodder.`]); }
-  tableBubble(`Chance the ${SEASON_WORD[on.season]} have started by…`, ["By","Chance"], on.probability_by_date.slice(0,7).map(x=>[fmtD(x.by), Math.round(x.probability*100)+"%"]), r.real.forecast?"real forecast":"sample");
+  if (on.climatology){ S.lastAnswer=smsFit(`Rains usually start ~${fmtD(on.most_likely)} here (${fmtD(on.likely_window[0])}-${fmtD(on.likely_window[1])}). Wait for 20 mm in 3 days.`);
+    if (on.probability_by_date.length) tableBubble(`Usual start of the ${SEASON_WORD[on.season]}: share of past years started by…`, ["By","Share of years"], on.probability_by_date.map(x=>[fmtD(x.by), Math.round(x.probability*100)+"%"]), fcBadge(r));
+    return botSay([`*The ${SEASON_WORD[on.season]} most likely start around ${fmtD(on.most_likely)}*, between ${fmtD(on.likely_window[0])} and ${fmtD(on.likely_window[1])} in most years.${on.probability_no_clear_start>=0.2?` In ${Math.round(on.probability_no_clear_start*100)}% of years they had no clear start.`:""}`,
+      `*What to do:* don't plant at the first shower. Wait until it has rained about 20 mm over 3 days.`, `_${srcLine(r)}._`]); }
+  tableBubble(`Chance the ${SEASON_WORD[on.season]} have started by…`, ["By","Chance"], on.probability_by_date.slice(0,7).map(x=>[fmtD(x.by), Math.round(x.probability*100)+"%"]), fcBadge(r));
   const half=on.probability_by_date.find(x=>x.probability>=0.5);
   S.lastAnswer=smsFit(`Rains most likely start ~${fmtD(on.most_likely)} (${fmtD(on.likely_window[0])}-${fmtD(on.likely_window[1])}), ${on.timing||""}. Wait to plant until steady rain.`);
   if (on.probability_no_clear_start>=0.5) return botSay([`*${Math.round(on.probability_no_clear_start*100)}% of forecast runs show no proper start of the ${SEASON_WORD[on.season]}* at your farm in the usual window. Plan for a failed or very late season.`,
@@ -1809,7 +1892,14 @@ async function answerFeedOutlook(N){
 async function answerRiskOutlook(N){
   if (!S.farm) return needFarm();
   const p=farmPoint(); const ens=await withThinking("Forecasting disease risk for the next 8 weeks…", ()=>ensembleFor(p.lat,p.lon));
-  if (ens.unavailable) return noData("8-week forecast");
+  if (ens.unavailable){ const gp=await gridPoint(p.lat,p.lon); if (!gp) return noData("8-week forecast");
+    const c=gridClim(gp), t0=new Date(), weekly=[]; for (let w=0;w<8;w++){ const d=new Date(t0.getTime()+w*7*864e5), mi=d.getUTCMonth(), rain=gp.rec.normals_mm[mi]*7/30.4;
+      const tx=(gp.rec.tmax_normal_c||[])[mi], tn=(gp.rec.tmin_normal_c||[])[mi]; weekly.push({week_start:d.toISOString().slice(0,10), rain_mm:+rain.toFixed(1), rain_days:Math.round(rain/8), tmean_c: tx!=null&&tn!=null ? (tx+tn)/2 : 22}); }
+    const wm=farmWetMonths(c); const risk=prDiseaseRisk(weekly, wm?wm.includes(thisMonth()):lsWet(lsSeason(thisMonth(), lsZone(S.district)))); mark("pr_risk"); checkPred(); remember("riskfc");
+    tableBubble("Disease risk, next 8 weeks (usual weather)", ["Week of","Ticks","LSD/tryps","Worms","FMD/CBPP"], risk.map(w=>[fmtD(w.week_start), w.tick_borne, w.lumpy_skin_and_tryps, w.worms_and_fluke, w.fmd_cbpp_movement]), "usual pattern");
+    const fh=risk.find(w=>w.tick_borne==="high");
+    return botSay([fh?`*Tick-borne disease risk is high from the week of ${fmtD(fh.week_start)}*: spray every 7–14 days and check ears and tail.`:"*Tick-borne risk stays low to medium for the next 8 weeks* in a usual year here.",
+      `_Based on the usual weather for these weeks in the 50 km area around your farm (NASA POWER ${c.period}, grid point ${gp.km} km away), because the 8-week forecast could not be reached. Ask again when online for this year's forecast._`]); }
   const wm=await wetMonthsHere(); const wetNow= wm ? wm.includes(thisMonth()) : lsWet(lsSeason(thisMonth(), lsZone(S.district))); const risk=prDiseaseRisk(weeklyFromEns(ens,8), wetNow); mark("pr_risk"); checkPred(); remember("riskfc");
   tableBubble("Disease risk, next 8 weeks", ["Week of","Ticks","LSD/tryps","Worms","FMD/CBPP"], risk.map(w=>[fmtD(w.week_start), w.tick_borne, w.lumpy_skin_and_tryps, w.worms_and_fluke, w.fmd_cbpp_movement]), ens.real?"real forecast":"sample");
   const firstHigh=risk.find(w=>w.tick_borne==="high"); const fmdHigh=risk.filter(w=>w.fmd_cbpp_movement==="high").length;
@@ -2097,7 +2187,7 @@ async function neighbourSends(text){
     if (!c){ if (!/^(hi|hello|help)\b/i.test(text.trim())) S.okQ=text; reply="Send your farm's coordinates first, e.g. -0.84331 30.80194 (in Google Maps, press and hold your farm). Then I answer for your exact farm."; }
     else { const info=await placeInfo(c.lat,c.lon);
       if (!info.in_uganda) reply="These coordinates are outside Uganda. Please check them; DST Uganda covers Ugandan farms only.";
-      else { S.okLoc={lat:c.lat, lon:c.lon, district:info.district};
+      else { S.okLoc={lat:c.lat, lon:c.lon, district:info.district}; prefetchFarm(S.okLoc);
         reply=`Farm saved: ${c.lat.toFixed(5)}, ${c.lon.toFixed(5)}${info.district?", "+info.district+" District":""}.`;
         if (S.okQ){ const q=S.okQ; S.okQ=null; lcdAdd(toSms(reply).slice(0,459)); await sleep(reduced?50:500); reply = (aiState==="on" && !blocked(q) ? await smsAI(q) : null) || await smsResolve(smsAssistant(q)); } } } }
   if (reply===null) reply = await smsResolve(smsAssistant(text));
@@ -2312,8 +2402,8 @@ const TOOLS = [
       if (k==="price"){ const cat=mkCategory(String(i.animal||"bull"))||"local_bull"; mark("pr_price"); checkPred(); return {note:"Sample seasonal price pattern; real tool needs 12 months of reports", market:mkNearest(1).markets[0].name, typical_peak_month:"December"}; }
       if (k==="disease_risk"){ const p=farmPoint(); const ens=await ensembleFor(p.lat,p.lon); if (ens.unavailable) return {available:false, reason:"Forecast not reachable; say so."}; const r=prDiseaseRisk(weeklyFromEns(ens,8), lsWet(lsSeason(thisMonth(), lsZone(S.district)))); tableBubble("Disease risk, next 8 weeks", ["Week of","Ticks","LSD/tryps","Worms","FMD/CBPP"], r.map(w=>[fmtD(w.week_start), w.tick_borne, w.lumpy_skin_and_tryps, w.worms_and_fluke, w.fmd_cbpp_movement]), ens.real?"real forecast":"sample"); mark("pr_risk"); checkPred(); return {real:ens.real, weeks:r}; }
       const r=await predictAll(); if (r.unavailable) return {available:false, reason:"The forecast or this farm's records could not be reached; say so and do not guess or use another place's numbers."}; S.pred={...S.pred,last:r};
-      if (k==="season"){ const o=r.outlook; tableBubble(`Rain outlook: chance of drier / normal / wetter than normal`, ["Month","Drier","Normal","Wetter","Likely mm"], o.months.slice(0,4).map(m=>[m.label, Math.round(m.probabilities.below_normal*100)+"%", Math.round(m.probabilities.near_normal*100)+"%", Math.round(m.probabilities.above_normal*100)+"%", `${m.forecast_median_mm} (normal ${m.normal_mm})`]), r.real.forecast?"real forecast":"sample"); mark("pr_season"); checkPred(); return {real:r.real, outlook:o, track_record:TRACK_LINE}; }
-      if (k==="onset"){ const on=r.onset; if (on.probability_by_date) tableBubble(`Chance the ${SEASON_WORD[on.season]} have started by…`, ["By","Chance"], on.probability_by_date.slice(0,7).map(x=>[fmtD(x.by), Math.round(x.probability*100)+"%"]), r.real.forecast?"real forecast":"sample"); mark("pr_onset"); checkPred(); return {real:r.real, onset:on, usual_period:r.clim.period, track_record:TRACK_LINE}; }
+      if (k==="season"){ const o=r.outlook; tableBubble(`Rain outlook: chance of drier / normal / wetter than normal`, ["Month","Drier","Normal","Wetter","Likely mm"], o.months.slice(0,4).map(m=>[m.label, Math.round(m.probabilities.below_normal*100)+"%", Math.round(m.probabilities.near_normal*100)+"%", Math.round(m.probabilities.above_normal*100)+"%", `${m.forecast_median_mm} (normal ${m.normal_mm})`]), fcBadge(r)); mark("pr_season"); checkPred(); return {real:r.real, outlook:o, track_record:TRACK_LINE}; }
+      if (k==="onset"){ const on=r.onset; if (on.probability_by_date) tableBubble(`Chance the ${SEASON_WORD[on.season]} have started by…`, ["By","Chance"], on.probability_by_date.slice(0,7).map(x=>[fmtD(x.by), Math.round(x.probability*100)+"%"]), fcBadge(r)); mark("pr_onset"); checkPred(); return {real:r.real, onset:on, usual_period:r.clim.period, track_record:TRACK_LINE}; }
       if (k==="feed"){ const n=Number(i.cattle), w=Number(i.avg_weight_kg); if (!(n>0)) throw new Error("Ask how many cattle."); if (!(w>50)) throw new Error("Ask the typical weight in kg.");
         const months=r.outlook.months.slice(0,4); const tot=r.clim.rain_monthly_normal_mm.reduce((q,x)=>q+x.mean,0);
         const forage=months.map(m=>{ const nm=r.clim.rain_monthly_normal_mm.find(x=>x.month===FD_MONTHS[+m.month.split("-")[1]-1]); const base=SAMPLE_BIOMASS*S.farm.ha*(nm?nm.mean:80)/tot; const z=(m.probabilities.above_normal-m.probabilities.below_normal)*1.2; return [base*Math.max(0.3,1+0.25*(z-1)), base*Math.max(0.3,1+0.25*z), base*(1+0.25*(z+1))]; });
@@ -2567,6 +2657,7 @@ $("sms-form").addEventListener("submit",e=>{ e.preventDefault(); const i=$("sms-
 $("reset").addEventListener("click",boot);
 
 function boot(){
+  fcGrid();
   S=fresh(); AI.turns=[]; AI.okTurns=[]; chat.innerHTML=""; lcd.querySelectorAll(".sms,.empty").forEach(n=>n.remove()); lcdEmpty();
   const d=document.createElement("div"); d.className="day"; d.textContent="Today"; chat.appendChild(d);
   addBubble("sys","Demo chat. Tap a suggestion or type your own message. Farm figures are sample data.");
@@ -2577,5 +2668,6 @@ if (location.hash==="#selftest") window.DST_TEST={recGrass, recBreed, rankPaddoc
 boot();
 })();
 </script>
+<script id="fc-snapshot" type="application/json">null</script>
 </body>
 </html>
