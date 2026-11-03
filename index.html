@@ -1108,7 +1108,7 @@ const STEPS = [
 let S;
 function fresh(){
   return {
-    stage:"terms", name:"", role:"", farm:null, pending:null, draft:{}, lastAnswer:"",
+    stage:"terms", lang:null, name:"", role:"", farm:null, pending:null, draft:{}, lastAnswer:"",
     done:new Set(), smsCount:0, neighbourOptOut:false, last:{}, district:null, gps:null, okLoc:null, okQ:null, alertsOn:false,
     groups:[{name:"Kasese Cattle Keepers", code:"K7P2QX", sample:true,
       members:[{name:"Grace (sample)",phone:"256752000101",channel:"whatsapp"},{name:"Musa (sample)",phone:"256782000102",channel:"sms"}],
@@ -1138,15 +1138,91 @@ function addBubble(kind, html, extra){
   el.innerHTML = html + (kind==="sys"?"":`<span class="t">${now()}</span>`);
   chat.appendChild(el); chat.scrollTop = chat.scrollHeight; return el;
 }
+/* ---------- languages: English, Runyankore (nyn), Rukonzo / Lhukonzo (koo) ----------
+   DRAFT translations, not yet checked by native speakers: every translated reply is labelled "draft".
+   Numbers, dates, units, product and place names are kept as they are. On the Claude copy, Claude
+   writes every reply in the chosen language; on the public link the fixed answer lines below are used
+   and supporting lines stay in English. */
+const LANGS={en:"English", nyn:"Runyankore", koo:"Rukonzo"};
+const LANG_PICK=[["en","English"],["nyn","Runyankore"],["koo","Rukonzo (Lhukonzo)"]];
+function langFrom(t){ const l=String(t).toLowerCase();
+  if (/\b(english|engl|1)\b/.test(l)) return "en";
+  if (/\b(runyankore|runyankole|runyankor|nyankore|nyankole|orunyankore|2)\b/.test(l)) return "nyn";
+  if (/\b(rukonzo|lhukonzo|olhukonzo|konzo|rukonjo|rukhonjo|lukonzo|3)\b/.test(l)) return "koo"; return null; }
+const L10N={
+  pick:{en:"Hello! Please choose your language.", nyn:"Agandi! Torana orurimi orwo oyenda.", koo:"Wasibire! Sombola olhulimi lhwawu."},
+  intro:{en:"Hello! I'm *DST Uganda*, WWF Uganda's assistant for cattle keepers. I use satellite images, weather and livestock-health records to answer your questions.",
+    nyn:"Agandi! Ndi *DST Uganda*, omuhwezi wa WWF Uganda ow'abarisa b'ente. Ninkoresa ebishushani bya setilaiti, enjura n'ebirikukwata aha magara g'ente kugarukamu ebibuuzo byawe.",
+    koo:"Wasibire! Ingye ndi *DST Uganda*, omuwathikya wa WWF Uganda w'abaghunda b'esyonde. Ngakolesya ebisasani by'esetilaiti, embula n'amakuru w'amaghalha w'esyonde erisubirya ebibulyo byawu."},
+  askName:{en:"What's your name?", nyn:"Ibara ryawe niiwe oha?", koo:"Erina lyawu niwe ndi?"},
+  later:{en:"I'll take care of that in a moment. ", nyn:"Ekyo ndakikora hanyuma kakye. ", koo:"Ekyo nganakikolha omwa kathambi kake. "},
+  terms:{en:"By using DST Uganda you agree to its Terms of Use: your name, phone number and farm location are used only to give you this service, under Uganda's Data Protection and Privacy Act, 2019.",
+    nyn:"Kukoresa DST Uganda noikiriza ebiragiro byayo: ibara ryawe, enamba ya simu n'ahu faamu yaawe eri nibikoresibwa kukuheereza obuhweezi obu bwonka, nk'oku Iteeka rya Uganda erikuriinda amakuru g'abantu (2019) rigamba.",
+    koo:"Omwa kukolesya DST Uganda wamaikirirya ebiragiro byayo: erina lyawu, enamba y'esimu n'ahali omusiri wawu bikakolesibwa erikuha obuwathikya obu busa, ngoku Ekiragiro kya Uganda ekikalinda amakuru w'abandu (2019) kikabugha."},
+  nice:{en:(n,q)=>`Nice to meet you, *${n}*! 📍 Now your farm's location: tap *📍 Use my real location* while you're on the farm, or send its coordinates or a Google Maps link.${q?" Then I'll answer your question.":""}`,
+    nyn:(n,q)=>`Ninshemererwa kukumanya, *${n}*! 📍 Hati ntumira ahu faamu yaawe eri: kanda *📍 Use my real location* ori aha faamu, nari ontumire ebipimo byayo (coordinates) nari link ya Google Maps.${q?" Hanyuma ndagarukamu ekibuuzo kyawe.":""}`,
+    koo:(n,q)=>`Nasemererwa erikumanya, *${n}*! 📍 Lino ntumira ahali omusiri wawu: kanda *📍 Use my real location* iwuli oku musiri, kutse untumire ebipimo byaghu (coordinates) kutse link ya Google Maps.${q?" Enyuma w'aho nganasubirya ekibulyo kyawu.":""}`},
+  askAnything:{en:"Ask me anything: which acaricide to use, rain, diseases, grass, how many cows the farm carries, markets, or tap *NOTICES* for outbreaks and quarantines.",
+    nyn:"Mbaza ekirikwenda kyona: omubazi gw'enkwa, enjura, endwara, ebinyansi, ente zingahi ezirikubaasa kuriisibwa aha faamu, obutare, nari kanda *NOTICES* kumanya endwara ezaagwire n'okukomwa kw'ente.",
+    koo:"Mbulya ekyosyathaghaya kyosi: omubatsi w'esyonkwa, embula, endwala, obunyatsi, esyonde singahi esyangalisibwa oku musiri, esyosoko, kutse kanda *NOTICES* erimanya endwala esyabirihika n'erihanda ly'esyonde."},
+  draft:{nyn:"Ehi n'okuhindura kw'okugyezaho (draft): tikukaba kukyeboneibwe omunyankore. Enamba, ebiro n'amaziina tibihindurwa.", koo:"Ino ni ndambi y'erihindulha (draft): siyiri yikalebawa n'omukonzo. Esyonamba, ebiro n'amena sibikahindulhwa."},
+  draftTag:{nyn:"draft", koo:"draft"},
+  whatToDo:{nyn:"Eky'okukora:", koo:"Eky'erikolha:"}, why:{nyn:"Ahabw'enki:", koo:"Busanaki:"}, now:{nyn:"Hati:", koo:"Lino:"},
+};
+const lt=(k,...a)=>{ const v=L10N[k]; if (!v) return ""; const x=v[S.lang||"en"]??v.en; return typeof x==="function"?x(...a):x; };
+const DIR={nyn:{north:"omu bukiizi bwa ruguru",south:"omu bukiizi bwa reero","north-east":"ruguru-burengyerazuba",east:"burengyerazuba","south-east":"reero-burengyerazuba","south-west":"reero-burengyerezuba",west:"burengyerezuba","north-west":"ruguru-burengyerezuba"},
+  koo:{north:"ngebe ya ruguru",south:"ngebe ya kitsuka","north-east":"ruguru-ebuluku",east:"ebuluku","south-east":"kitsuka-ebuluku","south-west":"kitsuka-eyiri",west:"eyiri","north-west":"ruguru-eyiri"}};
+const dirL=(d,lg)=>(DIR[lg]||{})[d]||d;
+const OUT_WORD={nyn:{"drier than normal":"enjura nkye kurenza obutoosha","about normal":"enjura nk'obutoosha","wetter than normal":"enjura nyingi kurenza obutoosha","no clear signal (similar chances of dry, normal or wet)":"tihariho kimanyiso kirikweyoreka (omwanya gumwe gw'okwoma, obutoosha nari enjura nyingi)"},
+  koo:{"drier than normal":"embula nyike okwa kusangwa","about normal":"embula ngoku yikasangwa","wetter than normal":"embula nyingyi okwa kusangwa","no clear signal (similar chances of dry, normal or wet)":"sihali kimanyiso kikalhangirika"}};
+const STRENGTH={nyn:{"very likely":"nikirikubaasa munonga","probably":"nikiboneka","likely":"nikibaasa"},koo:{"very likely":"kyangabya munene","probably":"kyangabya","likely":"kyangabya"}};
+function headL(h,lg){ let x=h; for (const [a,b] of Object.entries(STRENGTH[lg]||{})) x=x.replace(new RegExp("^"+a+"\\b"),b); for (const [a,b] of Object.entries(OUT_WORD[lg]||{})) x=x.replace(a,b); return x.replace(/\((\d+)% chance\)/,lg==="nyn"?"(omukisa $1%)":"(akaghisa $1%)"); }
+const SEASONW={nyn:{"long rains":"enjura ya Itumba (Kurwa Gatatu–Katano)","short rains":"enjura ya Sept–Nov","rains":"enjura"},koo:{"long rains":"embula ya Mughenda (Okwakasatu–Okwakathanu)","short rains":"embula ya Sept–Nov","rains":"embula"}};
+/* the main answer lines, recognised in the English text and rewritten (draft) */
+const LEADS=[
+  {re:/^Use (.+?), as a spray or dip in (.+?)\.(.*)$/s, nyn:m=>`*Koresa ${m[1]}*, nk'omubazi gw'okushwera nari kwoga ente (dip) omu ${m[2]}. Tabura omubazi omuhyaka buri murundi nk'oku ekipapura kyagwo kigamba, okoreese eizooba eryo. Shwera ente yoona.`,
+    koo:m=>`*Kolesya ${m[1]}*, ngomubatsi w'erisunda kutse eriogha esyonde (dip) omwa ${m[2]}. Thabulha omubatsi omuhyaka buli lhughendo ngoku ekipapura kyaghu kikabugha, ukolesye ekiro ekyo. Sunda ekisoro kyosi.`},
+  {re:/^If ticks are still on the cattle a week after two correct sprays, switch to an? (.+?) spray or dip/s, nyn:m=>`Enkwa yaaba ekiri aha nte kuhika esande emwe enyuma y'okushwera kabiri gye, hindura okoreese ${m[1]} (okushwera nari dip). Zaara gilavu; otakwatwa omubazi aha mubiri.`, koo:m=>`Esyonkwa syamabya isikiri oku syonde endambi emwe enyuma w'erisunda kabiri kuwene, hindulha ukolesye ${m[1]} (erisunda kutse dip). Ambala esigilavu; omubatsi isyakuhamba oku mubiri.`},
+  {re:/^The (long rains|short rains|rains) will most likely start around (.+?), probably between (.+?) and (.+?)\.(.*)$/s, nyn:m=>`*${SEASONW.nyn[m[1]]} nikiboneka ngu neija kutandika haihi ${m[2]}*, kandi nikirikubaasa ahagati ya ${m[3]} na ${m[4]}. Torahinga aha njura y'okubanza: rindira ekagwa mm 20 omu biro 3.`, koo:m=>`*${SEASONW.koo[m[1]]} yangatsuka hakuhi ${m[2]}*, kandi kyangabya ahakathi ka ${m[3]} na ${m[4]}. Usyahingha oku mbula y'erithangi: lindirira yikaghwa mm 20 omwa biro 3.`},
+  {re:/^The (long rains|short rains|rains) most likely start around (.+?), between (.+?) and (.+?) in most years\.(.*)$/s, nyn:m=>`*${SEASONW.nyn[m[1]]} obutoosha netandika haihi ${m[2]}*, ahagati ya ${m[3]} na ${m[4]} omu myaka myingi.`, koo:m=>`*${SEASONW.koo[m[1]]} kanyi yikatsuka hakuhi ${m[2]}*, ahakathi ka ${m[3]} na ${m[4]} omwa myaka mingyi.`},
+  {re:/^(\d+)% of forecast runs show no proper start of the (long rains|short rains|rains)/s, nyn:m=>`*Omu ${m[1]}% y'ebiteekateekyo, ${SEASONW.nyn[m[2]]} teraatandike gye* omu biro byayo eby'obutoosha. Tebeekanisa ekyanda kiraingwe: bika ebyokurya n'amaizi g'ente.`, koo:m=>`*Omwa ${m[1]}% y'ebiteghekererwa, ${SEASONW.koo[m[2]]} siyitsukire kuwene* omwa ndambi yayo. Theghekania eky'omwisi ekiri ekiraire: bika ebyalya n'amaghetse w'esyonde.`},
+  {re:/^Outlook for (.+?): (.+?)\.(.*)$/s, nyn:m=>`*Ebirikureebwa aha ${m[1]}: ${headL(m[2],"nyn")}.*`, koo:m=>`*Ebikalhangirawa okwa ${m[1]}: ${headL(m[2],"koo")}.*`},
+  {re:/^Graze early, about (.+?), and again from about (.+?)\./s, nyn:m=>`*Riisa ente kare, haihi ${m[1]}, kandi ogarukyemu kuruga haihi ${m[2]}.* Omu ihangwe ziteeke omu kicuucu n'amaizi.`, koo:m=>`*Lisya esyonde kitsuka, hakuhi ${m[1]}, kandi wasubaye erilwa hakuhi ${m[2]}.* Omwa kasana syo hirwe omwa kitutu n'amaghetse.`},
+  {re:/^Graze (\d.+?)\.(.*)$/s, nyn:m=>`*Riisa ente ${m[1].replace(/ and /g," na ")}.*${/Rest them in shade with water (.+?) \(/.test(m[2])?` Ziteeke omu kicuucu kandi oziheereze amaizi ${m[2].match(/Rest them in shade with water (.+?) \(/)[1]}.`:""}${/storm is forecast (\d\d:\d\d-\d\d:\d\d(?:, \d\d:\d\d-\d\d:\d\d)*)/.test(m[2])?` Enjura nyingi nari enkuba y'omurabyo ${m[2].match(/storm is forecast (\d\d:\d\d-\d\d:\d\d(?:, \d\d:\d\d-\d\d:\d\d)*)/)[1]}: garura ente.`:""}`,
+    koo:m=>`*Lisya esyonde ${m[1].replace(/ and /g," na ")}.*${/Rest them in shade with water (.+?) \(/.test(m[2])?` Syo hirwe omwa kitutu kandi uwasyo amaghetse ${m[2].match(/Rest them in shade with water (.+?) \(/)[1]}.`:""}${/storm is forecast (\d\d:\d\d-\d\d:\d\d(?:, \d\d:\d\d-\d\d:\d\d)*)/.test(m[2])?` Embula nyingyi kutse omukeyi ${m[2].match(/storm is forecast (\d\d:\d\d-\d\d:\d\d(?:, \d\d:\d\d-\d\d:\d\d)*)/)[1]}: subya esyonde.`:""}`},
+  {re:/^Water the herd at (.+?), about ([\d.]+) km ([a-z-]+) of your farm\./s, nyn:m=>`*Eshesa ente aha ${m[1].replace(/^the /,"")}*, haihi km ${m[2]} ${dirL(m[3],"nyn")} ya faamu yaawe.`, koo:m=>`*Nywesya esyonde oku ${m[1].replace(/^the /,"")}*, hakuhi km ${m[2]} ${dirL(m[3],"koo")} w'omusiri wawu.`},
+  {re:/^Take the herd ([\d.]+) km ([a-z-]+) to the greenest (.+?) near your farm \(greenness ([\d.]+)/s, nyn:m=>`*Twara ente km ${m[1]} ${dirL(m[2],"nyn")}* ahari ebinyansi ebirikukirayo obubishi haihi na faamu yaawe (obubishi ${m[4]}). Banza ohikaane na nyineitaka.`, koo:m=>`*Lhwa n'esyonde km ${m[1]} ${dirL(m[2],"koo")}* ahali obunyatsi obuli ebisu kutsibu hakuhi n'omusiri wawu (ebisu ${m[4]}). Thangi ukanaye na nyakabwana w'ekitaka.`},
+  {re:/^Nearest: (.+?), about (\d+) km from (.+?), meets on ([A-Za-z]+)\./s, nyn:m=>`Akatale akari haihi: *${m[1]}*, haihi km ${m[2]} kuruga aha faamu yaawe, kaba kariho ${m[4]}.`, koo:m=>`Esoko eyiri hakuhi: *${m[1]}*, hakuhi km ${m[2]} erilwa oku musiri wawu, yikabya ${m[4]}.`},
+  {re:/^Nearest milk buyer: (.+?), (.+?), about ([\d.]+) km from your farm, buys (.+?), about (UGX [\d,]+) a litre/s, nyn:m=>`*Ogura amate ari haihi: ${m[1]}*, ${m[2]}, haihi km ${m[3]}, nagura ${m[4]}, haihi *${m[5]} buri liita*.`, koo:m=>`*Omughuli w'amabere oyuli hakuhi: ${m[1]}*, ${m[2]}, hakuhi km ${m[3]}, akaghula ${m[4]}, hakuhi *${m[5]} buli lita*.`},
+  {re:/^Plant (.+?) on your farm in (.+?)\.(.*)$/s, nyn:m=>`*Hinga ${m[1]}* aha faamu yaawe omu ${m[2]}.`, koo:m=>`*Hingha ${m[1]}* oku musiri wawu omwa ${m[2]}.`},
+  {re:/^([A-Z][a-z]+) is (.+?)\..*Watch most for (.+?)(?:, then|\.)/s, nyn:m=>`*${m[1]}*: endwara ez'okureeba munonga: *${m[3]}*.`, koo:m=>`*${m[1]}*: endwala esy'erilebya kutsibu: *${m[3]}*.`},
+  {re:/^Today's grazing plan for (.+?)$/s, nyn:m=>`*Entebeekanisa y'okuriisa ente erizooba aha ${m[1]}*`, koo:m=>`*Entegheka y'erilisya esyonde munabwire oku ${m[1]}*`},
+  {re:/^When: graze (.+?)\.$/s, nyn:m=>`*Ryari:* riisa ente ${m[1].replace(/; shade and water/,"; ekicuucu n'amaizi").replace(/; storm or heavy rain/,"; enjura nyingi").replace(/ and /g," na ")}.`, koo:m=>`*Ndambi:* lisya esyonde ${m[1].replace(/; shade and water/,"; ekitutu n'amaghetse").replace(/; storm or heavy rain/,"; embula nyingyi").replace(/ and /g," na ")}.`},
+  {re:/^Water: (.+?), ([\d.]+) km ([a-z-]+)\.$/s, nyn:m=>`*Amaizi:* ${m[1].replace(/^the /,"")}, km ${m[2]} ${dirL(m[3],"nyn")}.`, koo:m=>`*Amaghetse:* ${m[1].replace(/^the /,"")}, km ${m[2]} ${dirL(m[3],"koo")}.`},
+];
+function trLine(x){ const lg=S.lang; if (!lg || lg==="en" || typeof x!=="string") return {text:x, done:false};
+  const plain=x.replace(/\*/g,"");
+  for (const l of LEADS){ const m=plain.match(l.re); if (m && l[lg]) return {text:l[lg](m), done:true}; } return {text:x, done:false}; }
+const DRAFT_HTML=()=>` <span class="draft" title="${esc(lt("draft"))}">· ${lt("draftTag")}</span>`;
+/* Claude copy: translate any fixed reply that has no drafted line (one call per reply, keeps numbers) */
+async function aiTranslate(parts){ if (aiState!=="on" || !sampleFn || !S.lang || S.lang==="en") return null;
+  const txt=parts.map((p,i)=>`[${i}] ${typeof p==="string"?p:(p.caption||"")}`).join("\n");
+  try { const {text}=await sampleFn([{role:"user", content:`Translate each numbered line into ${LANGS[S.lang]} for a cattle keeper in Uganda. Plain, simple words. Keep the numbering [n], every number, date, unit (mm, km, °C, %, UGX), time, product name, place name, link and the *asterisks* exactly as they are. Reply with the numbered lines only.\n\n${txt}`}], {modelTier:"quick"});
+    const out={}; for (const ln of text.split(/\n/)){ const m=ln.match(/^\s*\[(\d+)\]\s*(.*)$/); if (m) out[+m[1]]=m[2]; } return out; } catch(e){ return null; } }
 async function botSay(parts){
-  for (const p of parts){
+  let ai=null; const lg=S.lang&&S.lang!=="en"?S.lang:null;
+  if (lg){ const need=parts.some(p=>(typeof p==="string"||p.caption) && !trLine(typeof p==="string"?p:p.caption).done && !p.raw); if (need) ai=await aiTranslate(parts); }
+  for (const [pi, p0] of parts.entries()){ let p=p0, tagged=false;
+    if (lg && !p0.raw){ const src=typeof p0==="string"?p0:p0.caption; if (src){ const t=trLine(src); const v=t.done?t.text:(ai&&ai[pi]?ai[pi]:null);
+        if (v){ tagged=true; p = typeof p0==="string" ? v : {...p0, caption:v}; } } }
     const ty = document.createElement("div"); ty.className="typing"; ty.innerHTML="<i></i><i></i><i></i>";
     chat.appendChild(ty); chat.scrollTop=chat.scrollHeight; $("status").textContent="typing…";
     await sleep(reduced?40:Math.min(450, 150 + (typeof p==="string"?p.length:250)));   /* short typing pause: answers must feel instant */
     ty.remove(); statusIdle();
-    if (typeof p === "string") addBubble("in", wa(p));
+    if (typeof p === "string") addBubble("in", wa(p)+(tagged?DRAFT_HTML():""));
     else if (p.html) addBubble(p.kind||"in", p.html, p.extra);
-    else if (p.canvas){ const el=addBubble("in", wa(p.caption||"")); el.insertBefore(p.canvas, el.firstChild); }
+    else if (p.raw) addBubble("in", wa(p.raw));
+    else if (p.canvas){ const el=addBubble("in", wa(p.caption||"")+(tagged?DRAFT_HTML():"")); el.insertBefore(p.canvas, el.firstChild); }
   }
 }
 function banner(text, head, onTap, ms){
@@ -1343,20 +1419,33 @@ async function assistant(raw){
   if (block){ if (/nin|cm|cf/i.test(t)) mark("safety_nin"); checkSafety(); return botSay([{html:wa(block), extra:"blocked"}]); }
 
   /* onboarding: only a name and the farm's location */
-  if (S.stage==="terms" || S.stage==="name"){
+  if (S.stage==="lang"){
+    const lg=langFrom(t);
+    if (!lg) return botSay([{raw:`${L10N.pick.en} / ${L10N.pick.nyn} / ${L10N.pick.koo}`}]);
+    S.lang=lg; S.stage="name"; AI.lang=lg;
+    const q=S.queued||S.preLoc;
+    return botSay([{raw:lt("intro")}, {raw:`${q?lt("later"):""}${lt("askName")}`}, {kind:"sys", html:esc(lt("terms"))}, ...(lg!=="en"?[{kind:"sys", html:"✍️ "+esc(lt("draft"))}]:[])]);
+  }
+  if (S.stage==="terms"){
+    const greet0 = /^(hi+|hello|hey|hallo|good (morning|afternoon|evening)|habari|oli otya|agandi|wasibire|wabukire|start|menu)\b[\s!.]*$/i.test(t);
+    const lg0=langFrom(t);
+    if (!greet0 && !lg0){ if (parseCoords(t)||isShortMapLink(t)) S.preLoc=t; else S.queued=t; }
+    S.stage="lang";
+    if (lg0) return assistant(t);
+    return botSay([{html:wa(`${L10N.pick.en}\n${L10N.pick.nyn}\n${L10N.pick.koo}`)+`<div class="try langpick">${LANG_PICK.map(([k,n])=>`<button type="button" class="chip" data-lang="${k}">${n}</button>`).join("")}</div>`}]);
+  }
+  if (S.stage==="name"){
     const greet = /^(hi+|hello|hey|hallo|good (morning|afternoon|evening)|habari|oli otya|agandi|start|menu)\b[\s!.]*$/i.test(t);
     const isLoc = parseCoords(t) || isShortMapLink(t) || /📍|\bmy location\b/i.test(t);
     const nm = (!greet && !isLoc) ? nameFromIntro(t) : null;
     if (nm){
       S.name=nm; S.role=S.role||"Farmer"; S.stage="location";
       if (S.preLoc){ const pl=S.preLoc; S.preLoc=null; return assistant(pl); }
-      return botSay([`Nice to meet you, *${S.name}*! 📍 Now your farm's location: tap *📍 Use my real location* while you're on the farm, or send its coordinates or a Google Maps link.${S.queued?" Then I'll answer your question.":""}`]);
+      return botSay([{raw:lt("nice", S.name, !!S.queued)}]);
     }
     if (isLoc) S.preLoc=t; else if (!greet && !S.queued) S.queued=t;
-    const first = S.stage==="terms"; S.stage="name";
-    return botSay([...(first?["Hello! I'm *DST Uganda*, WWF Uganda's assistant for cattle keepers. I use satellite images, weather and livestock-health records to answer your questions."]:[]),
-      `${S.queued||S.preLoc?"I'll take care of that in a moment. ":""}What's your name?`,
-      ...(first?[{kind:"sys", html:"By using DST Uganda you agree to its Terms of Use: your name, phone number and farm location are used only to give you this service, under Uganda's Data Protection and Privacy Act, 2019."}]:[])]);
+    S.stage="name";
+    return botSay([{raw:`${S.queued||S.preLoc?lt("later"):""}${lt("askName")}`}]);
   }
   if (S.stage==="location"){
     if (/use my real location/i.test(t)){ S.stage="main"; mark("terms"); return useRealLocation(false); }
@@ -1455,8 +1544,10 @@ function fixWord(w){
   for (const v of VOCAB){ if (Math.abs(v.length-w.length)>bd) continue; const d=editDist(w,v); if (d<=bd && (best===w || d<editDist(w,best))) best=v; }
   return SHORTHAND[best] || best;
 }
+const LOCAL_WORDS={ /* Runyankore */ enjura:"rain", enjuura:"rain", endwara:"diseases", enkwa:"ticks", ebinyansi:"grass", omubazi:"acaricide", amaizi:"water", akatale:"market", obutare:"market", amate:"milk", kuriisa:"graze", riisa:"graze", ente:"cows", ekyanda:"dry season", itumba:"rains", ryari:"when", nkahe:"where", ninkahe:"where",
+  /* Rukonzo / Lhukonzo */ embula:"rain", endwala:"diseases", esyonkwa:"ticks", obunyatsi:"grass", omubatsi:"acaricide", amaghetse:"water", esoko:"market", amabere:"milk", lisya:"graze", erilisya:"graze", esyonde:"cows", ndambi:"when", hayi:"where", ngahi:"where" };
 function norm(text){
-  return String(text).toLowerCase().replace(/[’']/g,"'").replace(/~/g," about ").replace(/(\d)\s*(kg|kgs|ac|acres?|ha|hectares?)\b/g,"$1 $2")
+  return String(text).toLowerCase().split(/\s+/).map(w=>LOCAL_WORDS[w.replace(/[?.!,]+$/,"")]||w).join(" ").replace(/[’']/g,"'").replace(/~/g," about ").replace(/(\d)\s*(kg|kgs|ac|acres?|ha|hectares?)\b/g,"$1 $2")
     .replace(/[^a-z0-9.,:?'\s-]/g," ").split(/\s+/).filter(Boolean).map(w=>{ const core=w.replace(/[.,:?!]+$/,""); const tail=w.slice(core.length); return fixWord(core)+tail; }).join(" ");
 }
 const has = (N, ...words) => words.some(w => new RegExp("\\b"+w+"\\b").test(N));
@@ -1527,7 +1618,7 @@ async function autoRegister(ha, name, lead){
   noticesForDistrict();
   if (S.queued){ const q=S.queued; S.queued=null; addBubble("sys", `Your question: “${esc(q)}”`); return assistant(q); }
   if (hadFarm) return;
-  return botSay(["Ask me anything: which acaricide to use, rain, diseases, grass, how many cows the farm carries, markets, or tap *NOTICES* for outbreaks and quarantines."]);
+  return botSay([{raw:lt("askAnything")}]);
 }
 async function proposeArea(ha, name){
   const radius=Math.round(Math.sqrt(ha*10000/Math.PI));
@@ -1717,10 +1808,10 @@ async function smartMain(t, N){
   /* scored intents */
   const intents = [
     {id:"compare", w:[["best price",6],["best profit",7],["most money",6],["compare",5],["where should i sell",7],["where to sell",5],["profit",5],["worth",2],["highest price",6]]},
-    {id:"graze_time", w:[["when should i graze",12],["when to graze",12],["what time should i graze",12],["what time to graze",12],["time to graze",11],["graze today",9],["too hot",7],["heat stress",8],["hot for my cows",9],["hot for the cows",9],["what time",3],["graze tomorrow",10]]},
+    {id:"graze_time", w:[["graze when",12],["when graze",12],["when should i graze",12],["when to graze",12],["what time should i graze",12],["what time to graze",12],["time to graze",11],["graze today",9],["too hot",7],["heat stress",8],["hot for my cows",9],["hot for the cows",9],["what time",3],["graze tomorrow",10]]},
     {id:"day_plan", w:[["plan my day",12],["grazing plan",12],["plan for today",10],["today's plan",10],["plan the day",11],["daily plan",10],["plan for my herd",10]]},
-    {id:"water", w:[["where is water",12],["where can i find water",12],["find water",11],["water near",11],["nearest water",12],["water for my cows",11],["water for the cows",11],["water for my cattle",11],["drinking water",8],["water point",10],["water points",10],["valley tank",10],["valley dam",10],["borehole",9],["nearest dam",11],["watering",7],["water the cows",10],["water my cows",10]]},
-    {id:"pasture_near", w:[["good grass near",12],["pasture near",12],["grass near",11],["where is pasture",12],["where is grass",11],["where is good grass",12],["find pasture",11],["find grass",11],["greener grass",9],["green grass",7],["where can i graze",12],["where to graze",8],["where should i graze",8],["pasture around",10]]},
+    {id:"water", w:[["water where",12],["where water",12],["where is water",12],["where can i find water",12],["find water",11],["water near",11],["nearest water",12],["water for my cows",11],["water for the cows",11],["water for my cattle",11],["drinking water",8],["water point",10],["water points",10],["valley tank",10],["valley dam",10],["borehole",9],["nearest dam",11],["watering",7],["water the cows",10],["water my cows",10]]},
+    {id:"pasture_near", w:[["grass where",12],["where grass",12],["good grass near",12],["pasture near",12],["grass near",11],["where is pasture",12],["where is grass",11],["where is good grass",12],["find pasture",11],["find grass",11],["greener grass",9],["green grass",7],["where can i graze",12],["where to graze",8],["where should i graze",8],["pasture around",10]]},
     {id:"milk_market", w:[["milk market",10],["milk markets",10],["sell my milk",10],["sell milk",9],["selling milk",9],["buy my milk",10],["buys milk",9],["milk buyer",9],["milk buyers",9],["milk collection",9],["collection centre",8],["collection center",8],["milk centre",9],["milk center",9],["dairy cooperative",8],["milk cooperative",9],["milk price",9],["price of milk",9],["milk prices",9]]},
     {id:"market", w:[["where can i sell",7],["where do i sell",7],["sell my cow",8],["sell my cows",8],["sell my bull",8],["sell my bulls",8],["sell my cattle",8],["sell my goats",8],["sell cattle",7],["selling cattle",7],["who buys",6],["cattle buyers",7],["livestock market",7],["cattle market",7],["market",4],["markets",4],["market day",6],["sell",2],["buy",1],["going for",5],["cow prices",6],["bull price",6],["price of a",4],["how much is a",4],["auction",4]]},
     {id:"diseases", w:[["diseases",4],["disease",4],["sick",2],["sickness",3],["illness",3],["expect",1],["outbreak",3],["vaccinate",3],["vaccine",3],["vaccination",3]]},
@@ -2230,6 +2321,7 @@ function renderQuick(){
   const q=$("quick"); q.innerHTML="";
   let opts;
   if (S.stage==="terms") opts=["Hello","which acaricide should I use for my ticks?"];
+  else if (S.stage==="lang") opts=LANG_PICK.map(x=>x[1]);
   else if (S.stage==="name") opts=[];
   else if (S.stage==="location") opts=["📍 Use my real location"];
   else if (S.pending==="farm_size") opts=["About 8 acres","3 hectares"];
@@ -2511,7 +2603,8 @@ async function aiAssistant(userText){
   AI.turns.push({role:"user", content:userText});
   if (AI.turns.length>24) AI.turns = AI.turns.slice(-24);
   while (AI.turns.length && AI.turns[0].role!=="user") AI.turns.shift();
-  const input=[{role:"user", content:RULES+"\n\nSTATE (current, authoritative):\n"+JSON.stringify(snapshot())}, ...AI.turns];
+  const langRule = S.lang && S.lang!=="en" ? `\n\nLANGUAGE: the farmer chose ${LANGS[S.lang]}. Write every reply in ${LANGS[S.lang]} (plain, simple words; draft quality is acceptable). Keep every number, date, unit, time, product name and place name exactly. End each reply with " · draft".` : "";
+  const input=[{role:"user", content:RULES+langRule+"\n\nSTATE (current, authoritative):\n"+JSON.stringify(snapshot())}, ...AI.turns];
   const ty=document.createElement("div"); ty.className="typing"; ty.innerHTML="<i></i><i></i><i></i>";
   chat.appendChild(ty); chat.scrollTop=chat.scrollHeight; $("status").textContent="thinking…";
   try {
@@ -2652,6 +2745,7 @@ async function send(text){
   } finally { busy=false; renderQuick();
     const ins=chat.querySelectorAll(".msg.in"); if (ins.length>mark0) addVoteBar(ins[ins.length-1], t); }
 }
+document.addEventListener("click",e=>{ const b=e.target.closest&&e.target.closest("[data-lang]"); if (!b || S.stage!=="lang") return; send(b.textContent); });
 $("wa-form").addEventListener("submit",e=>{ e.preventDefault(); const i=$("wa-text"); const v=i.value; i.value=""; send(v); });
 $("sms-form").addEventListener("submit",e=>{ e.preventDefault(); const i=$("sms-text"); const v=i.value.trim(); i.value=""; if(v) neighbourSends(v); });
 $("reset").addEventListener("click",boot);
