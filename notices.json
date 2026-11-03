@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-02T21:57Z",
+ "generated_at": "2026-11-03T01:25Z",
  "note": "Titles, dates and links exactly as published by each source. Always open the source and follow your District Veterinary Officer.",
  "kept_previous": false,
  "sources": [
@@ -24,15 +24,15 @@
    "url": "https://www.agriculture.go.ug/feed/?paged=2",
    "ok": true,
    "items_read": 10,
-   "kept": 1,
+   "kept": 0,
    "too_old": 0,
    "undated": 0,
    "untrusted_publisher": 0,
-   "not_animal_health": 6,
+   "not_animal_health": 5,
    "duplicate": 0,
    "untrusted_names": [],
    "newest_seen": "2025-08-21",
-   "older_than_latest": 3
+   "older_than_latest": 5
   },
   {
    "id": "maaif_p3",
@@ -117,8 +117,17 @@
    "id": "maaif_s2",
    "name": "MAAIF (agriculture.go.ug), site search: cattle",
    "url": "https://www.agriculture.go.ug/?s=cattle&feed=rss2",
-   "ok": false,
-   "error": "TimeoutError: The read operation timed out"
+   "ok": true,
+   "items_read": 10,
+   "kept": 2,
+   "too_old": 0,
+   "undated": 0,
+   "untrusted_publisher": 0,
+   "not_animal_health": 1,
+   "duplicate": 1,
+   "untrusted_names": [],
+   "newest_seen": "2025-10-24",
+   "older_than_latest": 6
   },
   {
    "id": "maaif_s3",
@@ -158,7 +167,7 @@
    "url": "https://www.agriculture.go.ug/?s=animal+disease&feed=rss2",
    "ok": true,
    "items_read": 10,
-   "kept": 2,
+   "kept": 1,
    "too_old": 0,
    "undated": 0,
    "untrusted_publisher": 0,
@@ -166,7 +175,7 @@
    "duplicate": 2,
    "untrusted_names": [],
    "newest_seen": "2025-10-20",
-   "older_than_latest": 5
+   "older_than_latest": 6
   },
   {
    "id": "moh",
@@ -390,15 +399,16 @@
    "name": "Google News: FMD in Uganda",
    "url": "https://news.google.com/rss/search?q=Uganda+%28%22foot+and+mouth%22+OR+%22foot-and-mouth%22+OR+FMD%29+when%3A90d&hl=en-UG&gl=UG&ceid=UG%3Aen",
    "ok": true,
-   "items_read": 43,
+   "items_read": 44,
    "kept": 8,
    "too_old": 0,
    "undated": 0,
-   "untrusted_publisher": 18,
+   "untrusted_publisher": 19,
    "not_animal_health": 15,
    "duplicate": 2,
    "untrusted_names": [
     "UG Diplomat",
+    "ReliefWeb",
     "AOL.co.uk",
     "3tres3.com",
     "Philstar.com",
@@ -414,11 +424,11 @@
    "name": "Google News: other animal diseases in Uganda",
    "url": "https://news.google.com/rss/search?q=Uganda+%28anthrax+OR+%22lumpy+skin%22+OR+CBPP+OR+%22East+Coast+Fever%22+OR+%22Rift+Valley+fever%22+OR+%22swine+fever%22+OR+%22bird+flu%22+OR+%22avian+influenza%22+OR+PPR+OR+rabies+OR+trypanosomiasis%29+when%3A90d&hl=en-UG&gl=UG&ceid=UG%3Aen",
    "ok": true,
-   "items_read": 28,
+   "items_read": 29,
    "kept": 7,
    "too_old": 0,
    "undated": 0,
-   "untrusted_publisher": 15,
+   "untrusted_publisher": 16,
    "not_animal_health": 5,
    "duplicate": 1,
    "untrusted_names": [
@@ -451,8 +461,8 @@
    "duplicate": 4,
    "untrusted_names": [
     "NICD",
-    "World Vision",
     "GOV.UK blogs",
+    "Red Pepper",
     "BBC",
     "Barbados Today",
     "CTV News",
@@ -844,7 +854,7 @@
    "title": "Animal Feeds Act 2024",
    "url": "https://www.agriculture.go.ug/animal-feeds-act-2024/?utm_source=rss&utm_medium=rss&utm_campaign=animal-feeds-act-2024",
    "published": "2024-09-24T10:39Z",
-   "source": "MAAIF (agriculture.go.ug), site search: animal disease",
+   "source": "MAAIF (agriculture.go.ug), site search: cattle",
    "source_kind": "official",
    "publisher": "MAAIF",
    "body": "MAAIF",
