@@ -1147,17 +1147,20 @@ function postToGroup(group, sender, text){
 }
 
 /* ---------- farm map: real satellite imagery (Esri World Imagery) + Google Maps links ---------- */
-const LEAFLET_JS="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js", LEAFLET_CSS="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css";
+/* map library: two CDNs, tried in turn, with a generous wait for slow rural connections */
+const LEAFLET_SRC=[["https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js","https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"],
+                   ["https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js","https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"]];
 let leafletP=null;
+function loadFrom([js, css], wait){ return new Promise((res,rej)=>{
+  const l=document.createElement("link"); l.rel="stylesheet"; l.href=css; document.head.appendChild(l);
+  const sc=document.createElement("script"); sc.src=js; sc.async=true;
+  const tm=setTimeout(()=>rej(new Error("leaflet timeout")), wait);
+  sc.onload=()=>{ clearTimeout(tm); window.L&&window.L.map ? res(window.L) : rej(new Error("leaflet missing")); };
+  sc.onerror=()=>{ clearTimeout(tm); rej(new Error("leaflet blocked")); }; document.head.appendChild(sc); }); }
 function loadLeaflet(){
   if (window.L && window.L.map) return Promise.resolve(window.L); if (leafletP) return leafletP;
-  leafletP=new Promise((res,rej)=>{
-    const l=document.createElement("link"); l.rel="stylesheet"; l.href=LEAFLET_CSS; document.head.appendChild(l);
-    const sc=document.createElement("script"); sc.src=LEAFLET_JS; sc.async=true;
-    sc.onload=()=> window.L&&window.L.map ? res(window.L) : rej(new Error("leaflet missing"));
-    sc.onerror=()=>rej(new Error("leaflet blocked")); document.head.appendChild(sc);
-    setTimeout(()=>rej(new Error("leaflet timeout")),10000);
-  }).catch(e=>{ leafletP=null; throw e; });
+  leafletP=loadFrom(LEAFLET_SRC[0], 30000).catch(()=> window.L&&window.L.map ? window.L : loadFrom(LEAFLET_SRC[1], 30000))
+    .catch(e=>{ leafletP=null; throw e; });
   return leafletP;
 }
 const gmapsPin=(lat,lon)=>`https://www.google.com/maps/search/?api=1&query=${lat.toFixed(6)}%2C${lon.toFixed(6)}`;
@@ -1174,13 +1177,18 @@ function farmMap(opts={}){
   const links=document.createElement("div"); links.className="farmmap-links";
   links.innerHTML=`<a href="${gmapsSat(lat,lon,z)}" target="_blank" rel="noopener">Open in Google Maps (satellite)</a><a href="${gmapsPin(lat,lon)}" target="_blank" rel="noopener">Pin and directions</a><span class="mono">${lat.toFixed(5)}, ${lon.toFixed(5)}</span>`;
   box.append(m,links);
-  const fallback=why=>{ if (box.dataset.fb) return; box.dataset.fb="1"; m.replaceWith(farmCanvas()); const n=document.createElement("small"); n.textContent=why; box.insertBefore(n,links); };
+  const fallback=why=>{ if (box.dataset.fb) return; box.dataset.fb="1"; m.replaceWith(farmCanvas()); const n=document.createElement("small"); n.textContent=why+" ";
+    const again=document.createElement("button"); again.type="button"; again.className="chip"; again.textContent="Try the live map again";
+    again.addEventListener("click",()=>{ box.replaceWith(farmMap(opts)); }); n.appendChild(again); box.insertBefore(n,links); };
+  let slow=null;
   loadLeaflet().then(L=>whenConnected(box,()=>{ try {
     const map=L.map(m,{scrollWheelZoom:false, attributionControl:false}).setView([lat,lon],z);
     L.control.attribution({prefix:false}).addAttribution("Powered by Esri · Imagery: Esri, Maxar, Earthstar Geographics").addTo(map);
     const t=L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",{maxZoom:19, maxNativeZoom:19}).addTo(map);
-    let ok=0, bad=0; t.on("tileload",()=>{ if (!ok++){ const n=document.createElement("small"); n.textContent=IMAGERY_NOTE; box.appendChild(n); } }); t.on("tileerror",()=>{ bad++; if (!ok && bad>=4) fallback("Satellite imagery is blocked here (for example inside the Claude viewer). The Google Maps links still show the real place."); });
-    setTimeout(()=>{ if (!ok) fallback("Satellite imagery did not load (no internet, or blocked here). The Google Maps links still show the real place."); },9000);
+    let ok=0, bad=0; t.on("tileload",()=>{ if (!ok++){ if (slow){ slow.remove(); slow=null; } const n=document.createElement("small"); n.textContent=IMAGERY_NOTE; box.appendChild(n); } }); t.on("tileerror",()=>{ bad++; if (!ok && bad>=4) fallback("Satellite imagery is blocked here (for example inside the Claude viewer). The Google Maps links still show the real place."); });
+    /* slow connection: say so after 10 s but keep waiting; give up only after 60 s */
+    setTimeout(()=>{ if (!ok && !box.dataset.fb){ slow=document.createElement("small"); slow.textContent="Loading the satellite photo… this can take a minute on a slow connection."; box.insertBefore(slow,links); } },10000);
+    setTimeout(()=>{ if (!ok) fallback("Satellite imagery did not load (no internet, or blocked here). The Google Maps links still show the real place."); },60000);
     if (radius) L.circle([lat,lon],{radius, color:"#ffffff", weight:3, fill:false, interactive:false}).addTo(map);
     L.circleMarker([lat,lon],{radius:5, color:"#ffffff", weight:2, fillColor:"#0A0A0A", fillOpacity:1, interactive:false}).addTo(map);
     const pads=opts.paddocks||[]; for (const p of pads){ const isBest=p.id===opts.best;
