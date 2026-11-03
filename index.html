@@ -749,6 +749,26 @@ const compass=(lat,lon,la,lo)=>{ const y=Math.sin((lo-lon)*Math.PI/180)*Math.cos
   const b=(Math.atan2(y,x)*180/Math.PI+360)%360; return ["north","north-east","east","south-east","south","south-west","west","north-west"][Math.round(b/45)%8]; };
 const gmapsDir=(la,lo)=>`https://www.google.com/maps/dir/?api=1&destination=${la.toFixed(5)},${lo.toFixed(5)}`;
 
+/* real Sentinel-2 grass greenness for the pilot area: tiles published by the scheduled job in the public demo repo
+   (scripts/greenness.py, mirrored from domain/services/greenness_tiles.py) */
+const GREEN_BASES=["https://raw.githubusercontent.com/edgarmutungisa/demo/main/greenness/", "greenness/"];
+const GREEN_TILE=0.1; let greenIdx; const greenTiles={};
+const gTileKey=(lat,lon)=>`t${Math.floor(+(lat/GREEN_TILE).toFixed(9))}_${Math.floor(+(lon/GREEN_TILE).toFixed(9))}`;
+function gTilesNear(lat, lon, km){ const dlat=km/111.32, dlon=dlat/Math.max(0.2,Math.cos(lat*Math.PI/180)); const [i0,j0]=gTileKey(lat-dlat,lon-dlon).slice(1).split("_").map(Number), [i1,j1]=gTileKey(lat+dlat,lon+dlon).slice(1).split("_").map(Number);
+  const out=[]; for (let i=i0;i<=i1;i++) for (let j=j0;j<=j1;j++) out.push(`t${i}_${j}`); return out; }
+function gCells(t){ const out=[], top=t.lat0+GREEN_TILE; t.ndvi.forEach((v,k)=>{ if (v==null||v<0) return; const r=Math.floor(k/t.cols), c=k%t.cols;
+  out.push({lat:+(top-(r+0.5)*t.step).toFixed(5), lon:+(t.lon0+(c+0.5)*t.step).toFixed(5), ndvi:v/100, land_cover:"grass or shrub land"}); }); return out; }
+async function greenIndex(){ if (greenIdx!==undefined) return greenIdx;
+  for (const base of GREEN_BASES){ try { const r=await fetch(base+"index.json",{cache:"no-store"}); if (!r.ok) continue; const j=await r.json(); if (j && Array.isArray(j.tiles) && j.tiles.length) return (greenIdx={base, ...j}); } catch(e){} }
+  return (greenIdx=null); }
+async function realPastureCells(lat, lon, km=3){
+  const idx=await greenIndex(); if (!idx) return {status:"unavailable"};
+  const keys=gTilesNear(lat,lon,km).filter(k=>idx.tiles.includes(k)); if (!keys.length) return {status:"outside", idx};
+  const cells=[]; for (const k of keys){ if (!greenTiles[k]){ try { const r=await fetch(idx.base+k+".json"); if (!r.ok) throw 0; greenTiles[k]=await r.json(); } catch(e){ return {status:"unavailable"}; } } cells.push(...gCells(greenTiles[k])); }
+  return {status:"ok", idx, cells}; }
+async function pastureNear(lat, lon){ const g=await realPastureCells(lat,lon,3);
+  if (g.status==="ok"){ const r=rankPastureCells(g.cells,lat,lon,3); if (r) return {r, real:true, idx:g.idx}; return {r:null, real:true, idx:g.idx}; }
+  return {r:rankPastureCells(samplePastureCells(lat,lon),lat,lon,3), real:false, why:g.status}; }
 async function answerGrazeTime(N, quiet){
   if (!S.farm) return needFarm(); const p=farmPoint();
   const h=await withThinking("Checking today's heat at your farm, hour by hour…", ()=>hourlyFor(p.lat,p.lon)); if (!h) return noData("hourly forecast");
@@ -779,19 +799,23 @@ async function answerWater(N){
 
 async function answerPastureNear(N){
   if (!S.farm) return needFarm(); if ((S.paddocks||[]).length) return paddockAnswer(); const p=farmPoint();
-  const r=rankPastureCells(samplePastureCells(p.lat,p.lon), p.lat, p.lon, 3); remember("pasture_near"); mark("graze");
-  const c=r.choice, k=r.closer_option;
-  S.lastAnswer=smsFit(`Greenest grass near you (SAMPLE): ${c.distance_km} km ${compass(p.lat,p.lon,c.lat,c.lon)}. Ask the owner first.`);
-  return botSay([{canvas:farmMap({points:r.cells.map(x=>({lat:x.lat, lon:x.lon, label:`${x.ndvi}`, best:x===c}))}), caption:`*Take the herd ${c.distance_km} km ${compass(p.lat,p.lon,c.lat,c.lon)}* to the greenest ${c.land_cover} near your farm (greenness ${c.ndvi}). <a href="${gmapsDir(c.lat,c.lon)}" target="_blank" rel="noopener">Directions</a>`},
-    `${k?`Closer and almost as green: ${k.distance_km} km ${compass(p.lat,p.lon,k.lat,k.lon)} (greenness ${k.ndvi}). `:""}Land outside your farm may be private or communal: agree with the owner or the grazing committee first. Greenness shows where grass is growing, not its feed value. Keep out of national parks and forest reserves.`,
-    "_Greenness here is SAMPLE data. The live tool scans 500 m cells of grass and shrub land within 3 km in this month's Sentinel-2 images (ESA WorldCover land cover, protected areas removed). Got paddocks? Send them and I'll pick the paddock instead._"]); }
+  const q=await withThinking("Reading this month's satellite images around your farm…", ()=>pastureNear(p.lat,p.lon)); remember("pasture_near"); mark("graze");
+  if (q.real && !q.r) return botSay([`The latest satellite images (to ${fmtD(q.idx.latest_image||q.idx.window[1])}) show no clear grass or shrub land within 3 km of your farm outside protected areas, often because of cloud. Graze your usual area and ask again in a few days.`]);
+  const r=q.r, c=r.choice, k=r.closer_option, dir=x=>compass(p.lat,p.lon,x.lat,x.lon);
+  S.lastAnswer=smsFit(`Greenest grass near you${q.real?"":" (SAMPLE)"}: ${c.distance_km} km ${dir(c)}. Ask the owner first.`);
+  const src = q.real
+    ? `_Source: ${q.idx.source}. Images ${fmtD(q.idx.window[0])}–${fmtD(q.idx.window[1])}, latest ${q.idx.latest_image?fmtD(q.idx.latest_image):"–"}; cells about 280 m. Updated daily for Kasese and Isingiro._`
+    : `_Greenness here is SAMPLE data${q.why==="outside"?": real satellite greenness is published for Kasese and Isingiro only, and this farm is outside them":": the real satellite layer could not be reached from here (or has not been published yet)"}. The live tool scans grass and shrub land within 3 km in this month's Sentinel-2 images (ESA WorldCover land cover, protected areas removed)._`;
+  return botSay([{canvas:farmMap({points:r.cells.map(x=>({lat:x.lat, lon:x.lon, label:`${x.ndvi.toFixed(2)}`, best:x===c}))}), caption:`*Take the herd ${c.distance_km} km ${dir(c)}* to the greenest ${c.land_cover} near your farm (greenness ${c.ndvi.toFixed(2)}${q.real?", satellite":", sample"}). <a href="${gmapsDir(c.lat,c.lon)}" target="_blank" rel="noopener">Directions</a>`},
+    `${k?`Closer and almost as green: ${k.distance_km} km ${dir(k)} (greenness ${k.ndvi.toFixed(2)}). `:""}Land outside your farm may be private or communal: agree with the owner or the grazing committee first. Greenness shows where grass is growing, not its feed value. Keep out of national parks and forest reserves.`,
+    src+" Got paddocks? Send them and I'll pick the paddock instead."]); }
 
 async function answerDayPlan(N){
   if (!S.farm) return needFarm(); const p=farmPoint();
   const [h,w]=await withThinking("Planning your herd's day: heat, grass and water…", ()=>Promise.all([hourlyFor(p.lat,p.lon), waterFor(p.lat,p.lon)]));
   const g=h?grazingHours(h, gzToday()):null; const pads=(S.paddocks||[]).length; mark("graze"); remember("graze");
   let where; if (pads){ const wet=lsWet(lsSeason(thisMonth(), lsZone(S.district))); const rp=rankPaddocks(S.paddocks, new Date(), wet); where=`*Where:* ${rp.best.name} (${rp.reason})`; }
-  else { const r=rankPastureCells(samplePastureCells(p.lat,p.lon), p.lat, p.lon, 3); where=`*Where:* the greenest grass ${r.choice.distance_km} km ${compass(p.lat,p.lon,r.choice.lat,r.choice.lon)} of your farm (SAMPLE greenness; agree with the land owner first)`; }
+  else { const q=await pastureNear(p.lat,p.lon), r=q.r; where = r ? `*Where:* the greenest grass ${r.choice.distance_km} km ${compass(p.lat,p.lon,r.choice.lat,r.choice.lon)} of your farm (${q.real?`satellite images to ${fmtD(q.idx.latest_image||q.idx.window[1])}`:"SAMPLE greenness"}; agree with the land owner first)` : "*Where:* no clear grass in the latest satellite images within 3 km; use your usual area"; }
   const when = g ? `*When:* graze ${g.graze.join(" and ")||"only with care"}${g.rest_in_shade.length?`; shade and water ${g.rest_in_shade.join(", ")}`:""}${g.avoid_rain_or_storm.length?`; storm or heavy rain ${g.avoid_rain_or_storm.join(", ")}`:""}.` : "*When:* the hourly forecast could not be reached, so I won't guess the hours.";
   const water = w && w.found ? `*Water:* ${w.choice.name?w.choice.name+" ("+w.choice.kind+")":"the "+w.choice.kind}, ${w.choice.distance_km} km ${compass(p.lat,p.lon,w.choice.lat,w.choice.lon)}.` : w ? "*Water:* none mapped within 5 km in OpenStreetMap; use your usual source and tell the extension officer so it can be mapped." : "*Water:* the water map could not be reached.";
   S.lastAnswer=smsFit(`${when.replace(/\*/g,"")} ${water.replace(/\*/g,"")}`);
@@ -2312,15 +2336,15 @@ const TOOLS = [
       const p=farmPoint(); const c=await climateFor(p.lat,p.lon); if (!c.real) return {available:false, reason:"This farm's rainfall and temperature records could not be reached; say so."}; showClimate(c); mark("fd_clim"); checkFarmData(); return c;
     }},
   { name:"grazing",
-    description:"Time2Graze guidance for the registered farm. action 'when': grazing and shade hours today or tomorrow from the REAL hourly forecast (Temperature-Humidity Index; graze when THI < 79, no storm). 'water': nearest REAL OpenStreetMap water points (rivers, dams, valley tanks, boreholes, taps), parks and seasonal ones last. 'pasture': greenest grass/shrub land within 3 km (SAMPLE greenness in the demo) or the best paddock if paddocks exist. 'plan': all three. Lead with the decision; say land outside the farm needs the owner's agreement. available:false = say so, never guess.",
+    description:"Time2Graze guidance for the registered farm. action 'when': grazing and shade hours today or tomorrow from the REAL hourly forecast (Temperature-Humidity Index; graze when THI < 79, no storm). 'water': nearest REAL OpenStreetMap water points (rivers, dams, valley tanks, boreholes, taps), parks and seasonal ones last. 'pasture': greenest grass/shrub land within 3 km (REAL Sentinel-2 greenness for Kasese and Isingiro when the published layer is reachable, else SAMPLE: check the sample field) or the best paddock if paddocks exist. 'plan': all three. Lead with the decision; say land outside the farm needs the owner's agreement. available:false = say so, never guess.",
     inputSchema:{type:"object",properties:{action:{type:"string",enum:["when","water","pasture","plan"]}, tomorrow:{type:"boolean"}},required:["action"]},
     async execute(i){ if (!S.farm) return {available:false, reason:"Ask for the farm's coordinates first."}; const p=farmPoint(), a=String(i.action);
       const when=async()=>{ const h=await hourlyFor(p.lat,p.lon); const g=h&&grazingHours(h, i.tomorrow?new Date(Date.parse(gzToday())+864e5).toISOString().slice(0,10):gzToday()); return g?{...g, hours:undefined, sources:[GZ_SRC.thi,GZ_SRC.weather]}:{available:false}; };
       const water=async()=>{ const w=await waterFor(p.lat,p.lon); return w?{...w, sources:[GZ_SRC.water], note:"straight-line km; OSM may miss or list dry/private points"}:{available:false}; };
-      const pasture=()=>{ if ((S.paddocks||[]).length){ const wet=lsWet(lsSeason(thisMonth(), lsZone(S.district))); return {from:"paddocks", ...rankPaddocks(S.paddocks,new Date(),wet)}; } return {from:"land around the farm", sample:true, ...rankPastureCells(samplePastureCells(p.lat,p.lon),p.lat,p.lon,3)}; };
+      const pasture=()=>{ if ((S.paddocks||[]).length){ const wet=lsWet(lsSeason(thisMonth(), lsZone(S.district))); return {from:"paddocks", ...rankPaddocks(S.paddocks,new Date(),wet)}; } return pastureNear(p.lat,p.lon).then(q=>({from:"land around the farm", sample:!q.real, ...(q.r||{choice:null, note:"no clear pasture in the latest images"}), ...(q.real?{images_to:q.idx.latest_image, source:q.idx.source}:{why_sample:q.why})})); };
       mark("graze");
       if (a==="when") return when(); if (a==="water") return water(); if (a==="pasture") return pasture();
-      return {when:await when(), where:pasture(), water:await water()}; }},
+      return {when:await when(), where:await pasture(), water:await water()}; }},
   { name:"markets",
     description:"Cattle markets anywhere in Uganda (SAMPLE data in this demo). action 'nearest' lists the nearest markets to the farm/GPS with market days and recent price ranges; 'compare' ranks all markets for selling one kind of animal, by net money per animal after transport (transport_cost_per_head_per_km, the farmer's own cost) and other costs, or by price if no transport cost is given. Shows a table and returns the numbers.",
     inputSchema:{type:"object",properties:{action:{type:"string",enum:["nearest","compare","milk"]}, litres_per_day:{type:"number"}, transport_cost_per_km:{type:"number"}, animal:{type:"string",description:"bull, local cow, crossbred cow, heifer, calf, goat, sheep"}, head:{type:"number"}, transport_cost_per_head_per_km:{type:"number"}, other_costs_per_head:{type:"number"}, district:{type:"string"}},required:["action"]},
