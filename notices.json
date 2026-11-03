@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-03T13:46Z",
+ "generated_at": "2026-11-03T16:09Z",
  "note": "Titles, dates and links exactly as published by each source. Always open the source and follow your District Veterinary Officer.",
  "kept_previous": false,
  "sources": [
@@ -24,15 +24,15 @@
    "url": "https://www.agriculture.go.ug/feed/?paged=2",
    "ok": true,
    "items_read": 10,
-   "kept": 1,
+   "kept": 0,
    "too_old": 0,
    "undated": 0,
    "untrusted_publisher": 0,
-   "not_animal_health": 6,
+   "not_animal_health": 5,
    "duplicate": 0,
    "untrusted_names": [],
    "newest_seen": "2025-08-21",
-   "older_than_latest": 3
+   "older_than_latest": 5
   },
   {
    "id": "maaif_p3",
@@ -133,17 +133,8 @@
    "id": "maaif_s3",
    "name": "MAAIF (agriculture.go.ug), site search: vaccination",
    "url": "https://www.agriculture.go.ug/?s=vaccination&feed=rss2",
-   "ok": true,
-   "items_read": 10,
-   "kept": 0,
-   "too_old": 0,
-   "undated": 0,
-   "untrusted_publisher": 0,
-   "not_animal_health": 0,
-   "duplicate": 1,
-   "untrusted_names": [],
-   "newest_seen": "2025-10-20",
-   "older_than_latest": 9
+   "ok": false,
+   "error": "TimeoutError: The read operation timed out"
   },
   {
    "id": "maaif_s4",
@@ -165,8 +156,17 @@
    "id": "maaif_s5",
    "name": "MAAIF (agriculture.go.ug), site search: animal disease",
    "url": "https://www.agriculture.go.ug/?s=animal+disease&feed=rss2",
-   "ok": false,
-   "error": "TimeoutError: The read operation timed out"
+   "ok": true,
+   "items_read": 10,
+   "kept": 1,
+   "too_old": 0,
+   "undated": 0,
+   "untrusted_publisher": 0,
+   "not_animal_health": 1,
+   "duplicate": 2,
+   "untrusted_names": [],
+   "newest_seen": "2025-10-20",
+   "older_than_latest": 6
   },
   {
    "id": "moh",
@@ -415,18 +415,17 @@
    "name": "Google News: other animal diseases in Uganda",
    "url": "https://news.google.com/rss/search?q=Uganda+%28anthrax+OR+%22lumpy+skin%22+OR+CBPP+OR+%22East+Coast+Fever%22+OR+%22Rift+Valley+fever%22+OR+%22swine+fever%22+OR+%22bird+flu%22+OR+%22avian+influenza%22+OR+PPR+OR+rabies+OR+trypanosomiasis%29+when%3A90d&hl=en-UG&gl=UG&ceid=UG%3Aen",
    "ok": true,
-   "items_read": 36,
+   "items_read": 34,
    "kept": 7,
    "too_old": 0,
    "undated": 0,
-   "untrusted_publisher": 22,
-   "not_animal_health": 6,
+   "untrusted_publisher": 21,
+   "not_animal_health": 5,
    "duplicate": 1,
    "untrusted_names": [
     "Sifa FM Kenya",
     "The Eastleigh Voice",
     "Addis Standard",
-    "Business Daily",
     "EthiopiaToday",
     "Devdiscourse",
     "IndexBox",
@@ -437,7 +436,8 @@
     "All about feed",
     "3tres3.com",
     "People Daily",
-    "Anadolu Ajansı"
+    "Anadolu Ajansı",
+    "kare11.com"
    ],
    "newest_seen": "2026-11-03"
   },
@@ -450,8 +450,8 @@
    "kept": 2,
    "too_old": 0,
    "undated": 0,
-   "untrusted_publisher": 33,
-   "not_animal_health": 20,
+   "untrusted_publisher": 34,
+   "not_animal_health": 19,
    "duplicate": 11,
    "untrusted_names": [
     "Sifa FM Kenya",
@@ -460,6 +460,7 @@
     "AOL.com",
     "World Vision",
     "GOV.UK blogs",
+    "Contagion Live",
     "Al Jazeera",
     "All about feed",
     "Red Pepper",
@@ -467,8 +468,7 @@
     "SoftPower News",
     "Big News Network.com",
     "BBC",
-    "People Daily",
-    "Anadolu Ajansı"
+    "People Daily"
    ],
    "newest_seen": "2026-11-03"
   },
