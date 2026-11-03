@@ -10,13 +10,17 @@ name: Refresh notices
 #    domain/services/greenness_tiles.py. Needs two repository secrets:
 #    GEE_SERVICE_ACCOUNT_KEY (the Earth Engine service-account JSON key) and GEE_PROJECT.
 #    Without them this step is skipped and the page labels greenness as SAMPLE.
+# 3. Once a day, prepares rain forecasts for a 0.5 degree grid over Uganda in forecasts.json
+#    (NASA POWER history since 1981 + ECMWF seasonal ensemble; no keys), so the page
+#    answers at once. Source: scripts/forecast_grid.py with scripts/prediction_models.py and
+#    scripts/uganda_climate.py, mirrored from DSTUganda domain/services.
 on:
   schedule:
     - cron: "17 */3 * * *"
   workflow_dispatch:
   push:
     branches: [main]
-    paths: ["scripts/notices.py", "scripts/greenness.py", ".github/workflows/notices.yml"]
+    paths: ["scripts/notices.py", "scripts/greenness.py", "scripts/forecast_grid.py", "scripts/prediction_models.py", "scripts/uganda_climate.py", ".github/workflows/notices.yml"]
 
 permissions:
   contents: write
@@ -45,13 +49,19 @@ jobs:
           if [ -z "$GEE_SERVICE_ACCOUNT_KEY" ]; then echo "GEE_SERVICE_ACCOUNT_KEY not set: greenness skipped"; exit 0; fi
           pip install --quiet earthengine-api==1.7.4
           python scripts/greenness.py --out-dir greenness
+      - name: Prepare rain forecasts for Uganda (daily)
+        continue-on-error: true      # never block the notices
+        run: |
+          pip install --quiet httpx==0.28.1
+          cd scripts && python forecast_grid.py --out ../forecasts.json
       - name: Commit if changed
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add notices.json
           if [ -d greenness ]; then git add greenness; fi
+          if [ -f forecasts.json ]; then git add forecasts.json; fi
           if git diff --cached --quiet; then echo "No change"; exit 0; fi
-          git commit -m "Refresh notices and greenness"
+          git commit -m "Refresh notices, greenness and forecasts"
           git pull --rebase origin main
           git push origin HEAD:main
