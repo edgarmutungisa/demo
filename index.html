@@ -241,7 +241,7 @@ footer .wrap{padding-block:18px 84px;font-size:13px;color:var(--mute);display:fl
 <main class="wrap">
   <section class="intro">
     <h2>Try DST Uganda: it tells farmers what is likely next</h2>
-    <p>The DST Uganda pilot serves Isingiro and Kasese districts. You are Sarah, a pastoralist with Ankole-cross cows for milk, who also grows maize and beans. DST Uganda only needs your name and your farm's coordinates (your phone's GPS, typed numbers or a Google Maps link); everything else is worked out from that point. You're chatting on WhatsApp. Your neighbour Okello has a basic phone and uses SMS. DST Uganda is a predictive tool: it forecasts the season, the start of the rains, grass and feed for the herd, disease risk and prices, with a probability and an action. Ask the way farmers really type, including short, half-finished questions.</p>
+    <p>The DST Uganda pilot serves Isingiro and Kasese districts. You are Sarah, a pastoralist with Ankole-cross cows for milk, who also grows maize and beans. DST Uganda only needs your name and your farm's coordinates (your phone's GPS, typed numbers or a Google Maps link); everything else is worked out from that point. DST Uganda is the decision support tool of the Time2Graze project: it tells her when to graze, where the grass is and where to water, as well as what to plan for. You're chatting on WhatsApp. Your neighbour Okello has a basic phone and uses SMS. DST Uganda is a predictive tool: it forecasts the season, the start of the rains, grass and feed for the herd, disease risk and prices, with a probability and an action. Ask the way farmers really type, including short, half-finished questions.</p>
     <p class="ai-mode" id="ai-mode">Smart replies: connecting…</p>
   </section>
 
@@ -685,6 +685,117 @@ function showLive(r){
   tableBubble(`Weather day by day: last 7 days and next 5`, ["Day","Rain mm","Max °C",""], [...r.past.slice(-7), ...r.future.slice(0,5)].map(x=>{ const fut=x.d>r.lv.today; return [x.d.toUTCString().slice(0,11), fut&&x.chance!=null?`${Math.round(x.p||0)} (${x.chance}%)`:String(Math.round(x.p||0)), x.tmax!=null?x.tmax.toFixed(1):"–", fut?"forecast":""]; }), r.lv.real?"live":"sample");
 }
 
+/* ---------- Time2Graze: when to graze, where the grass is, where to water (port of domain/services/grazing.py) ---------- */
+const GZ_DAY=[7,18], THI_MILD=72, THI_MODERATE=79, THI_SEVERE=89, GZ_HEAVY_RAIN=5, GZ_STORM=new Set([95,96,99]);
+const GZ_SRC={thi:"NRC (1971) THI; heat-stress bands: Armstrong (1994), Journal of Dairy Science 77:2044", weather:"Open-Meteo hourly forecast for your coordinates",
+  water:"OpenStreetMap (Overpass API)", pasture:"Sentinel-2 NDVI, ESA WorldCover, WDPA protected areas"};
+const gzThi=(t,rh)=>(1.8*t+32)-(0.55-0.0055*rh)*(1.8*t-26);
+const gzBand=v=> v>=THI_SEVERE?"severe": v>=THI_MODERATE?"moderate": v>=THI_MILD?"mild":"none";
+function gzWindows(hours){ const out=[]; for (const h of [...hours].sort((a,b)=>a-b)){ if (out.length && h===out.at(-1)[1]) out.at(-1)[1]=h+1; else out.push([h,h+1]); } return out; }
+const gzFmt=w=>`${String(w[0]).padStart(2,"0")}:00-${String(w[1]).padStart(2,"0")}:00`;
+function grazingHours(hourly, day){ /* day: "YYYY-MM-DD" local */
+  const rows=[]; (hourly.time||[]).forEach((t,i)=>{ if (t.slice(0,10)!==day) return; const h=+t.slice(11,13); if (h<GZ_DAY[0]||h>=GZ_DAY[1]) return;
+    const temp=hourly.temperature_2m[i], rh=hourly.relative_humidity_2m[i]; if (temp==null||rh==null) return;
+    const v=gzThi(temp,rh); rows.push({hour:h, temp_c:temp, rh_pct:rh, thi:r1(v), heat:gzBand(v), rain_mm:+((hourly.precipitation||[])[i]||0), storm:GZ_STORM.has((hourly.weather_code||[])[i])}); });
+  if (rows.length<6) return null;
+  const good=rows.filter(r=>r.thi<THI_MODERATE && r.rain_mm<GZ_HEAVY_RAIN && !r.storm).map(r=>r.hour), hot=rows.filter(r=>r.thi>=THI_MODERATE).map(r=>r.hour), wet=rows.filter(r=>r.rain_mm>=GZ_HEAVY_RAIN||r.storm).map(r=>r.hour);
+  const peak=rows.reduce((a,b)=>b.thi>a.thi?b:a);
+  return {date:day, graze:gzWindows(good).map(gzFmt), rest_in_shade:gzWindows(hot).map(gzFmt), avoid_rain_or_storm:gzWindows(wet).map(gzFmt), hottest_hour:String(peak.hour).padStart(2,"0")+":00", max_thi:peak.thi, max_heat_stress:peak.heat, hours:rows}; }
+const hourlyCache={};
+async function hourlyFor(lat, lon){ const key=lat.toFixed(3)+","+lon.toFixed(3); if (hourlyCache[key]) return hourlyCache[key];
+  try { const ctl=new AbortController(); const tm=setTimeout(()=>ctl.abort(),20000);
+    const r=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat.toFixed(4)}&longitude=${lon.toFixed(4)}&hourly=temperature_2m,relative_humidity_2m,precipitation,weather_code&forecast_days=2&timezone=Africa%2FKampala`,{signal:ctl.signal}); clearTimeout(tm);
+    if (!r.ok) throw new Error("http "+r.status); const j=await r.json(); if (!j.hourly) throw new Error("no hourly"); return (hourlyCache[key]=j.hourly); } catch(e){ return null; } }
+function gzToday(){ return new Date(Date.now()+3*3600e3).toISOString().slice(0,10); }   /* Kampala date (UTC+3) */
+
+/* water: OpenStreetMap points around the farm, those inside parks marked (same query as grazing.overpass_query) */
+function overpassQuery(lat, lon, radius=5000){ const a=`(around:${radius},${lat.toFixed(6)},${lon.toFixed(6)})`; const dlat=radius/111320, dlon=dlat/Math.max(0.2,Math.cos(lat*Math.PI/180));
+  const bbox=`${(lat-dlat).toFixed(5)},${(lon-dlon).toFixed(5)},${(lat+dlat).toFixed(5)},${(lon+dlon).toFixed(5)}`;
+  return `[out:json][timeout:25];(nwr[natural=water]${a};nwr[waterway~"^(river|stream|canal)$"]${a};nwr[landuse=reservoir]${a};nwr[amenity=drinking_water]${a};nwr[amenity=watering_place]${a};nwr[man_made~"^(water_well|borehole|water_tap|dam)$"]${a};nwr[waterway=dam]${a};)->.w;.w out tags geom(${bbox});(area[boundary=national_park];area[boundary=protected_area];area[leisure=nature_reserve];)->.pa;nwr.w(area.pa);out ids;`; }
+function waterKind(t){ const w=t.waterway, n=t.natural, m=t.man_made;
+  if (w==="river"||w==="canal") return "river"; if (w==="stream") return "stream"; if (m==="water_well"||m==="borehole"||t.pump) return "borehole or well";
+  if (m==="water_tap"||t.amenity==="drinking_water") return "tap"; if (t.amenity==="watering_place") return "livestock watering point";
+  if (t.water==="pond") return "pond";
+  if (m==="dam"||w==="dam"||t.landuse==="reservoir"||["reservoir","basin"].includes(t.water)) return "dam or valley tank";
+  if (n==="water") return t.water==="lake"?"lake":"open water"; return null; }
+function parseOverpass(data, lat, lon){ const els=data.elements||[]; const inside=new Set(els.filter(e=>!e.tags).map(e=>e.type+"/"+e.id)); const out=[];
+  for (const e of els){ if (!e.tags) continue; const kind=waterKind(e.tags);
+    let pts = e.lat!=null ? [[e.lat,e.lon]] : (e.geometry||[]).filter(Boolean).map(g=>[g.lat,g.lon]); for (const m of e.members||[]) pts=pts.concat((m.geometry||[]).filter(Boolean).map(g=>[g.lat,g.lon]));
+    if (!kind || !pts.length) continue; const [plat,plon]=pts.reduce((a,b)=>mkKm(lat,lon,b[0],b[1])<mkKm(lat,lon,a[0],a[1])?b:a);
+    out.push({osm:e.type+"/"+e.id, kind, name:e.tags.name||"", lat:plat, lon:plon, seasonal:e.tags.intermittent==="yes"||(e.tags.seasonal!=null&&e.tags.seasonal!=="no"), in_protected_area:inside.has(e.type+"/"+e.id)}); }
+  return out; }
+const WANT_KINDS={borehole:"borehole or well", well:"borehole or well", tap:"tap", dam:"dam or valley tank", "valley tank":"dam or valley tank", pond:"pond", river:"river", stream:"stream", lake:"lake"};
+function rankWater(points, lat, lon, limit=5, want=null){ const kind=WANT_KINDS[(want||"").toLowerCase()]||null; const rows=points.map(p=>({...p, distance_km:+mkKm(lat,lon,p.lat,p.lon).toFixed(2), unreliable:!!p.seasonal}));
+  const off=r=>kind!==null && r.kind!==kind ? 1 : 0;
+  rows.sort((a,b)=>(a.in_protected_area-b.in_protected_area)||(off(a)-off(b))||(a.unreliable-b.unreliable)||(a.distance_km-b.distance_km));
+  const seen=new Set(), uniq=[]; for (const r of rows){ const k=r.name?r.kind+"|"+r.name:r.osm; if (seen.has(k)) continue; seen.add(k); uniq.push(r); }
+  const choice=uniq.find(r=>!r.in_protected_area&&!r.unreliable&&(kind===null||r.kind===kind))||uniq.find(r=>!r.in_protected_area&&!r.unreliable)||uniq[0]||null; return {choice, points:uniq.slice(0,limit), found:uniq.length, asked_for:kind}; }
+const waterCache={};
+async function waterFor(lat, lon, want=null){ const key=lat.toFixed(4)+","+lon.toFixed(4); if (waterCache[key]) return rankWater(waterCache[key], lat, lon, 5, want);
+  try { const ctl=new AbortController(); const tm=setTimeout(()=>ctl.abort(),30000);
+    const r=await fetch("https://overpass-api.de/api/interpreter",{method:"POST", body:"data="+encodeURIComponent(overpassQuery(lat,lon)), headers:{"Content-Type":"application/x-www-form-urlencoded"}, signal:ctl.signal}); clearTimeout(tm);
+    if (!r.ok) throw new Error("http "+r.status); waterCache[key]=parseOverpass(await r.json(), lat, lon); return rankWater(waterCache[key], lat, lon, 5, want); } catch(e){ return null; } }
+
+/* pasture near the farm: same ranking as grazing.rank_pasture_cells. Cell greenness is SAMPLE in the demo (the real tool reads Sentinel-2 through Earth Engine) */
+function rankPastureCells(cells, lat, lon, maxKm=3){ let rows=cells.filter(c=>c.ndvi!=null).map(c=>({...c, distance_km:+mkKm(lat,lon,c.lat,c.lon).toFixed(2)})).filter(r=>r.distance_km<=maxKm);
+  if (!rows.length) return null; rows.sort((a,b)=>(b.ndvi-a.ndvi)||(a.distance_km-b.distance_km)); const best=rows[0];
+  const near=rows.filter(r=>r.ndvi>=best.ndvi-0.05).reduce((a,b)=>b.distance_km<a.distance_km?b:a); return {choice:best, closer_option:near!==best?near:null, cells:rows.slice(0,6)}; }
+function samplePastureCells(lat, lon){ let seed=Math.abs(Math.round(lat*1e4)*31+Math.round(lon*1e4))%233280; const rnd=()=>(seed=(seed*9301+49297)%233280)/233280; const out=[];
+  const dLat=0.5/111.32, dLon=dLat/Math.cos(lat*Math.PI/180);
+  for (let i=-5;i<=5;i++) for (let j=-5;j<=5;j++){ if (i===0&&j===0) continue; if (rnd()<0.35) continue; out.push({lat:+(lat+i*dLat).toFixed(5), lon:+(lon+j*dLon).toFixed(5), ndvi:+(0.30+rnd()*0.35).toFixed(2), land_cover: rnd()<0.7?"grassland":"shrubland"}); }
+  return out; }
+const compass=(lat,lon,la,lo)=>{ const y=Math.sin((lo-lon)*Math.PI/180)*Math.cos(la*Math.PI/180), x=Math.cos(lat*Math.PI/180)*Math.sin(la*Math.PI/180)-Math.sin(lat*Math.PI/180)*Math.cos(la*Math.PI/180)*Math.cos((lo-lon)*Math.PI/180);
+  const b=(Math.atan2(y,x)*180/Math.PI+360)%360; return ["north","north-east","east","south-east","south","south-west","west","north-west"][Math.round(b/45)%8]; };
+const gmapsDir=(la,lo)=>`https://www.google.com/maps/dir/?api=1&destination=${la.toFixed(5)},${lo.toFixed(5)}`;
+
+async function answerGrazeTime(N, quiet){
+  if (!S.farm) return needFarm(); const p=farmPoint();
+  const h=await withThinking("Checking today's heat at your farm, hour by hour…", ()=>hourlyFor(p.lat,p.lon)); if (!h) return noData("hourly forecast");
+  const tomorrow=/\btomorrow|tmrw\b/.test(N); const day=tomorrow? new Date(Date.parse(gzToday())+864e5).toISOString().slice(0,10) : gzToday();
+  const g=grazingHours(h, day); if (!g) return noData("hourly forecast");
+  remember("graze"); mark("graze"); S.ctx={...(S.ctx||{}), graze:g};
+  tableBubble(`${tomorrow?"Tomorrow":"Today"} at your farm, hour by hour`, ["Hour","°C","Humidity","Heat (THI)","Advice"], g.hours.map(r=>[String(r.hour).padStart(2,"0")+":00", r.temp_c.toFixed(1), r.rh_pct+"%", `${r.thi} ${r.heat==="none"?"":r.heat}`.trim(), r.storm?"storm: keep in":r.rain_mm>=GZ_HEAVY_RAIN?"heavy rain":r.thi>=THI_MODERATE?"shade + water":"graze"]), "live forecast");
+  const main = g.graze.length ? `*Graze ${g.graze.join(" and ")}.*` : "*No safe grazing hours in daylight:* keep the herd near shade and water, and graze at the coolest time with care.";
+  const rest = g.rest_in_shade.length ? ` Rest them in shade with water *${g.rest_in_shade.join(", ")}* (heat index ${g.max_thi} at ${g.hottest_hour}, ${g.max_heat_stress} heat stress).` : ` No heat stress expected (heat index peaks at ${g.max_thi} at ${g.hottest_hour}).`;
+  const wet = g.avoid_rain_or_storm.length ? ` Heavy rain or a storm is forecast *${g.avoid_rain_or_storm.join(", ")}*: bring the herd in before it.` : "";
+  S.lastAnswer=smsFit(`Graze ${g.graze.join(", ")||"with care"}.${g.rest_in_shade.length?` Shade and water ${g.rest_in_shade.join(", ")}.`:""}${wet?` Storm/heavy rain ${g.avoid_rain_or_storm.join(", ")}.`:""}`);
+  if (quiet) return g;
+  return botSay([main+rest+wet, "Why: cattle eat less and lose milk when the heat index (temperature with humidity) reaches 79 or more; Ankole and zebu cope better than Friesian crosses, so this is on the cautious side.", `_Sources: ${GZ_SRC.thi}; ${GZ_SRC.weather}._ Ask _where is water?_ or _where is good grass near me?_`]); }
+
+async function answerWater(N){
+  if (!S.farm) return needFarm(); const p=farmPoint();
+  const want=(N.match(/\b(borehole|well|tap|valley tank|dam|pond|river|stream|lake)s?\b/)||[])[1]||null;
+  const w=await withThinking("Looking for mapped water points around your farm…", ()=>waterFor(p.lat,p.lon,want)); if (!w) return noData("map of water points (OpenStreetMap)");
+  remember("water"); mark("graze");
+  if (!w.found) return botSay(["No water point is mapped within 5 km of your farm in OpenStreetMap. That does not mean there is none: tell your extension officer about the dams, valley tanks and boreholes you use so they can be mapped, and I'll find them for the next herder."]);
+  const c=w.choice, nm=x=>x.name?`${x.name} (${x.kind})`:x.kind, nmS=x=>x.name?`${x.name} (${x.kind})`:`the ${x.kind}`, tag=x=>[x.in_protected_area?"inside a park or reserve":"", x.unreliable?"seasonal":""].filter(Boolean).join(", ");
+  tableBubble("Water near your farm (straight-line)", ["Water","Distance","Direction","Note"], w.points.map(x=>[nm(x), x.distance_km+" km", compass(p.lat,p.lon,x.lat,x.lon), tag(x)||"–"]), "OpenStreetMap");
+  S.lastAnswer=smsFit(`Nearest water: ${nm(c)}, ${c.distance_km} km ${compass(p.lat,p.lon,c.lat,c.lon)}.`);
+  const alt=w.points.filter(x=>x!==c && !x.in_protected_area).slice(0,2);
+  return botSay([{canvas:farmMap({points:w.points.map(x=>({lat:x.lat, lon:x.lon, label:x.name||x.kind, best:x===c}))}), caption:`*Water the herd at ${nmS(c)}*, about ${c.distance_km} km ${compass(p.lat,p.lon,c.lat,c.lon)} of your farm. <a href="${gmapsDir(c.lat,c.lon)}" target="_blank" rel="noopener">Directions</a>`},
+    `${alt.length?`If it is dry or busy: ${alt.map(x=>`${nm(x)}, ${x.distance_km} km`).join("; ")}. `:""}${w.points.some(x=>x.in_protected_area)?"Avoid water inside the park or reserve: contact with buffalo and other wildlife spreads Foot-and-Mouth Disease and tsetse. ":""}Water at midday when it is hottest, and keep the herd off the banks of dams so the water stays clean.`,
+    `_Source: ${GZ_SRC.water}, mapped by volunteers: a point may be missing, dry or private, so ask before using water on someone else's land. The live tool also checks with satellite records (JRC Global Surface Water) how often each dam really holds water._`]); }
+
+async function answerPastureNear(N){
+  if (!S.farm) return needFarm(); if ((S.paddocks||[]).length) return paddockAnswer(); const p=farmPoint();
+  const r=rankPastureCells(samplePastureCells(p.lat,p.lon), p.lat, p.lon, 3); remember("pasture_near"); mark("graze");
+  const c=r.choice, k=r.closer_option;
+  S.lastAnswer=smsFit(`Greenest grass near you (SAMPLE): ${c.distance_km} km ${compass(p.lat,p.lon,c.lat,c.lon)}. Ask the owner first.`);
+  return botSay([{canvas:farmMap({points:r.cells.map(x=>({lat:x.lat, lon:x.lon, label:`${x.ndvi}`, best:x===c}))}), caption:`*Take the herd ${c.distance_km} km ${compass(p.lat,p.lon,c.lat,c.lon)}* to the greenest ${c.land_cover} near your farm (greenness ${c.ndvi}). <a href="${gmapsDir(c.lat,c.lon)}" target="_blank" rel="noopener">Directions</a>`},
+    `${k?`Closer and almost as green: ${k.distance_km} km ${compass(p.lat,p.lon,k.lat,k.lon)} (greenness ${k.ndvi}). `:""}Land outside your farm may be private or communal: agree with the owner or the grazing committee first. Greenness shows where grass is growing, not its feed value. Keep out of national parks and forest reserves.`,
+    "_Greenness here is SAMPLE data. The live tool scans 500 m cells of grass and shrub land within 3 km in this month's Sentinel-2 images (ESA WorldCover land cover, protected areas removed). Got paddocks? Send them and I'll pick the paddock instead._"]); }
+
+async function answerDayPlan(N){
+  if (!S.farm) return needFarm(); const p=farmPoint();
+  const [h,w]=await withThinking("Planning your herd's day: heat, grass and water…", ()=>Promise.all([hourlyFor(p.lat,p.lon), waterFor(p.lat,p.lon)]));
+  const g=h?grazingHours(h, gzToday()):null; const pads=(S.paddocks||[]).length; mark("graze"); remember("graze");
+  let where; if (pads){ const wet=lsWet(lsSeason(thisMonth(), lsZone(S.district))); const rp=rankPaddocks(S.paddocks, new Date(), wet); where=`*Where:* ${rp.best.name} (${rp.reason})`; }
+  else { const r=rankPastureCells(samplePastureCells(p.lat,p.lon), p.lat, p.lon, 3); where=`*Where:* the greenest grass ${r.choice.distance_km} km ${compass(p.lat,p.lon,r.choice.lat,r.choice.lon)} of your farm (SAMPLE greenness; agree with the land owner first)`; }
+  const when = g ? `*When:* graze ${g.graze.join(" and ")||"only with care"}${g.rest_in_shade.length?`; shade and water ${g.rest_in_shade.join(", ")}`:""}${g.avoid_rain_or_storm.length?`; storm or heavy rain ${g.avoid_rain_or_storm.join(", ")}`:""}.` : "*When:* the hourly forecast could not be reached, so I won't guess the hours.";
+  const water = w && w.found ? `*Water:* ${w.choice.name?w.choice.name+" ("+w.choice.kind+")":"the "+w.choice.kind}, ${w.choice.distance_km} km ${compass(p.lat,p.lon,w.choice.lat,w.choice.lon)}.` : w ? "*Water:* none mapped within 5 km in OpenStreetMap; use your usual source and tell the extension officer so it can be mapped." : "*Water:* the water map could not be reached.";
+  S.lastAnswer=smsFit(`${when.replace(/\*/g,"")} ${water.replace(/\*/g,"")}`);
+  return botSay([`*Today's grazing plan for ${S.farm.name||"your farm"}*`, when, where+".", water, `_Sources: ${GZ_SRC.weather}; ${GZ_SRC.thi}; ${GZ_SRC.water}. Ask _when should I graze?_, _where is water?_ or _where is good grass near me?_ for details._`]); }
+
 /* ---------- PREDICTION ENGINE (demo port of domain/services/prediction/models.py) ----------
    Real 51-member ECMWF seasonal ensemble from Open-Meteo where reachable; labelled sample otherwise. */
 const qInc=(arr,p)=>{ const s=[...arr].sort((a,b)=>a-b), i=(s.length-1)*p, lo=Math.floor(i); return s[lo]+(s[Math.min(lo+1,s.length-1)]-s[lo])*(i-lo); };
@@ -883,6 +994,7 @@ const STEPS = [
   {id:"post", t:"Post to the group", d:"Your message reaches WhatsApp and SMS members.", tries:["tell the group milk truck 7am tmrw","text okello to bring his cans"]},
   {id:"herd", t:"Herd health, grass and breed", d:"Diseases by season, the acaricide, the best grass and the best breed for your farm.", tries:["diseases to expect next month?","which acaricide should I use?","which grass is best for my farm?","which breed should I keep?"]},
   {id:"paddock", t:"Which paddock to graze", d:"Add paddocks, then get the greenest rested paddock for your cows.", tries:["add sample paddocks","which paddock should I put my cows in?","I moved the cows to paddock B","which paddock now?"]},
+  {id:"graze", t:"Time2Graze: when, where, water", d:"Today's grazing hours from the heat at your farm, the greenest grass nearby and the nearest water.", tries:["when should I graze today?","where is water for my cows?","where is good grass near me?","plan my day"]},
   {id:"market", t:"Sell at the best profit", d:"Nearest market, prices across Uganda, and profit after transport.", tries:["nearest cattle market?","where will i get the best price for 4 bulls?","3000 per bull per km"]},
   {id:"farmdata", t:"Your farm's weather history since 1981", d:"Rain and heat history, grass versus normal, and your soil.", tries:["is this year drier than normal?","when do the long rains usually start here?","how is my grass compared to normal?","what soil do i have?"]},
   {id:"live", t:"Live weather and alerts", d:"Today's weather, day by day, and whether the season has really started.", tries:["weather now?","has the season really started?","send me weather alerts"]},
@@ -1050,6 +1162,9 @@ function farmMap(opts={}){
       L.circle([p.lat,p.lon],{radius:p.radius, color:isBest?"#ffffff":"#d4d4d4", weight:isBest?4:2, dashArray:isBest?null:"5 5", fill:false, interactive:false}).addTo(map)
         .bindTooltip(p.name,{permanent:true, direction:"center", className:"ptip"+(isBest?" best":"")}); }
     if (pads.length){ const b=L.latLngBounds(pads.map(p=>[p.lat,p.lon])).extend([lat,lon]); map.fitBounds(b.pad(0.6),{maxZoom:17}); }
+    const pts=opts.points||[]; for (const p of pts){ L.circleMarker([p.lat,p.lon],{radius:p.best?8:6, color:"#ffffff", weight:p.best?3:2, fillColor:p.best?"#0A0A0A":"#5a5a5a", fillOpacity:1, interactive:false}).addTo(map)
+        .bindTooltip(p.label,{permanent:!!p.best||pts.length<=4, direction:"top", className:"ptip"+(p.best?" best":"")}); }
+    if (pts.length){ const b=L.latLngBounds(pts.map(p=>[p.lat,p.lon])).extend([lat,lon]); map.fitBounds(b.pad(0.25),{maxZoom:16}); }
     setTimeout(()=>map.invalidateSize(),60);
   } catch(e){ fallback("The satellite map could not start here. The Google Maps links still show the real place."); } }))
   .catch(()=>fallback("The satellite map could not load (no internet, or blocked here). The Google Maps links still show the real place."));
@@ -1212,7 +1327,7 @@ const SHORTHAND = {u:"you",ur:"your",r:"are",pls:"please",plz:"please",tmrw:"tom
   feb:"february",jan:"january",dec:"december",nov:"november",mar:"march",apr:"april",
   raining:"rain",rains:"rain",rainy:"rain",rainfall:"rain",showers:"rain",drought:"dry season",dryspell:"dry spell",
   grasses:"grass",pasture:"pasture",pastures:"pasture",milking:"milk",fodders:"fodder"};
-const VOCAB = ("next then than this that same also just only like what when where which with about from have will week today tomorrow month year many much more most best last soon here there them they your rain rainfall forecast season weather dry wet month january february march april november december temperature hot cold heat "+
+const VOCAB = ("plan plans planning graze grazing grazed water watering borehole boreholes valley tank tanks dam dams heat hot shade pond ponds river stream next then than this that same also just only like what when where which with about from have will week today tomorrow month year many much more most best last soon here there them they your rain rainfall forecast season weather dry wet month january february march april november december temperature hot cold heat "+
   "cows cattle carry capacity stocking many animals herd weight graze grazing overgrazing paddock paddocks rotate rotation moved sample greenest "+
   "breed breeds friesian ankole zebu boran sahiwal jersey crossbreed crosses brachiaria mulato rhodes napier buffel lablab desmodium "+
   "biomass grass pasture trend worse better declining improving history satellite image picture photo map show farm report pdf "+
@@ -1492,6 +1607,10 @@ async function smartMain(t, N){
   /* scored intents */
   const intents = [
     {id:"compare", w:[["best price",6],["best profit",7],["most money",6],["compare",5],["where should i sell",7],["where to sell",5],["profit",5],["worth",2],["highest price",6]]},
+    {id:"graze_time", w:[["when should i graze",12],["when to graze",12],["what time should i graze",12],["what time to graze",12],["time to graze",11],["graze today",9],["too hot",7],["heat stress",8],["hot for my cows",9],["hot for the cows",9],["what time",3],["graze tomorrow",10]]},
+    {id:"day_plan", w:[["plan my day",12],["grazing plan",12],["plan for today",10],["today's plan",10],["plan the day",11],["daily plan",10],["plan for my herd",10]]},
+    {id:"water", w:[["where is water",12],["where can i find water",12],["find water",11],["water near",11],["nearest water",12],["water for my cows",11],["water for the cows",11],["water for my cattle",11],["drinking water",8],["water point",10],["water points",10],["valley tank",10],["valley dam",10],["borehole",9],["nearest dam",11],["watering",7],["water the cows",10],["water my cows",10]]},
+    {id:"pasture_near", w:[["good grass near",12],["pasture near",12],["grass near",11],["where is pasture",12],["where is grass",11],["where is good grass",12],["find pasture",11],["find grass",11],["greener grass",9],["green grass",7],["where can i graze",12],["where to graze",8],["where should i graze",8],["pasture around",10]]},
     {id:"milk_market", w:[["milk market",10],["milk markets",10],["sell my milk",10],["sell milk",9],["selling milk",9],["buy my milk",10],["buys milk",9],["milk buyer",9],["milk buyers",9],["milk collection",9],["collection centre",8],["collection center",8],["milk centre",9],["milk center",9],["dairy cooperative",8],["milk cooperative",9],["milk price",9],["price of milk",9],["milk prices",9]]},
     {id:"market", w:[["where can i sell",7],["where do i sell",7],["sell my cow",8],["sell my cows",8],["sell my bull",8],["sell my bulls",8],["sell my cattle",8],["sell my goats",8],["sell cattle",7],["selling cattle",7],["who buys",6],["cattle buyers",7],["livestock market",7],["cattle market",7],["market",4],["markets",4],["market day",6],["sell",2],["buy",1],["going for",5],["cow prices",6],["bull price",6],["price of a",4],["how much is a",4],["auction",4]]},
     {id:"diseases", w:[["diseases",4],["disease",4],["sick",2],["sickness",3],["illness",3],["expect",1],["outbreak",3],["vaccinate",3],["vaccine",3],["vaccination",3]]},
@@ -1767,6 +1886,10 @@ async function answerIntent(id, N, t){
   switch(id){
     case "market": return answerMarket(N);
     case "milk_market": return answerMilk(N);
+    case "graze_time": return answerGrazeTime(N);
+    case "day_plan": return answerDayPlan(N);
+    case "water": return answerWater(N);
+    case "pasture_near": return answerPastureNear(N);
     case "compare": return answerCompare(N);
     case "diseases": {
       const dist = districtIn(N) || S.district; const m = monthIn(N) ?? (/\b(then|that month|same month)\b/.test(N) && S.ctx?.month!=null ? S.ctx.month : null); const month = m!==null ? m+1 : thisMonth(); S.ctx={...(S.ctx||{}), month:month-1};
@@ -1897,6 +2020,8 @@ function smsAssistant(text){
     set("rain"); return "__RAIN__:"+(mi+1);
   }
   if (has(N,"store","hay","fodder","feed","silage") && (c.last==="rain" || has(N,"dry","season","should"))){ set("dryfeed"); return "__DRYFEED__"; }
+  if (has(N,"graze","grazing","too hot","heat")){ set("graze"); return "__GRAZE__"; }
+  if (has(N,"water","borehole","valley tank","dam")){ set("water"); return "__WATER__:"+((N.match(/\b(borehole|tap|valley tank|dam|pond|river|stream|lake)s?\b/)||[])[1]||""); }
   if (has(N,"rain","forecast","weather","season")){ set("rain"); return "__RAIN__:"; }
   if (has(N,"map","image","pdf","report","photo","picture","satellite")) return "Maps, photos and PDF reports are on WhatsApp only. By SMS I answer short questions on rain, cattle, pasture and groups.";
   const dz=lsDiseaseIn(N);
@@ -1921,6 +2046,9 @@ async function smsResolve(reply){
   if (typeof reply!=="string" || !reply.startsWith("__")) return reply;
   if (!S.okLoc) return "Send your farm's coordinates first, e.g. -0.84331 30.80194. Then I answer for your exact farm.";
   const pt={lat:S.okLoc.lat, lon:S.okLoc.lon};
+  if (reply==="__GRAZE__"){ const h=await hourlyFor(pt.lat,pt.lon), g=h&&grazingHours(h,gzToday()); return g ? smsFit(`Today: graze ${g.graze.join(", ")||"with care"}.${g.rest_in_shade.length?` Shade and water ${g.rest_in_shade.join(", ")} (heat index ${g.max_thi}).`:""}${g.avoid_rain_or_storm.length?` Storm/heavy rain ${g.avoid_rain_or_storm.join(", ")}: bring cattle in.`:""}`) : "I could not reach today's hourly forecast for your farm. Try again later."; }
+  if (reply.startsWith("__WATER__")){ const w=await waterFor(pt.lat,pt.lon,reply.split(":")[1]||null); if (!w) return "I could not reach the water map right now. Try again later."; if (!w.found) return "No water point is mapped within 5 km of your farm. Tell your extension officer about the ones you use so they can be added.";
+    const nm=x=>x.name?`${x.name} (${x.kind})`:x.kind, alt=w.points.find(x=>x!==w.choice&&!x.in_protected_area); return smsFit(`Nearest water: ${nm(w.choice)}, ${w.choice.distance_km} km ${compass(pt.lat,pt.lon,w.choice.lat,w.choice.lon)}.${alt?` Also ${nm(alt)}, ${alt.distance_km} km.`:""} Ask before using private water.`); }
   if (reply==="__DRYFEED__"){ const a=await dryFeedAnswer(pt); return a ? smsFit(a.replace(/ Tell me how many animals.*$/,"")) : "I could not reach your farm's rainfall records right now. Try again later."; }
   const r=await predictAll(pt); if (r.unavailable) return "I could not reach the forecast for your farm right now, and I won't guess. Try again later.";
   const want=+reply.split(":")[1]||null; const ms=r.outlook.months; const om= want ? ms.find(x=>+x.month.split("-")[1]===want) : ms[0];
@@ -2182,6 +2310,16 @@ const TOOLS = [
       if (k==="pasture_condition"){ mark("fd_ndvi"); checkFarmData(); return samplePasture(); }
       const p=farmPoint(); const c=await climateFor(p.lat,p.lon); if (!c.real) return {available:false, reason:"This farm's rainfall and temperature records could not be reached; say so."}; showClimate(c); mark("fd_clim"); checkFarmData(); return c;
     }},
+  { name:"grazing",
+    description:"Time2Graze guidance for the registered farm. action 'when': grazing and shade hours today or tomorrow from the REAL hourly forecast (Temperature-Humidity Index; graze when THI < 79, no storm). 'water': nearest REAL OpenStreetMap water points (rivers, dams, valley tanks, boreholes, taps), parks and seasonal ones last. 'pasture': greenest grass/shrub land within 3 km (SAMPLE greenness in the demo) or the best paddock if paddocks exist. 'plan': all three. Lead with the decision; say land outside the farm needs the owner's agreement. available:false = say so, never guess.",
+    inputSchema:{type:"object",properties:{action:{type:"string",enum:["when","water","pasture","plan"]}, tomorrow:{type:"boolean"}},required:["action"]},
+    async execute(i){ if (!S.farm) return {available:false, reason:"Ask for the farm's coordinates first."}; const p=farmPoint(), a=String(i.action);
+      const when=async()=>{ const h=await hourlyFor(p.lat,p.lon); const g=h&&grazingHours(h, i.tomorrow?new Date(Date.parse(gzToday())+864e5).toISOString().slice(0,10):gzToday()); return g?{...g, hours:undefined, sources:[GZ_SRC.thi,GZ_SRC.weather]}:{available:false}; };
+      const water=async()=>{ const w=await waterFor(p.lat,p.lon); return w?{...w, sources:[GZ_SRC.water], note:"straight-line km; OSM may miss or list dry/private points"}:{available:false}; };
+      const pasture=()=>{ if ((S.paddocks||[]).length){ const wet=lsWet(lsSeason(thisMonth(), lsZone(S.district))); return {from:"paddocks", ...rankPaddocks(S.paddocks,new Date(),wet)}; } return {from:"land around the farm", sample:true, ...rankPastureCells(samplePastureCells(p.lat,p.lon),p.lat,p.lon,3)}; };
+      mark("graze");
+      if (a==="when") return when(); if (a==="water") return water(); if (a==="pasture") return pasture();
+      return {when:await when(), where:pasture(), water:await water()}; }},
   { name:"markets",
     description:"Cattle markets anywhere in Uganda (SAMPLE data in this demo). action 'nearest' lists the nearest markets to the farm/GPS with market days and recent price ranges; 'compare' ranks all markets for selling one kind of animal, by net money per animal after transport (transport_cost_per_head_per_km, the farmer's own cost) and other costs, or by price if no transport cost is given. Shows a table and returns the numbers.",
     inputSchema:{type:"object",properties:{action:{type:"string",enum:["nearest","compare","milk"]}, litres_per_day:{type:"number"}, transport_cost_per_km:{type:"number"}, animal:{type:"string",description:"bull, local cow, crossbred cow, heifer, calf, goat, sheep"}, head:{type:"number"}, transport_cost_per_head_per_km:{type:"number"}, other_costs_per_head:{type:"number"}, district:{type:"string"}},required:["action"]},
