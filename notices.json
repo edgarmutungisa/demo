@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-04T19:17Z",
+ "generated_at": "2026-11-04T22:02Z",
  "note": "Titles, dates and links exactly as published by each source. Always open the source and follow your District Veterinary Officer.",
  "kept_previous": false,
  "sources": [
@@ -446,11 +446,11 @@
    "url": "https://news.google.com/rss/search?q=Uganda+%28livestock+OR+cattle+OR+animals%29+%28quarantine+OR+vaccination+OR+%22movement+ban%22+OR+outbreak+OR+MAAIF%29+when%3A90d&hl=en-UG&gl=UG&ceid=UG%3Aen",
    "ok": true,
    "items_read": 24,
-   "kept": 3,
+   "kept": 4,
    "too_old": 0,
    "undated": 0,
    "untrusted_publisher": 11,
-   "not_animal_health": 8,
+   "not_animal_health": 7,
    "duplicate": 2,
    "untrusted_names": [
     "NICD",
@@ -465,7 +465,7 @@
     "Internazionale",
     "Outbreak News Today"
    ],
-   "newest_seen": "2026-11-04"
+   "newest_seen": "2026-11-03"
   },
   {
    "id": "allafrica",
@@ -484,6 +484,19 @@
   }
  ],
  "notices": [
+  {
+   "id": "9c91fae23bb2",
+   "title": "Agric. & Environment: Leaders rally Kyankwanzi farmers as FMD vaccination coverage lags at 20%",
+   "url": "https://news.google.com/rss/articles/CBMisAFBVV95cUxObXg3dzRFYTlkVFMydkZIX1FEWEg3c2FMUHBEWG56OGtWSGdPdFJBdk1INVZsZzVSU1M1ZXVQN1czTnNNSUZpZkpSUnA5VjgtWVJGbnNzYjJaTlZWck03cU9sWGhKc3RZTThPRUlsU2RzaVhsVzRiQ0NuOHl2NUJiY21kRDVmdUstZm9hRjV2b3d4b2VIZklkYjh5bjJKQTZNV3MyNVBqTldNWWYzQUNiaQ?oc=5",
+   "published": "2026-11-03T05:26Z",
+   "source": "Google News: livestock quarantines and vaccination in Uganda",
+   "source_kind": "news",
+   "publisher": "NewVision.co.ug",
+   "category": "vaccination",
+   "districts": [
+    "Kyankwanzi"
+   ]
+  },
   {
    "id": "e13fa6ae93a7",
    "title": "Nakasongola Farmers Raise Alarm Over FMD Vaccine, Demand Government Explanation",
