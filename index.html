@@ -1026,7 +1026,7 @@ function nearestDistrict(lat, lon){
 }
 const inUganda = (lat,lon) => lat>-1.6 && lat<4.4 && lon>29.4 && lon<35.2;
 /* Real district and nearest place name from OpenStreetMap (Nominatim reverse geocoding).
-   Falls back to the nearest district town above when offline or blocked (for example inside the Claude viewer). */
+   Falls back to the nearest district town above when offline or blocked (for example inside the hosted viewer). */
 const placeCache={};
 async function placeInfo(lat, lon){
   const key=lat.toFixed(4)+","+lon.toFixed(4); if (placeCache[key]) return placeCache[key];
@@ -1064,7 +1064,7 @@ async function useRealLocation(viaAI){
   let g;
   try { g = await readGps(); }
   catch (e) {
-    const why = e.code==="denied" ? "Location permission was refused or is blocked here. Inside the Claude viewer, pages cannot read your location; open the demo from the repo or a website to use real GPS."
+    const why = e.code==="denied" ? "Location permission was refused or is blocked here. Inside the hosted viewer, pages cannot read your location; open the demo from the repo or a website to use real GPS."
       : e.code==="timeout" ? "Your device took too long to find a GPS fix. Try again outdoors."
       : "This browser cannot provide a location.";
     addBubble("sys", esc(why));
@@ -1140,7 +1140,7 @@ function addBubble(kind, html, extra){
 }
 /* ---------- languages: English, Runyankore (nyn), Rukonzo / Lhukonzo (koo) ----------
    DRAFT translations, not yet checked by native speakers: every translated reply is labelled "draft".
-   Numbers, dates, units, product and place names are kept as they are. On the Claude copy, Claude
+   Numbers, dates, units, product and place names are kept as they are. On the hosted copy, the AI
    writes every reply in the chosen language; on the public link the fixed answer lines below are used
    and supporting lines stay in English. */
 const LANGS={en:"English", nyn:"Runyankore", koo:"Rukonzo"};
@@ -1204,7 +1204,7 @@ function trLine(x){ const lg=S.lang; if (!lg || lg==="en" || typeof x!=="string"
   const plain=x.replace(/\*/g,"");
   for (const l of LEADS){ const m=plain.match(l.re); if (m && l[lg]) return {text:l[lg](m), done:true}; } return {text:x, done:false}; }
 const DRAFT_HTML=()=>` <span class="draft" title="${esc(lt("draft"))}">· ${lt("draftTag")}</span>`;
-/* Claude copy: translate any fixed reply that has no drafted line (one call per reply, keeps numbers) */
+/* hosted copy: translate any fixed reply that has no drafted line (one call per reply, keeps numbers) */
 async function aiTranslate(parts){ if (aiState!=="on" || !sampleFn || !S.lang || S.lang==="en") return null;
   const txt=parts.map((p,i)=>`[${i}] ${typeof p==="string"?p:(p.caption||"")}`).join("\n");
   try { const {text}=await sampleFn([{role:"user", content:`Translate each numbered line into ${LANGS[S.lang]} for a cattle keeper in Uganda. Plain, simple words. Keep the numbering [n], every number, date, unit (mm, km, °C, %, UGX), time, product name, place name, link and the *asterisks* exactly as they are. Reply with the numbered lines only.\n\n${txt}`}], {modelTier:"quick"});
@@ -1338,7 +1338,7 @@ function farmMap(opts={}){
     const map=L.map(m,{scrollWheelZoom:false, attributionControl:false}).setView([lat,lon],z);
     L.control.attribution({prefix:false}).addAttribution("Powered by Esri · Imagery: Esri, Maxar, Earthstar Geographics").addTo(map);
     const t=L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",{maxZoom:19, maxNativeZoom:19}).addTo(map);
-    let ok=0, bad=0; t.on("tileload",()=>{ if (!ok++){ if (slow){ slow.remove(); slow=null; } const n=document.createElement("small"); n.textContent=IMAGERY_NOTE; box.appendChild(n); } }); t.on("tileerror",()=>{ bad++; if (!ok && bad>=4) fallback("Satellite imagery is blocked here (for example inside the Claude viewer). The Google Maps links still show the real place."); });
+    let ok=0, bad=0; t.on("tileload",()=>{ if (!ok++){ if (slow){ slow.remove(); slow=null; } const n=document.createElement("small"); n.textContent=IMAGERY_NOTE; box.appendChild(n); } }); t.on("tileerror",()=>{ bad++; if (!ok && bad>=4) fallback("Satellite imagery is blocked here (for example inside the hosted viewer). The Google Maps links still show the real place."); });
     /* slow connection: say so after 10 s but keep waiting; give up only after 60 s */
     setTimeout(()=>{ if (!ok && !box.dataset.fb){ slow=document.createElement("small"); slow.textContent="Loading the satellite photo… this can take a minute on a slow connection."; box.insertBefore(slow,links); } },10000);
     setTimeout(()=>{ if (!ok) fallback("Satellite imagery did not load (no internet, or blocked here). The Google Maps links still show the real place."); },60000);
@@ -2335,7 +2335,7 @@ function renderQuick(){
   for (const o of opts){ const b=document.createElement("button"); b.type="button"; b.className="chip"; b.textContent=o; b.addEventListener("click",()=>send(o)); q.appendChild(b); }
 }
 
-/* ---------- AI brain: Claude, on the viewer's own Claude account ---------- */
+/* ---------- AI brain: the hosted copy's AI, on the viewer's own account ---------- */
 let sampleFn = null, aiState = "pending";           // pending | on | off
 const AI = { turns: [], okTurns: [] };
 const AI_OFF_CODES = ["not_granted","sampling_disabled","not_declared","capability_disabled","capability_removed","tools_unavailable"];
@@ -2343,9 +2343,9 @@ function statusIdle(){ $("status").textContent = aiState==="on" ? "online · sma
 function renderAiMode(){
   statusIdle();
   const el=$("ai-mode"); if(!el) return;
-  el.textContent = aiState==="on" ? "Smart replies: on. Claude reads each message, using your Claude account."
+  el.textContent = aiState==="on" ? "Smart replies: on. The AI reads each message, using your own account."
     : aiState==="pending" ? "Smart replies: connecting…"
-    : "Smart replies: off in this view. Open the demo in Claude to turn them on; simple replies are used meanwhile.";
+    : "Smart replies: off in this view. Open the hosted copy to turn them on; simple replies are used meanwhile.";
 }
 (async () => {
   try {
@@ -2627,7 +2627,7 @@ async function aiAssistant(userText){
   }
 }
 
-/* the basic phone's free-text SMS, answered by Claude when available */
+/* the basic phone's free-text SMS, answered by the AI when available */
 const SMS_RULES = `You are DST Uganda (WWF Uganda) answering a farmer by SMS on a basic phone in Uganda. Demo with sample data. The farmer's farm is only known from the coordinates they sent (in the STATE as farm_location); never assume a district or place.
 Reply in plain text only, at most 300 characters, no emojis, no markdown. Answer every question directly and correctly in context, whatever its topic; understand short or half-finished messages from the conversation. If live data is needed (market prices, news), say so briefly and still give concrete guidance. For rain or season questions call area_rain_outlook and use only its numbers. Give practical, specific advice; refer animal health or chemical questions to a vet or extension officer. Maps, photos and PDF reports are only on WhatsApp. Group commands: JOIN code, POST code message, LEAVE code, GROUPS, STOP, HELP.`;
 const SMS_TOOLS=[{name:"area_rain_outlook", description:"The rain outlook for the farmer's own coordinates (real ECMWF forecast judged against the farm's own rainfall records): chance of drier/normal/wetter per month and when the rains will likely start. Needs the farm's coordinates.",
@@ -2642,7 +2642,7 @@ async function smsAI(text){
   } catch(e){ AI.okTurns.pop(); if (AI_OFF_CODES.includes(e && e.code)) { aiState="off"; renderAiMode(); } return null; }
 }
 
-/* ---------- feedback: shared suggestion box inside Claude (db), copy-to-send elsewhere ---------- */
+/* ---------- feedback: shared suggestion box in the hosted copy (db), copy-to-send elsewhere ---------- */
 const FB = { db:null, user:null, uid:null, owner:false, canWrite:false, votes:[], rating:0, sent:0 };
 (async () => {
   try {
