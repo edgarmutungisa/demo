@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-05T10:22Z",
+ "generated_at": "2026-11-05T13:31Z",
  "note": "Titles, dates and links exactly as published by each source. Always open the source and follow your District Veterinary Officer.",
  "kept_previous": false,
  "sources": [
@@ -385,14 +385,14 @@
    "url": "https://www.mediacentre.go.ug/feed/",
    "ok": true,
    "items_read": 40,
-   "kept": 0,
+   "kept": 1,
    "too_old": 0,
    "undated": 0,
    "untrusted_publisher": 0,
-   "not_animal_health": 40,
+   "not_animal_health": 39,
    "duplicate": 0,
    "untrusted_names": [],
-   "newest_seen": "2026-11-03"
+   "newest_seen": "2026-11-04"
   },
   {
    "id": "gnews_fmd",
@@ -422,15 +422,16 @@
    "kept": 8,
    "too_old": 0,
    "undated": 0,
-   "untrusted_publisher": 12,
-   "not_animal_health": 5,
+   "untrusted_publisher": 13,
+   "not_animal_health": 4,
    "duplicate": 0,
    "untrusted_names": [
+    "Addis Standard",
     "The Eastleigh Voice",
+    "EthiopiaToday",
     "Food and Agriculture Organization",
     "IndexBox",
     "ReliefWeb",
-    "Free Press Journal",
     "Health Policy Watch",
     "Anadolu Ajansı",
     "3tres3.com",
@@ -447,26 +448,24 @@
    "kept": 2,
    "too_old": 0,
    "undated": 0,
-   "untrusted_publisher": 14,
-   "not_animal_health": 6,
+   "untrusted_publisher": 12,
+   "not_animal_health": 8,
    "duplicate": 2,
    "untrusted_names": [
     "Centers for Disease Control and Prevention | CDC (.gov)",
     "NICD",
     "GOV.UK blogs",
-    "National Geographic",
     "BBC",
     "Barbados Today",
     "CABI Digital Library",
     "PBS",
     "Global Biodefense",
     "Al Jazeera",
-    "TRT Afrika",
     "thecitizen.co.tz",
     "Internazionale",
     "Outbreak News Today"
    ],
-   "newest_seen": "2026-11-04"
+   "newest_seen": "2026-11-05"
   },
   {
    "id": "allafrica",
@@ -485,6 +484,18 @@
   }
  ],
  "notices": [
+  {
+   "id": "28ac753df1fa",
+   "title": "UPDF returns from Somalia; Semujju won’t Eat his Chicken",
+   "url": "https://www.mediacentre.go.ug/press-room/updf-returns-from-somalia-semujju-wont-eat-his-chicken",
+   "published": "2026-11-04T21:00Z",
+   "source": "Uganda Media Centre (mediacentre.go.ug)",
+   "source_kind": "official",
+   "publisher": "Uganda Media Centre",
+   "body": "Uganda Media Centre",
+   "category": "livestock",
+   "districts": []
+  },
   {
    "id": "e13fa6ae93a7",
    "title": "Nakasongola Farmers Raise Alarm Over FMD Vaccine, Demand Government Explanation",
