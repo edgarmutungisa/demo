@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-05T16:22Z",
+ "generated_at": "2026-11-05T19:15Z",
  "note": "Titles, dates and links exactly as published by each source. Always open the source and follow your District Veterinary Officer.",
  "kept_previous": false,
  "sources": [
@@ -293,8 +293,16 @@
    "id": "naro",
    "name": "NARO (naro.go.ug)",
    "url": "https://www.naro.go.ug/feed/",
-   "ok": false,
-   "error": "HTTPError: HTTP Error 500: Internal Server Error"
+   "ok": true,
+   "items_read": 10,
+   "kept": 0,
+   "too_old": 0,
+   "undated": 0,
+   "untrusted_publisher": 0,
+   "not_animal_health": 10,
+   "duplicate": 0,
+   "untrusted_names": [],
+   "newest_seen": "2026-11-05"
   },
   {
    "id": "naro_s0",
@@ -436,12 +444,12 @@
    "name": "Google News: livestock quarantines and vaccination in Uganda",
    "url": "https://news.google.com/rss/search?q=Uganda+%28livestock+OR+cattle+OR+animals%29+%28quarantine+OR+vaccination+OR+%22movement+ban%22+OR+outbreak+OR+MAAIF%29+when%3A90d&hl=en-UG&gl=UG&ceid=UG%3Aen",
    "ok": true,
-   "items_read": 23,
+   "items_read": 25,
    "kept": 2,
    "too_old": 0,
    "undated": 0,
-   "untrusted_publisher": 12,
-   "not_animal_health": 7,
+   "untrusted_publisher": 13,
+   "not_animal_health": 8,
    "duplicate": 2,
    "untrusted_names": [
     "Centers for Disease Control and Prevention | CDC (.gov)",
@@ -455,6 +463,7 @@
     "Al Jazeera",
     "thecitizen.co.tz",
     "Internazionale",
+    "Nature",
     "Outbreak News Today"
    ],
    "newest_seen": "2026-11-05"
