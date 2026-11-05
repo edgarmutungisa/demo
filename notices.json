@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-04T22:02Z",
+ "generated_at": "2026-11-05T01:27Z",
  "note": "Titles, dates and links exactly as published by each source. Always open the source and follow your District Veterinary Officer.",
  "kept_previous": false,
  "sources": [
@@ -225,21 +225,21 @@
    "name": "Dairy Development Authority (dda.go.ug)",
    "url": "https://www.dda.go.ug/feed/",
    "ok": false,
-   "error": "URLError: <urlopen error timed out>"
+   "error": "URLError: <urlopen error [Errno -3] Temporary failure in name resolution>"
   },
   {
    "id": "dda_s0",
    "name": "Dairy Development Authority (dda.go.ug), site search: milk",
    "url": "https://www.dda.go.ug/?s=milk&feed=rss2",
    "ok": false,
-   "error": "URLError: <urlopen error timed out>"
+   "error": "URLError: <urlopen error [Errno -3] Temporary failure in name resolution>"
   },
   {
    "id": "dda_s1",
    "name": "Dairy Development Authority (dda.go.ug), site search: dairy",
    "url": "https://www.dda.go.ug/?s=dairy&feed=rss2",
    "ok": false,
-   "error": "URLError: <urlopen error timed out>"
+   "error": "URLError: <urlopen error [Errno -3] Temporary failure in name resolution>"
   },
   {
    "id": "nagrc",
@@ -446,11 +446,11 @@
    "url": "https://news.google.com/rss/search?q=Uganda+%28livestock+OR+cattle+OR+animals%29+%28quarantine+OR+vaccination+OR+%22movement+ban%22+OR+outbreak+OR+MAAIF%29+when%3A90d&hl=en-UG&gl=UG&ceid=UG%3Aen",
    "ok": true,
    "items_read": 24,
-   "kept": 4,
+   "kept": 3,
    "too_old": 0,
    "undated": 0,
    "untrusted_publisher": 11,
-   "not_animal_health": 7,
+   "not_animal_health": 8,
    "duplicate": 2,
    "untrusted_names": [
     "NICD",
@@ -465,7 +465,7 @@
     "Internazionale",
     "Outbreak News Today"
    ],
-   "newest_seen": "2026-11-03"
+   "newest_seen": "2026-11-04"
   },
   {
    "id": "allafrica",
@@ -484,19 +484,6 @@
   }
  ],
  "notices": [
-  {
-   "id": "9c91fae23bb2",
-   "title": "Agric. & Environment: Leaders rally Kyankwanzi farmers as FMD vaccination coverage lags at 20%",
-   "url": "https://news.google.com/rss/articles/CBMisAFBVV95cUxObXg3dzRFYTlkVFMydkZIX1FEWEg3c2FMUHBEWG56OGtWSGdPdFJBdk1INVZsZzVSU1M1ZXVQN1czTnNNSUZpZkpSUnA5VjgtWVJGbnNzYjJaTlZWck03cU9sWGhKc3RZTThPRUlsU2RzaVhsVzRiQ0NuOHl2NUJiY21kRDVmdUstZm9hRjV2b3d4b2VIZklkYjh5bjJKQTZNV3MyNVBqTldNWWYzQUNiaQ?oc=5",
-   "published": "2026-11-03T05:26Z",
-   "source": "Google News: livestock quarantines and vaccination in Uganda",
-   "source_kind": "news",
-   "publisher": "NewVision.co.ug",
-   "category": "vaccination",
-   "districts": [
-    "Kyankwanzi"
-   ]
-  },
   {
    "id": "e13fa6ae93a7",
    "title": "Nakasongola Farmers Raise Alarm Over FMD Vaccine, Demand Government Explanation",
@@ -559,17 +546,6 @@
    "districts": []
   },
   {
-   "id": "2c7c1754a864",
-   "title": "Minister Warns Rabies Is a ‘Death Sentence’ as Uganda Targets 2030 Eradication",
-   "url": "https://news.google.com/rss/articles/CBMitgFBVV95cUxOOUlUVzNaLTA2MEkzdnVTb0ZNdjZlVUdCc2lSNHI3aXZfMllvdm1nODVmbUtqSVlLOE5vOF9jRGRua0hEeVRLTnlrS29ONzl3eS0xUDFRemdPRDFUU0ZmWDZmLUlKWEZKMGRQaG5VV1JQQjZoaU5ZRWJsSWVqYVZiRzV4MzFPbkM0OGVrUUdGR19ndklfMU4tQXY3QThUczc3ZTBRYUNEd19EUXZXUW1UZnFZWEJtQdIBvgFBVV95cUxPTFBTcGdsY3pOYWg3cUVFelk4Tzc5NE9YU3F3Q2YzTkx4RmVrcHEtcE9GODR5eEZhT3FoR0FEQmJzUElDYURtTkI2MDk1MFozamxBTG5VSUVKV2EyYnFIaVFDLTBSQy1HMk5PSmtjUU92MnVJT3loemNOR2ZadUxRSXJhOUFRTHF2QXkxdTY1RlZmc1RfRmNBelRMX2hjQ3VSM3M4NkNJWTVQNTBfenpSZDJrbTZidXNwNUE3RWZR?oc=5",
-   "published": "2026-09-23T07:00Z",
-   "source": "Google News: other animal diseases in Uganda",
-   "source_kind": "news",
-   "publisher": "Nilepost",
-   "category": "outbreak",
-   "districts": []
-  },
-  {
    "id": "b83b21d449b1",
    "title": "Uganda Steps Up Rabies Elimination Efforts Ahead of 2030 Target",
    "url": "https://news.google.com/rss/articles/CBMipAFBVV95cUxOTm5VNzRCSWtZMFJJcHUtNzduTkh5SDRDajlZd3dPdEh4U2xweXRTTkhiR3NQSTlfNUhRVWlRWTNNMnE5S0NoZWp3Q1pfUkJRdWJldjJjemhVdzJRMXZwTFVLY2tqOVNtV1RrMG1xT3JqTkRzcm9wcWFncjlPQ2FtSk1wbVNjZ0wybklJeXRjeElMSVZtUEZYakVGOW1aSV9xYnFMVNIBrAFBVV95cUxNcllOellZcnpJQVZ4eXBtRTBEdEpCMkxkUkI5YjIyUktWMTItekFFN2xGcHNSR2pJOTFhNDE1MUdCWVJlZTRuTjhWaUNjYTA2MHh5T3hIZ1lqRTRPVEYxNGNmSzNYZkZtSHJuOGNnOUtRXzJVSUZidUswcEhZeUtGMVVUTW90WEIxdWZIOXZwVEhfUEdZYTNJUGNqb0RqbnBKSkh3b0tHZjdiQ3hr?oc=5",
@@ -578,6 +554,17 @@
    "source_kind": "news",
    "publisher": "Nilepost",
    "category": "advisory",
+   "districts": []
+  },
+  {
+   "id": "2c7c1754a864",
+   "title": "Minister Warns Rabies Is a ‘Death Sentence’ as Uganda Targets 2030 Eradication",
+   "url": "https://news.google.com/rss/articles/CBMitgFBVV95cUxOOUlUVzNaLTA2MEkzdnVTb0ZNdjZlVUdCc2lSNHI3aXZfMllvdm1nODVmbUtqSVlLOE5vOF9jRGRua0hEeVRLTnlrS29ONzl3eS0xUDFRemdPRDFUU0ZmWDZmLUlKWEZKMGRQaG5VV1JQQjZoaU5ZRWJsSWVqYVZiRzV4MzFPbkM0OGVrUUdGR19ndklfMU4tQXY3QThUczc3ZTBRYUNEd19EUXZXUW1UZnFZWEJtQdIBvgFBVV95cUxPTFBTcGdsY3pOYWg3cUVFelk4Tzc5NE9YU3F3Q2YzTkx4RmVrcHEtcE9GODR5eEZhT3FoR0FEQmJzUElDYURtTkI2MDk1MFozamxBTG5VSUVKV2EyYnFIaVFDLTBSQy1HMk5PSmtjUU92MnVJT3loemNOR2ZadUxRSXJhOUFRTHF2QXkxdTY1RlZmc1RfRmNBelRMX2hjQ3VSM3M4NkNJWTVQNTBfenpSZDJrbTZidXNwNUE3RWZR?oc=5",
+   "published": "2026-09-23T07:00Z",
+   "source": "Google News: other animal diseases in Uganda",
+   "source_kind": "news",
+   "publisher": "Nilepost",
+   "category": "outbreak",
    "districts": []
   },
   {
