@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-05T04:11Z",
+ "generated_at": "2026-11-05T10:22Z",
  "note": "Titles, dates and links exactly as published by each source. Always open the source and follow your District Veterinary Officer.",
  "kept_previous": false,
  "sources": [
@@ -225,21 +225,21 @@
    "name": "Dairy Development Authority (dda.go.ug)",
    "url": "https://www.dda.go.ug/feed/",
    "ok": false,
-   "error": "URLError: <urlopen error [Errno -3] Temporary failure in name resolution>"
+   "error": "URLError: <urlopen error timed out>"
   },
   {
    "id": "dda_s0",
    "name": "Dairy Development Authority (dda.go.ug), site search: milk",
    "url": "https://www.dda.go.ug/?s=milk&feed=rss2",
    "ok": false,
-   "error": "URLError: <urlopen error [Errno -3] Temporary failure in name resolution>"
+   "error": "URLError: <urlopen error timed out>"
   },
   {
    "id": "dda_s1",
    "name": "Dairy Development Authority (dda.go.ug), site search: dairy",
    "url": "https://www.dda.go.ug/?s=dairy&feed=rss2",
    "ok": false,
-   "error": "URLError: <urlopen error [Errno -3] Temporary failure in name resolution>"
+   "error": "URLError: <urlopen error timed out>"
   },
   {
    "id": "nagrc",
@@ -302,7 +302,7 @@
    "not_animal_health": 10,
    "duplicate": 0,
    "untrusted_names": [],
-   "newest_seen": "2026-10-27"
+   "newest_seen": "2026-11-05"
   },
   {
    "id": "naro_s0",
@@ -418,17 +418,15 @@
    "name": "Google News: other animal diseases in Uganda",
    "url": "https://news.google.com/rss/search?q=Uganda+%28anthrax+OR+%22lumpy+skin%22+OR+CBPP+OR+%22East+Coast+Fever%22+OR+%22Rift+Valley+fever%22+OR+%22swine+fever%22+OR+%22bird+flu%22+OR+%22avian+influenza%22+OR+PPR+OR+rabies+OR+trypanosomiasis%29+when%3A90d&hl=en-UG&gl=UG&ceid=UG%3Aen",
    "ok": true,
-   "items_read": 26,
+   "items_read": 25,
    "kept": 8,
    "too_old": 0,
    "undated": 0,
-   "untrusted_publisher": 14,
-   "not_animal_health": 4,
+   "untrusted_publisher": 12,
+   "not_animal_health": 5,
    "duplicate": 0,
    "untrusted_names": [
-    "Addis Standard",
     "The Eastleigh Voice",
-    "EthiopiaToday",
     "Food and Agriculture Organization",
     "IndexBox",
     "ReliefWeb",
@@ -438,7 +436,7 @@
     "3tres3.com",
     "Centers for Disease Control and Prevention | CDC (.gov)"
    ],
-   "newest_seen": "2026-11-04"
+   "newest_seen": "2026-11-05"
   },
   {
    "id": "gnews_control",
@@ -446,21 +444,24 @@
    "url": "https://news.google.com/rss/search?q=Uganda+%28livestock+OR+cattle+OR+animals%29+%28quarantine+OR+vaccination+OR+%22movement+ban%22+OR+outbreak+OR+MAAIF%29+when%3A90d&hl=en-UG&gl=UG&ceid=UG%3Aen",
    "ok": true,
    "items_read": 24,
-   "kept": 3,
+   "kept": 2,
    "too_old": 0,
    "undated": 0,
-   "untrusted_publisher": 11,
-   "not_animal_health": 8,
+   "untrusted_publisher": 14,
+   "not_animal_health": 6,
    "duplicate": 2,
    "untrusted_names": [
+    "Centers for Disease Control and Prevention | CDC (.gov)",
     "NICD",
     "GOV.UK blogs",
+    "National Geographic",
     "BBC",
     "Barbados Today",
     "CABI Digital Library",
     "PBS",
     "Global Biodefense",
     "Al Jazeera",
+    "TRT Afrika",
     "thecitizen.co.tz",
     "Internazionale",
     "Outbreak News Today"
@@ -480,7 +481,7 @@
    "not_animal_health": 30,
    "duplicate": 0,
    "untrusted_names": [],
-   "newest_seen": "2026-11-04"
+   "newest_seen": "2026-11-05"
   }
  ],
  "notices": [
@@ -679,19 +680,6 @@
    "publisher": "The Independent Uganda",
    "category": "vaccination",
    "districts": []
-  },
-  {
-   "id": "91da5f87f83b",
-   "title": "MAAIF warns Kabale farmers over compulsory FMD vaccination",
-   "url": "https://news.google.com/rss/articles/CBMimAFBVV95cUxPU0NmOHhVazdTeEFPcElfUjZvZGJlakc0b0NoejNtR1N1TzFsc1FnWWVDREdRTE0wTG1fNTdxX0ZSQjR6TWZKV2NBaDRwV3dMcjQyNG1NT00yYVhfVWdEaTBVek9kbVdXRXRNM2hONmFlVDRHSlJaRnlCZl8zdWNFemhVWDlWTkd1cDdYanZvSFVITUgwdVdYX9IBoAFBVV95cUxNTGpmbHRNMDYxUnRRczdVbnptaTYzcmhkcHVTZjJUbTZWc3hocUNOejQwNVVmMm1vcFF4RGktdHFJX29WSFNEMy1KYkItRXc0SnNSbjFYYk51X0lQVHR1V183ZlZYa05PZTJyUktTLWMzUnkxSHlmNkpLRDBtcUx3X2FpRnlFY1cteXJQTkJId3gtN3NLOEc0V2dWRko2MGNC?oc=5",
-   "published": "2026-08-07T07:00Z",
-   "source": "Google News: livestock quarantines and vaccination in Uganda",
-   "source_kind": "news",
-   "publisher": "Nilepost",
-   "category": "vaccination",
-   "districts": [
-    "Kabale"
-   ]
   },
   {
    "id": "e12cfea38b68",
