@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-06T07:35Z",
+ "generated_at": "2026-11-06T10:19Z",
  "note": "Titles, dates and links exactly as published by each source. Always open the source and follow your District Veterinary Officer.",
  "kept_previous": false,
  "sources": [
@@ -24,15 +24,15 @@
    "url": "https://www.agriculture.go.ug/feed/?paged=2",
    "ok": true,
    "items_read": 10,
-   "kept": 0,
+   "kept": 1,
    "too_old": 0,
    "undated": 0,
    "untrusted_publisher": 0,
-   "not_animal_health": 5,
+   "not_animal_health": 6,
    "duplicate": 0,
    "untrusted_names": [],
    "newest_seen": "2025-08-21",
-   "older_than_latest": 5
+   "older_than_latest": 3
   },
   {
    "id": "maaif_p3",
@@ -165,17 +165,8 @@
    "id": "maaif_s5",
    "name": "MAAIF (agriculture.go.ug), site search: animal disease",
    "url": "https://www.agriculture.go.ug/?s=animal+disease&feed=rss2",
-   "ok": true,
-   "items_read": 10,
-   "kept": 1,
-   "too_old": 0,
-   "undated": 0,
-   "untrusted_publisher": 0,
-   "not_animal_health": 1,
-   "duplicate": 2,
-   "untrusted_names": [],
-   "newest_seen": "2025-10-20",
-   "older_than_latest": 6
+   "ok": false,
+   "error": "TimeoutError: The read operation timed out"
   },
   {
    "id": "moh",
@@ -383,16 +374,8 @@
    "id": "umc",
    "name": "Uganda Media Centre (mediacentre.go.ug)",
    "url": "https://www.mediacentre.go.ug/feed/",
-   "ok": true,
-   "items_read": 40,
-   "kept": 1,
-   "too_old": 0,
-   "undated": 0,
-   "untrusted_publisher": 0,
-   "not_animal_health": 39,
-   "duplicate": 0,
-   "untrusted_names": [],
-   "newest_seen": "2026-11-05"
+   "ok": false,
+   "error": "TimeoutError: The read operation timed out"
   },
   {
    "id": "gnews_fmd",
@@ -444,8 +427,8 @@
    "name": "Google News: livestock quarantines and vaccination in Uganda",
    "url": "https://news.google.com/rss/search?q=Uganda+%28livestock+OR+cattle+OR+animals%29+%28quarantine+OR+vaccination+OR+%22movement+ban%22+OR+outbreak+OR+MAAIF%29+when%3A90d&hl=en-UG&gl=UG&ceid=UG%3Aen",
    "ok": true,
-   "items_read": 25,
-   "kept": 2,
+   "items_read": 24,
+   "kept": 1,
    "too_old": 0,
    "undated": 0,
    "untrusted_publisher": 14,
@@ -453,8 +436,8 @@
    "duplicate": 2,
    "untrusted_names": [
     "NICD",
-    "GOV.UK blogs",
     "BBC",
+    "GOV.UK blogs",
     "Barbados Today",
     "CIDRAP",
     "CABI Digital Library",
@@ -464,10 +447,9 @@
     "TRT Afrika",
     "thecitizen.co.tz",
     "Internazionale",
-    "Nature",
-    "Outbreak News Today"
+    "Nature"
    ],
-   "newest_seen": "2026-11-05"
+   "newest_seen": "2026-11-03"
   },
   {
    "id": "allafrica",
@@ -682,17 +664,6 @@
    "districts": [
     "Kisoro"
    ]
-  },
-  {
-   "id": "81ebb3375108",
-   "title": "Housing Finance Bank supports MAAIF livestock vaccination campaign through accessible payment solutions",
-   "url": "https://news.google.com/rss/articles/CBMizwFBVV95cUxNMEJhdDA0cTNVaTZvUHR1Rk9zMXR4eEprTzBhSWsyR2lGUUZBRkRENVRCMU05dzY0eWNoSC1mb1JOajhPRHdwc2s3QTVmcWd3QS1RRE9VSG1xSktld3VFb21LMDNmQWNoSVY1ZlVvdG5mb3ZTRjRKR0FNMGdyN1J1dzhHcDJENHdidHN6bGY2dllVMnQ0SjFPUmprVnR6QkxuaVREMWpYakVReXptRTN4SmNEQVFzQVNQbF9GeUFqRm5COEpzSTdMNkFDa0dKYU0?oc=5",
-   "published": "2026-08-08T07:00Z",
-   "source": "Google News: livestock quarantines and vaccination in Uganda",
-   "source_kind": "news",
-   "publisher": "The Independent Uganda",
-   "category": "vaccination",
-   "districts": []
   },
   {
    "id": "e12cfea38b68",
