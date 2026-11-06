@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-06T04:14Z",
+ "generated_at": "2026-11-06T07:35Z",
  "note": "Titles, dates and links exactly as published by each source. Always open the source and follow your District Veterinary Officer.",
  "kept_previous": false,
  "sources": [
@@ -24,14 +24,15 @@
    "url": "https://www.agriculture.go.ug/feed/?paged=2",
    "ok": true,
    "items_read": 10,
-   "kept": 1,
+   "kept": 0,
    "too_old": 0,
    "undated": 0,
    "untrusted_publisher": 0,
-   "not_animal_health": 9,
+   "not_animal_health": 5,
    "duplicate": 0,
    "untrusted_names": [],
-   "newest_seen": "2025-08-21"
+   "newest_seen": "2025-08-21",
+   "older_than_latest": 5
   },
   {
    "id": "maaif_p3",
@@ -39,14 +40,15 @@
    "url": "https://www.agriculture.go.ug/feed/?paged=3",
    "ok": true,
    "items_read": 10,
-   "kept": 1,
+   "kept": 0,
    "too_old": 0,
    "undated": 0,
    "untrusted_publisher": 0,
-   "not_animal_health": 9,
+   "not_animal_health": 0,
    "duplicate": 0,
    "untrusted_names": [],
-   "newest_seen": "2022-08-02"
+   "newest_seen": "2022-08-02",
+   "older_than_latest": 10
   },
   {
    "id": "maaif_p4",
@@ -54,7 +56,7 @@
    "url": "https://www.agriculture.go.ug/feed/?paged=4",
    "ok": true,
    "items_read": 10,
-   "kept": 1,
+   "kept": 0,
    "too_old": 0,
    "undated": 0,
    "untrusted_publisher": 0,
@@ -62,7 +64,7 @@
    "duplicate": 0,
    "untrusted_names": [],
    "newest_seen": "2021-10-01",
-   "older_than_latest": 9
+   "older_than_latest": 10
   },
   {
    "id": "maaif_p5",
@@ -90,11 +92,11 @@
    "too_old": 0,
    "undated": 0,
    "untrusted_publisher": 0,
-   "not_animal_health": 1,
+   "not_animal_health": 0,
    "duplicate": 0,
    "untrusted_names": [],
    "newest_seen": "2022-04-25",
-   "older_than_latest": 9
+   "older_than_latest": 10
   },
   {
    "id": "maaif_s1",
@@ -115,8 +117,17 @@
    "id": "maaif_s2",
    "name": "MAAIF (agriculture.go.ug), site search: cattle",
    "url": "https://www.agriculture.go.ug/?s=cattle&feed=rss2",
-   "ok": false,
-   "error": "TimeoutError: The read operation timed out"
+   "ok": true,
+   "items_read": 10,
+   "kept": 2,
+   "too_old": 0,
+   "undated": 0,
+   "untrusted_publisher": 0,
+   "not_animal_health": 1,
+   "duplicate": 1,
+   "untrusted_names": [],
+   "newest_seen": "2025-10-24",
+   "older_than_latest": 6
   },
   {
    "id": "maaif_s3",
@@ -144,18 +155,27 @@
    "too_old": 0,
    "undated": 0,
    "untrusted_publisher": 0,
-   "not_animal_health": 2,
+   "not_animal_health": 0,
    "duplicate": 1,
    "untrusted_names": [],
    "newest_seen": "2025-10-20",
-   "older_than_latest": 6
+   "older_than_latest": 8
   },
   {
    "id": "maaif_s5",
    "name": "MAAIF (agriculture.go.ug), site search: animal disease",
    "url": "https://www.agriculture.go.ug/?s=animal+disease&feed=rss2",
-   "ok": false,
-   "error": "TimeoutError: The read operation timed out"
+   "ok": true,
+   "items_read": 10,
+   "kept": 1,
+   "too_old": 0,
+   "undated": 0,
+   "untrusted_publisher": 0,
+   "not_animal_health": 1,
+   "duplicate": 2,
+   "untrusted_names": [],
+   "newest_seen": "2025-10-20",
+   "older_than_latest": 6
   },
   {
    "id": "moh",
@@ -372,7 +392,7 @@
    "not_animal_health": 39,
    "duplicate": 0,
    "untrusted_names": [],
-   "newest_seen": "2026-11-04"
+   "newest_seen": "2026-11-05"
   },
   {
    "id": "gnews_fmd",
@@ -406,11 +426,11 @@
    "not_animal_health": 6,
    "duplicate": 0,
    "untrusted_names": [
+    "Bioengineer.org",
     "Addis Standard",
     "The Eastleigh Voice",
     "EthiopiaToday",
     "Food and Agriculture Organization",
-    "IndexBox",
     "ReliefWeb",
     "Health Policy Watch",
     "Anadolu Ajansı",
