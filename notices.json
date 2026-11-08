@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-08T19:02Z",
+ "generated_at": "2026-11-08T21:53Z",
  "note": "Titles, dates and links exactly as published by each source. Always open the source and follow your District Veterinary Officer.",
  "kept_previous": false,
  "sources": [
@@ -399,8 +399,8 @@
    "name": "Google News: FMD in Uganda",
    "url": "https://news.google.com/rss/search?q=Uganda+%28%22foot+and+mouth%22+OR+%22foot-and-mouth%22+OR+FMD%29+when%3A90d&hl=en-UG&gl=UG&ceid=UG%3Aen",
    "ok": true,
-   "items_read": 9,
-   "kept": 2,
+   "items_read": 10,
+   "kept": 3,
    "too_old": 0,
    "undated": 0,
    "untrusted_publisher": 3,
@@ -418,17 +418,16 @@
    "name": "Google News: other animal diseases in Uganda",
    "url": "https://news.google.com/rss/search?q=Uganda+%28anthrax+OR+%22lumpy+skin%22+OR+CBPP+OR+%22East+Coast+Fever%22+OR+%22Rift+Valley+fever%22+OR+%22swine+fever%22+OR+%22bird+flu%22+OR+%22avian+influenza%22+OR+PPR+OR+rabies+OR+trypanosomiasis%29+when%3A90d&hl=en-UG&gl=UG&ceid=UG%3Aen",
    "ok": true,
-   "items_read": 30,
+   "items_read": 29,
    "kept": 8,
    "too_old": 0,
    "undated": 0,
-   "untrusted_publisher": 17,
+   "untrusted_publisher": 16,
    "not_animal_health": 5,
    "duplicate": 0,
    "untrusted_names": [
     "Daily Nation",
-    "Bioengineer.org",
-    "Farmers Review Africa",
+    "Addis Standard",
     "The Eastleigh Voice",
     "EthiopiaToday",
     "Yakima Herald-Republic",
@@ -463,7 +462,7 @@
     "Global Biodefense",
     "Al Jazeera",
     "TRT Afrika",
-    "thecitizen.co.tz"
+    "The Citizen"
    ],
    "newest_seen": "2026-11-06"
   },
@@ -565,6 +564,19 @@
    "publisher": "Nilepost",
    "category": "advisory",
    "districts": []
+  },
+  {
+   "id": "9248b776cd49",
+   "title": "Foot and mouth disease hits Nakasongola",
+   "url": "https://news.google.com/rss/articles/CBMinwFBVV95cUxQeUFyT21XOTRsczhMazZzS3BUNDZWSUw0X21BSWFOU2Itc0RKQmlodlQ0WWlwNlY3VnJ6UVdFYnA1OWw0RFRpMUxMS2J5c29WQ3FvVEdwcS15RU1vY0hxVzI2ejFhdG1rU3dWU1p5UTJXTGU5ODlTNU8zOVlTdDNQNUFnNmdEUkVMbjBnbnFjOWcwZ3ZyOGhHak5tNDdGdVk?oc=5",
+   "published": "2026-09-17T07:00Z",
+   "source": "Google News: FMD in Uganda",
+   "source_kind": "news",
+   "publisher": "NewVision.co.ug",
+   "category": "outbreak",
+   "districts": [
+    "Nakasongola"
+   ]
   },
   {
    "id": "1832a1cfe876",
