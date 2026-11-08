@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-08T15:53Z",
+ "generated_at": "2026-11-08T19:02Z",
  "note": "Titles, dates and links exactly as published by each source. Always open the source and follow your District Veterinary Officer.",
  "kept_previous": false,
  "sources": [
@@ -471,8 +471,16 @@
    "id": "allafrica",
    "name": "allAfrica: Uganda",
    "url": "https://allafrica.com/tools/headlines/rdf/uganda/headlines.rdf",
-   "ok": false,
-   "error": "URLError: <urlopen error timed out>"
+   "ok": true,
+   "items_read": 30,
+   "kept": 0,
+   "too_old": 0,
+   "undated": 0,
+   "untrusted_publisher": 0,
+   "not_animal_health": 30,
+   "duplicate": 0,
+   "untrusted_names": [],
+   "newest_seen": "2026-11-06"
   }
  ],
  "notices": [
