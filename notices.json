@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-08T21:53Z",
+ "generated_at": "2026-11-09T04:18Z",
  "note": "Titles, dates and links exactly as published by each source. Always open the source and follow your District Veterinary Officer.",
  "kept_previous": false,
  "sources": [
@@ -293,47 +293,22 @@
    "id": "naro",
    "name": "NARO (naro.go.ug)",
    "url": "https://www.naro.go.ug/feed/",
-   "ok": true,
-   "items_read": 10,
-   "kept": 0,
-   "too_old": 0,
-   "undated": 0,
-   "untrusted_publisher": 0,
-   "not_animal_health": 10,
-   "duplicate": 0,
-   "untrusted_names": [],
-   "newest_seen": "2026-11-05"
+   "ok": false,
+   "error": "URLError: <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: certificate has expired (_ssl.c:1011)>"
   },
   {
    "id": "naro_s0",
    "name": "NARO (naro.go.ug), site search: livestock",
    "url": "https://www.naro.go.ug/?s=livestock&feed=rss2",
-   "ok": true,
-   "items_read": 10,
-   "kept": 3,
-   "too_old": 0,
-   "undated": 0,
-   "untrusted_publisher": 0,
-   "not_animal_health": 6,
-   "duplicate": 0,
-   "untrusted_names": [],
-   "newest_seen": "2026-08-17"
+   "ok": false,
+   "error": "URLError: <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: certificate has expired (_ssl.c:1011)>"
   },
   {
    "id": "naro_s1",
    "name": "NARO (naro.go.ug), site search: cattle",
    "url": "https://www.naro.go.ug/?s=cattle&feed=rss2",
-   "ok": true,
-   "items_read": 10,
-   "kept": 2,
-   "too_old": 0,
-   "undated": 0,
-   "untrusted_publisher": 0,
-   "not_animal_health": 4,
-   "duplicate": 0,
-   "untrusted_names": [],
-   "newest_seen": "2025-08-19",
-   "older_than_latest": 4
+   "ok": false,
+   "error": "URLError: <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: certificate has expired (_ssl.c:1011)>"
   },
   {
    "id": "uwa",
@@ -399,8 +374,8 @@
    "name": "Google News: FMD in Uganda",
    "url": "https://news.google.com/rss/search?q=Uganda+%28%22foot+and+mouth%22+OR+%22foot-and-mouth%22+OR+FMD%29+when%3A90d&hl=en-UG&gl=UG&ceid=UG%3Aen",
    "ok": true,
-   "items_read": 10,
-   "kept": 3,
+   "items_read": 9,
+   "kept": 2,
    "too_old": 0,
    "undated": 0,
    "untrusted_publisher": 3,
@@ -418,19 +393,18 @@
    "name": "Google News: other animal diseases in Uganda",
    "url": "https://news.google.com/rss/search?q=Uganda+%28anthrax+OR+%22lumpy+skin%22+OR+CBPP+OR+%22East+Coast+Fever%22+OR+%22Rift+Valley+fever%22+OR+%22swine+fever%22+OR+%22bird+flu%22+OR+%22avian+influenza%22+OR+PPR+OR+rabies+OR+trypanosomiasis%29+when%3A90d&hl=en-UG&gl=UG&ceid=UG%3Aen",
    "ok": true,
-   "items_read": 29,
+   "items_read": 28,
    "kept": 8,
    "too_old": 0,
    "undated": 0,
-   "untrusted_publisher": 16,
-   "not_animal_health": 5,
+   "untrusted_publisher": 14,
+   "not_animal_health": 6,
    "duplicate": 0,
    "untrusted_names": [
     "Daily Nation",
-    "Addis Standard",
+    "Farmers Review Africa",
     "The Eastleigh Voice",
     "EthiopiaToday",
-    "Yakima Herald-Republic",
     "Food and Agriculture Organization",
     "ReliefWeb",
     "Health Policy Watch",
@@ -454,7 +428,7 @@
    "not_animal_health": 6,
    "duplicate": 2,
    "untrusted_names": [
-    "Centers for Disease Control and Prevention | CDC (.gov)",
+    "NICD",
     "GOV.UK blogs",
     "BBC",
     "Barbados Today",
@@ -566,19 +540,6 @@
    "districts": []
   },
   {
-   "id": "9248b776cd49",
-   "title": "Foot and mouth disease hits Nakasongola",
-   "url": "https://news.google.com/rss/articles/CBMinwFBVV95cUxQeUFyT21XOTRsczhMazZzS3BUNDZWSUw0X21BSWFOU2Itc0RKQmlodlQ0WWlwNlY3VnJ6UVdFYnA1OWw0RFRpMUxMS2J5c29WQ3FvVEdwcS15RU1vY0hxVzI2ejFhdG1rU3dWU1p5UTJXTGU5ODlTNU8zOVlTdDNQNUFnNmdEUkVMbjBnbnFjOWcwZ3ZyOGhHak5tNDdGdVk?oc=5",
-   "published": "2026-09-17T07:00Z",
-   "source": "Google News: FMD in Uganda",
-   "source_kind": "news",
-   "publisher": "NewVision.co.ug",
-   "category": "outbreak",
-   "districts": [
-    "Nakasongola"
-   ]
-  },
-  {
    "id": "1832a1cfe876",
    "title": "Nakasongola bans livestock movement as FMD kills 55 cows",
    "url": "https://news.google.com/rss/articles/CBMisAFBVV95cUxQMFhmb0NiazUwUFZHbVdaS2NhYl81b2RVZy1pUmVqMUJJYXk4MExnSFRDUWZkWU9mQTRwd2FuSVNyVHlNa0NBVUxpUW16enJ6VTBWRjRRV0xlcUhqci1XLVN0Y0F0QU9razNJdmkyT1o2MDR5SHZuZ1JGVVZsLVJiUWs4Rkx4UnlNQmp2cHVGaW8yUmc5a190Q3IxbE1mSEktbC00R0tDMWE0WU9ucDVEMQ?oc=5",
@@ -617,9 +578,9 @@
    "districts": []
   },
   {
-   "id": "2c10e8f7a67e",
+   "id": "278996c40c59",
    "title": "Rabies deaths hit seven as Adjumani records 48 dog bit",
-   "url": "https://news.google.com/rss/articles/CBMipwFBVV95cUxNS0YtS2hMcHRMOGVrejF0S1dSOGxGUUlqNUFFSjFsLWV0a0VpSi1YTi1LX09SS0x0V2lyc0RuUzQ4V1Zublc1ZXBJMldQcnVaaWZUUFpzdHpVQkhoQUE1X1kwLUROS3ZBaEg3LWZCS2Q1WF93WXV3eDlNYzYxUjNzNmNES2dvT3R5Tm44amJsbmdXNk1Rckp4bzRSdEVfXzhFRmkyMUszVQ?oc=5",
+   "url": "https://news.google.com/rss/articles/CBMipwFBVV95cUxOZV9zNXhKWkgxUnBvNUxXWkhDX1FJNm1USTFYVlRqdURUa041UDEtTTdDamUydUNGNzMzVGhJZUwxeDlUdDl3ZXNlaURsZXZHM2JvSkREN0pVcGVoY1l3Ylg5dkhTa1Z3SmFVaG1RNWtqSVRFMkFtTFhwVXBicmhrQXdpN29oVlpzQlV4WmZxejlIc3VpY0R3M2FNX3J0a0xweEFqMDVscw?oc=5",
    "published": "2026-08-30T07:00Z",
    "source": "Google News: other animal diseases in Uganda",
    "source_kind": "news",
