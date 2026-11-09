@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-09T07:46Z",
+ "generated_at": "2026-11-09T10:19Z",
  "note": "Titles, dates and links exactly as published by each source. Always open the source and follow your District Veterinary Officer.",
  "kept_previous": false,
  "sources": [
@@ -22,17 +22,8 @@
    "id": "maaif_p2",
    "name": "MAAIF (agriculture.go.ug), older posts page 2",
    "url": "https://www.agriculture.go.ug/feed/?paged=2",
-   "ok": true,
-   "items_read": 10,
-   "kept": 0,
-   "too_old": 0,
-   "undated": 0,
-   "untrusted_publisher": 0,
-   "not_animal_health": 5,
-   "duplicate": 0,
-   "untrusted_names": [],
-   "newest_seen": "2025-08-21",
-   "older_than_latest": 5
+   "ok": false,
+   "error": "TimeoutError: The read operation timed out"
   },
   {
    "id": "maaif_p3",
@@ -392,19 +383,19 @@
    "not_animal_health": 39,
    "duplicate": 0,
    "untrusted_names": [],
-   "newest_seen": "2026-11-07"
+   "newest_seen": "2026-11-08"
   },
   {
    "id": "gnews_fmd",
    "name": "Google News: FMD in Uganda",
    "url": "https://news.google.com/rss/search?q=Uganda+%28%22foot+and+mouth%22+OR+%22foot-and-mouth%22+OR+FMD%29+when%3A90d&hl=en-UG&gl=UG&ceid=UG%3Aen",
    "ok": true,
-   "items_read": 10,
-   "kept": 2,
+   "items_read": 9,
+   "kept": 3,
    "too_old": 0,
    "undated": 0,
    "untrusted_publisher": 3,
-   "not_animal_health": 5,
+   "not_animal_health": 3,
    "duplicate": 0,
    "untrusted_names": [
     "3tres3.com",
@@ -422,8 +413,8 @@
    "kept": 8,
    "too_old": 0,
    "undated": 0,
-   "untrusted_publisher": 15,
-   "not_animal_health": 6,
+   "untrusted_publisher": 16,
+   "not_animal_health": 5,
    "duplicate": 0,
    "untrusted_names": [
     "Daily Nation",
@@ -446,18 +437,22 @@
    "name": "Google News: livestock quarantines and vaccination in Uganda",
    "url": "https://news.google.com/rss/search?q=Uganda+%28livestock+OR+cattle+OR+animals%29+%28quarantine+OR+vaccination+OR+%22movement+ban%22+OR+outbreak+OR+MAAIF%29+when%3A90d&hl=en-UG&gl=UG&ceid=UG%3Aen",
    "ok": true,
-   "items_read": 18,
+   "items_read": 25,
    "kept": 1,
    "too_old": 0,
    "undated": 0,
-   "untrusted_publisher": 8,
-   "not_animal_health": 7,
+   "untrusted_publisher": 13,
+   "not_animal_health": 9,
    "duplicate": 2,
    "untrusted_names": [
+    "Centers for Disease Control and Prevention | CDC (.gov)",
     "NICD",
-    "GOV.UK blogs",
     "BBC",
+    "GOV.UK blogs",
     "Barbados Today",
+    "CIDRAP",
+    "CABI Digital Library",
+    "PBS",
     "Global Biodefense",
     "Al Jazeera",
     "TRT Afrika",
@@ -565,6 +560,19 @@
    "districts": []
   },
   {
+   "id": "37b234d8c577",
+   "title": "Foot and mouth disease hits Nakasongola",
+   "url": "https://news.google.com/rss/articles/CBMinwFBVV95cUxPQks0MEdtODdZNWVCT1F1dXh4YkFsZ3dLMDUxRkV4Y2lUMnUxNzhqV0FuUkNlRDZDUlA1YVVLdXpNb3dQUmI2Wjh1MHFvYmE3TVNsZE42UFd4aW5SazMxR0o1RGE4aU03UU9zUXBpQlpfNllkaEJDU0lqdU1mcDJqT2dDeVAwZ3VvTXNEYnFJbERmRzIyTTc1ell5aWp3MXc?oc=5",
+   "published": "2026-09-17T07:00Z",
+   "source": "Google News: FMD in Uganda",
+   "source_kind": "news",
+   "publisher": "NewVision.co.ug",
+   "category": "outbreak",
+   "districts": [
+    "Nakasongola"
+   ]
+  },
+  {
    "id": "1832a1cfe876",
    "title": "Nakasongola bans livestock movement as FMD kills 55 cows",
    "url": "https://news.google.com/rss/articles/CBMisAFBVV95cUxQMFhmb0NiazUwUFZHbVdaS2NhYl81b2RVZy1pUmVqMUJJYXk4MExnSFRDUWZkWU9mQTRwd2FuSVNyVHlNa0NBVUxpUW16enJ6VTBWRjRRV0xlcUhqci1XLVN0Y0F0QU9razNJdmkyT1o2MDR5SHZuZ1JGVVZsLVJiUWs4Rkx4UnlNQmp2cHVGaW8yUmc5a190Q3IxbE1mSEktbC00R0tDMWE0WU9ucDVEMQ?oc=5",
@@ -603,9 +611,9 @@
    "districts": []
   },
   {
-   "id": "278996c40c59",
+   "id": "2c10e8f7a67e",
    "title": "Rabies deaths hit seven as Adjumani records 48 dog bit",
-   "url": "https://news.google.com/rss/articles/CBMipwFBVV95cUxOZV9zNXhKWkgxUnBvNUxXWkhDX1FJNm1USTFYVlRqdURUa041UDEtTTdDamUydUNGNzMzVGhJZUwxeDlUdDl3ZXNlaURsZXZHM2JvSkREN0pVcGVoY1l3Ylg5dkhTa1Z3SmFVaG1RNWtqSVRFMkFtTFhwVXBicmhrQXdpN29oVlpzQlV4WmZxejlIc3VpY0R3M2FNX3J0a0xweEFqMDVscw?oc=5",
+   "url": "https://news.google.com/rss/articles/CBMipwFBVV95cUxNS0YtS2hMcHRMOGVrejF0S1dSOGxGUUlqNUFFSjFsLWV0a0VpSi1YTi1LX09SS0x0V2lyc0RuUzQ4V1Zublc1ZXBJMldQcnVaaWZUUFpzdHpVQkhoQUE1X1kwLUROS3ZBaEg3LWZCS2Q1WF93WXV3eDlNYzYxUjNzNmNES2dvT3R5Tm44amJsbmdXNk1Rckp4bzRSdEVfXzhFRmkyMUszVQ?oc=5",
    "published": "2026-08-30T07:00Z",
    "source": "Google News: other animal diseases in Uganda",
    "source_kind": "news",
