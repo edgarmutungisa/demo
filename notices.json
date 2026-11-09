@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-09T19:14Z",
+ "generated_at": "2026-11-09T22:01Z",
  "note": "Titles, dates and links exactly as published by each source. Always open the source and follow your District Veterinary Officer.",
  "kept_previous": false,
  "sources": [
@@ -24,15 +24,15 @@
    "url": "https://www.agriculture.go.ug/feed/?paged=2",
    "ok": true,
    "items_read": 10,
-   "kept": 0,
+   "kept": 1,
    "too_old": 0,
    "undated": 0,
    "untrusted_publisher": 0,
-   "not_animal_health": 5,
+   "not_animal_health": 6,
    "duplicate": 0,
    "untrusted_names": [],
    "newest_seen": "2025-08-21",
-   "older_than_latest": 5
+   "older_than_latest": 3
   },
   {
    "id": "maaif_p3",
@@ -117,17 +117,8 @@
    "id": "maaif_s2",
    "name": "MAAIF (agriculture.go.ug), site search: cattle",
    "url": "https://www.agriculture.go.ug/?s=cattle&feed=rss2",
-   "ok": true,
-   "items_read": 10,
-   "kept": 2,
-   "too_old": 0,
-   "undated": 0,
-   "untrusted_publisher": 0,
-   "not_animal_health": 1,
-   "duplicate": 1,
-   "untrusted_names": [],
-   "newest_seen": "2025-10-24",
-   "older_than_latest": 6
+   "ok": false,
+   "error": "TimeoutError: The read operation timed out"
   },
   {
    "id": "maaif_s3",
@@ -167,7 +158,7 @@
    "url": "https://www.agriculture.go.ug/?s=animal+disease&feed=rss2",
    "ok": true,
    "items_read": 10,
-   "kept": 1,
+   "kept": 2,
    "too_old": 0,
    "undated": 0,
    "untrusted_publisher": 0,
@@ -175,7 +166,7 @@
    "duplicate": 2,
    "untrusted_names": [],
    "newest_seen": "2025-10-20",
-   "older_than_latest": 6
+   "older_than_latest": 5
   },
   {
    "id": "moh",
@@ -445,15 +436,16 @@
    "name": "Google News: livestock quarantines and vaccination in Uganda",
    "url": "https://news.google.com/rss/search?q=Uganda+%28livestock+OR+cattle+OR+animals%29+%28quarantine+OR+vaccination+OR+%22movement+ban%22+OR+outbreak+OR+MAAIF%29+when%3A90d&hl=en-UG&gl=UG&ceid=UG%3Aen",
    "ok": true,
-   "items_read": 27,
+   "items_read": 28,
    "kept": 1,
    "too_old": 0,
    "undated": 0,
-   "untrusted_publisher": 14,
+   "untrusted_publisher": 15,
    "not_animal_health": 10,
    "duplicate": 2,
    "untrusted_names": [
     "NICD",
+    "Food Business Middle East & Africa",
     "Centers for Disease Control and Prevention | CDC (.gov)",
     "BBC",
     "GOV.UK blogs",
@@ -797,7 +789,7 @@
    "title": "Animal Feeds Act 2024",
    "url": "https://www.agriculture.go.ug/animal-feeds-act-2024/?utm_source=rss&utm_medium=rss&utm_campaign=animal-feeds-act-2024",
    "published": "2024-09-24T10:39Z",
-   "source": "MAAIF (agriculture.go.ug), site search: cattle",
+   "source": "MAAIF (agriculture.go.ug), site search: animal disease",
    "source_kind": "official",
    "publisher": "MAAIF",
    "body": "MAAIF",
