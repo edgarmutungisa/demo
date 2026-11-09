@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-09T10:19Z",
+ "generated_at": "2026-11-09T13:33Z",
  "note": "Titles, dates and links exactly as published by each source. Always open the source and follow your District Veterinary Officer.",
  "kept_previous": false,
  "sources": [
@@ -22,8 +22,17 @@
    "id": "maaif_p2",
    "name": "MAAIF (agriculture.go.ug), older posts page 2",
    "url": "https://www.agriculture.go.ug/feed/?paged=2",
-   "ok": false,
-   "error": "TimeoutError: The read operation timed out"
+   "ok": true,
+   "items_read": 10,
+   "kept": 0,
+   "too_old": 0,
+   "undated": 0,
+   "untrusted_publisher": 0,
+   "not_animal_health": 5,
+   "duplicate": 0,
+   "untrusted_names": [],
+   "newest_seen": "2025-08-21",
+   "older_than_latest": 5
   },
   {
    "id": "maaif_p3",
@@ -413,8 +422,8 @@
    "kept": 8,
    "too_old": 0,
    "undated": 0,
-   "untrusted_publisher": 16,
-   "not_animal_health": 5,
+   "untrusted_publisher": 15,
+   "not_animal_health": 6,
    "duplicate": 0,
    "untrusted_names": [
     "Daily Nation",
@@ -611,9 +620,9 @@
    "districts": []
   },
   {
-   "id": "2c10e8f7a67e",
+   "id": "278996c40c59",
    "title": "Rabies deaths hit seven as Adjumani records 48 dog bit",
-   "url": "https://news.google.com/rss/articles/CBMipwFBVV95cUxNS0YtS2hMcHRMOGVrejF0S1dSOGxGUUlqNUFFSjFsLWV0a0VpSi1YTi1LX09SS0x0V2lyc0RuUzQ4V1Zublc1ZXBJMldQcnVaaWZUUFpzdHpVQkhoQUE1X1kwLUROS3ZBaEg3LWZCS2Q1WF93WXV3eDlNYzYxUjNzNmNES2dvT3R5Tm44amJsbmdXNk1Rckp4bzRSdEVfXzhFRmkyMUszVQ?oc=5",
+   "url": "https://news.google.com/rss/articles/CBMipwFBVV95cUxOZV9zNXhKWkgxUnBvNUxXWkhDX1FJNm1USTFYVlRqdURUa041UDEtTTdDamUydUNGNzMzVGhJZUwxeDlUdDl3ZXNlaURsZXZHM2JvSkREN0pVcGVoY1l3Ylg5dkhTa1Z3SmFVaG1RNWtqSVRFMkFtTFhwVXBicmhrQXdpN29oVlpzQlV4WmZxejlIc3VpY0R3M2FNX3J0a0xweEFqMDVscw?oc=5",
    "published": "2026-08-30T07:00Z",
    "source": "Google News: other animal diseases in Uganda",
    "source_kind": "news",
