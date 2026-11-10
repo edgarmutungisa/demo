@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-10T01:23Z",
+ "generated_at": "2026-11-10T04:08Z",
  "note": "Titles, dates and links exactly as published by each source. Always open the source and follow your District Veterinary Officer.",
  "kept_previous": false,
  "sources": [
@@ -22,8 +22,17 @@
    "id": "maaif_p2",
    "name": "MAAIF (agriculture.go.ug), older posts page 2",
    "url": "https://www.agriculture.go.ug/feed/?paged=2",
-   "ok": false,
-   "error": "TimeoutError: The read operation timed out"
+   "ok": true,
+   "items_read": 10,
+   "kept": 0,
+   "too_old": 0,
+   "undated": 0,
+   "untrusted_publisher": 0,
+   "not_animal_health": 5,
+   "duplicate": 0,
+   "untrusted_names": [],
+   "newest_seen": "2025-08-21",
+   "older_than_latest": 5
   },
   {
    "id": "maaif_p3",
