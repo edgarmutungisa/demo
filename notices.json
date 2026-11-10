@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-09T22:01Z",
+ "generated_at": "2026-11-10T01:23Z",
  "note": "Titles, dates and links exactly as published by each source. Always open the source and follow your District Veterinary Officer.",
  "kept_previous": false,
  "sources": [
@@ -22,17 +22,8 @@
    "id": "maaif_p2",
    "name": "MAAIF (agriculture.go.ug), older posts page 2",
    "url": "https://www.agriculture.go.ug/feed/?paged=2",
-   "ok": true,
-   "items_read": 10,
-   "kept": 1,
-   "too_old": 0,
-   "undated": 0,
-   "untrusted_publisher": 0,
-   "not_animal_health": 6,
-   "duplicate": 0,
-   "untrusted_names": [],
-   "newest_seen": "2025-08-21",
-   "older_than_latest": 3
+   "ok": false,
+   "error": "TimeoutError: The read operation timed out"
   },
   {
    "id": "maaif_p3",
@@ -117,8 +108,17 @@
    "id": "maaif_s2",
    "name": "MAAIF (agriculture.go.ug), site search: cattle",
    "url": "https://www.agriculture.go.ug/?s=cattle&feed=rss2",
-   "ok": false,
-   "error": "TimeoutError: The read operation timed out"
+   "ok": true,
+   "items_read": 10,
+   "kept": 2,
+   "too_old": 0,
+   "undated": 0,
+   "untrusted_publisher": 0,
+   "not_animal_health": 1,
+   "duplicate": 1,
+   "untrusted_names": [],
+   "newest_seen": "2025-10-24",
+   "older_than_latest": 6
   },
   {
    "id": "maaif_s3",
@@ -158,7 +158,7 @@
    "url": "https://www.agriculture.go.ug/?s=animal+disease&feed=rss2",
    "ok": true,
    "items_read": 10,
-   "kept": 2,
+   "kept": 1,
    "too_old": 0,
    "undated": 0,
    "untrusted_publisher": 0,
@@ -166,7 +166,7 @@
    "duplicate": 2,
    "untrusted_names": [],
    "newest_seen": "2025-10-20",
-   "older_than_latest": 5
+   "older_than_latest": 6
   },
   {
    "id": "moh",
@@ -409,22 +409,20 @@
    "name": "Google News: other animal diseases in Uganda",
    "url": "https://news.google.com/rss/search?q=Uganda+%28anthrax+OR+%22lumpy+skin%22+OR+CBPP+OR+%22East+Coast+Fever%22+OR+%22Rift+Valley+fever%22+OR+%22swine+fever%22+OR+%22bird+flu%22+OR+%22avian+influenza%22+OR+PPR+OR+rabies+OR+trypanosomiasis%29+when%3A90d&hl=en-UG&gl=UG&ceid=UG%3Aen",
    "ok": true,
-   "items_read": 28,
+   "items_read": 26,
    "kept": 8,
    "too_old": 0,
    "undated": 0,
-   "untrusted_publisher": 14,
+   "untrusted_publisher": 12,
    "not_animal_health": 6,
    "duplicate": 0,
    "untrusted_names": [
     "Daily Nation",
     "INSIGHTS IAS",
-    "Bioengineer.org",
     "Farmers Review Africa",
     "Food and Agriculture Organization",
     "ReliefWeb",
     "Health Policy Watch",
-    "People Daily",
     "Anadolu Ajansı",
     "3tres3.com",
     "Centers for Disease Control and Prevention | CDC (.gov)"
@@ -561,9 +559,9 @@
    "districts": []
   },
   {
-   "id": "37b234d8c577",
+   "id": "9248b776cd49",
    "title": "Foot and mouth disease hits Nakasongola",
-   "url": "https://news.google.com/rss/articles/CBMinwFBVV95cUxPQks0MEdtODdZNWVCT1F1dXh4YkFsZ3dLMDUxRkV4Y2lUMnUxNzhqV0FuUkNlRDZDUlA1YVVLdXpNb3dQUmI2Wjh1MHFvYmE3TVNsZE42UFd4aW5SazMxR0o1RGE4aU03UU9zUXBpQlpfNllkaEJDU0lqdU1mcDJqT2dDeVAwZ3VvTXNEYnFJbERmRzIyTTc1ell5aWp3MXc?oc=5",
+   "url": "https://news.google.com/rss/articles/CBMinwFBVV95cUxQeUFyT21XOTRsczhMazZzS3BUNDZWSUw0X21BSWFOU2Itc0RKQmlodlQ0WWlwNlY3VnJ6UVdFYnA1OWw0RFRpMUxMS2J5c29WQ3FvVEdwcS15RU1vY0hxVzI2ejFhdG1rU3dWU1p5UTJXTGU5ODlTNU8zOVlTdDNQNUFnNmdEUkVMbjBnbnFjOWcwZ3ZyOGhHak5tNDdGdVk?oc=5",
    "published": "2026-09-17T07:00Z",
    "source": "Google News: FMD in Uganda",
    "source_kind": "news",
@@ -789,7 +787,7 @@
    "title": "Animal Feeds Act 2024",
    "url": "https://www.agriculture.go.ug/animal-feeds-act-2024/?utm_source=rss&utm_medium=rss&utm_campaign=animal-feeds-act-2024",
    "published": "2024-09-24T10:39Z",
-   "source": "MAAIF (agriculture.go.ug), site search: animal disease",
+   "source": "MAAIF (agriculture.go.ug), site search: cattle",
    "source_kind": "official",
    "publisher": "MAAIF",
    "body": "MAAIF",
