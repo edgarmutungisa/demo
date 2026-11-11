@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-10T21:57Z",
+ "generated_at": "2026-11-11T04:15Z",
  "note": "Titles, dates and links exactly as published by each source. Always open the source and follow your District Veterinary Officer.",
  "kept_previous": false,
  "sources": [
@@ -444,8 +444,8 @@
    "name": "Google News: livestock quarantines and vaccination in Uganda",
    "url": "https://news.google.com/rss/search?q=Uganda+%28livestock+OR+cattle+OR+animals%29+%28quarantine+OR+vaccination+OR+%22movement+ban%22+OR+outbreak+OR+MAAIF%29+when%3A90d&hl=en-UG&gl=UG&ceid=UG%3Aen",
    "ok": true,
-   "items_read": 28,
-   "kept": 1,
+   "items_read": 29,
+   "kept": 2,
    "too_old": 0,
    "undated": 0,
    "untrusted_publisher": 14,
@@ -629,6 +629,19 @@
    "category": "outbreak",
    "districts": [
     "Adjumani"
+   ]
+  },
+  {
+   "id": "115b3e5ea209",
+   "title": "MAAIF lifts Kalangala pig quarantine following African swine fever containment",
+   "url": "https://news.google.com/rss/articles/CBMizgFBVV95cUxPMHFHakZpamJaT2tBYUhzT0tUSWRuSmU4NzVMNFZBRmtVNG9VZmh1dXFhWE82SVZ3aTZoXzVqZXM2R3lvcV9JbUplR3FGR1pHcE9oN1lOSE5Sb2JVRm8tak84aXlVeVRuZ0NUUEtXbFVBTkpSYWxBUkUtUEppMS1zY0J0M21DXzY4WnJ4RS1Mb0kxZlRwVTJONDc2blh3SkhvdGNMVllMVmpwT0RWdjdYbTQxRE9IRGw1dUdkWFdWaDY4QnQ3MEpVZW5FRjZWUQ?oc=5",
+   "published": "2026-08-23T07:00Z",
+   "source": "Google News: livestock quarantines and vaccination in Uganda",
+   "source_kind": "news",
+   "publisher": "Daily Monitor",
+   "category": "quarantine",
+   "districts": [
+    "Kalangala"
    ]
   },
   {
