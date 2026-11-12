@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-12T19:16Z",
+ "generated_at": "2026-11-12T22:02Z",
  "note": "Titles, dates and links exactly as published by each source. Always open the source and follow your District Veterinary Officer.",
  "kept_previous": false,
  "sources": [
@@ -383,8 +383,16 @@
    "id": "umc",
    "name": "Uganda Media Centre (mediacentre.go.ug)",
    "url": "https://www.mediacentre.go.ug/feed/",
-   "ok": false,
-   "error": "TimeoutError: The read operation timed out"
+   "ok": true,
+   "items_read": 40,
+   "kept": 1,
+   "too_old": 0,
+   "undated": 0,
+   "untrusted_publisher": 0,
+   "not_animal_health": 39,
+   "duplicate": 0,
+   "untrusted_names": [],
+   "newest_seen": "2026-11-11"
   },
   {
    "id": "gnews_fmd",
@@ -433,16 +441,16 @@
    "name": "Google News: livestock quarantines and vaccination in Uganda",
    "url": "https://news.google.com/rss/search?q=Uganda+%28livestock+OR+cattle+OR+animals%29+%28quarantine+OR+vaccination+OR+%22movement+ban%22+OR+outbreak+OR+MAAIF%29+when%3A90d&hl=en-UG&gl=UG&ceid=UG%3Aen",
    "ok": true,
-   "items_read": 26,
+   "items_read": 25,
    "kept": 1,
    "too_old": 0,
    "undated": 0,
-   "untrusted_publisher": 11,
+   "untrusted_publisher": 10,
    "not_animal_health": 11,
    "duplicate": 3,
    "untrusted_names": [
-    "Centers for Disease Control and Prevention | CDC (.gov)",
     "The Jerusalem Post",
+    "Centers for Disease Control and Prevention | CDC (.gov)",
     "GOV.UK blogs",
     "National Geographic",
     "BBC",
