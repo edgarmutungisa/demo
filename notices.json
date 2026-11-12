@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-12T13:33Z",
+ "generated_at": "2026-11-12T16:21Z",
  "note": "Titles, dates and links exactly as published by each source. Always open the source and follow your District Veterinary Officer.",
  "kept_previous": false,
  "sources": [
@@ -102,16 +102,8 @@
    "id": "maaif_s1",
    "name": "MAAIF (agriculture.go.ug), site search: livestock",
    "url": "https://www.agriculture.go.ug/?s=livestock&feed=rss2",
-   "ok": true,
-   "items_read": 10,
-   "kept": 0,
-   "too_old": 0,
-   "undated": 0,
-   "untrusted_publisher": 0,
-   "not_animal_health": 9,
-   "duplicate": 1,
-   "untrusted_names": [],
-   "newest_seen": "2026-04-09"
+   "ok": false,
+   "error": "HTTPError: HTTP Error 520: <none>"
   },
   {
    "id": "maaif_s2",
@@ -442,12 +434,12 @@
    "name": "Google News: livestock quarantines and vaccination in Uganda",
    "url": "https://news.google.com/rss/search?q=Uganda+%28livestock+OR+cattle+OR+animals%29+%28quarantine+OR+vaccination+OR+%22movement+ban%22+OR+outbreak+OR+MAAIF%29+when%3A90d&hl=en-UG&gl=UG&ceid=UG%3Aen",
    "ok": true,
-   "items_read": 25,
+   "items_read": 24,
    "kept": 1,
    "too_old": 0,
    "undated": 0,
    "untrusted_publisher": 11,
-   "not_animal_health": 10,
+   "not_animal_health": 9,
    "duplicate": 3,
    "untrusted_names": [
     "Centers for Disease Control and Prevention | CDC (.gov)",
