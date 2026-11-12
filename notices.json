@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-12T10:22Z",
+ "generated_at": "2026-11-12T13:33Z",
  "note": "Titles, dates and links exactly as published by each source. Always open the source and follow your District Veterinary Officer.",
  "kept_previous": false,
  "sources": [
@@ -383,8 +383,16 @@
    "id": "umc",
    "name": "Uganda Media Centre (mediacentre.go.ug)",
    "url": "https://www.mediacentre.go.ug/feed/",
-   "ok": false,
-   "error": "TimeoutError: The read operation timed out"
+   "ok": true,
+   "items_read": 40,
+   "kept": 1,
+   "too_old": 0,
+   "undated": 0,
+   "untrusted_publisher": 0,
+   "not_animal_health": 39,
+   "duplicate": 0,
+   "untrusted_names": [],
+   "newest_seen": "2026-11-11"
   },
   {
    "id": "gnews_fmd",
@@ -555,9 +563,9 @@
    "districts": []
   },
   {
-   "id": "9248b776cd49",
+   "id": "37b234d8c577",
    "title": "Foot and mouth disease hits Nakasongola",
-   "url": "https://news.google.com/rss/articles/CBMinwFBVV95cUxQeUFyT21XOTRsczhMazZzS3BUNDZWSUw0X21BSWFOU2Itc0RKQmlodlQ0WWlwNlY3VnJ6UVdFYnA1OWw0RFRpMUxMS2J5c29WQ3FvVEdwcS15RU1vY0hxVzI2ejFhdG1rU3dWU1p5UTJXTGU5ODlTNU8zOVlTdDNQNUFnNmdEUkVMbjBnbnFjOWcwZ3ZyOGhHak5tNDdGdVk?oc=5",
+   "url": "https://news.google.com/rss/articles/CBMinwFBVV95cUxPQks0MEdtODdZNWVCT1F1dXh4YkFsZ3dLMDUxRkV4Y2lUMnUxNzhqV0FuUkNlRDZDUlA1YVVLdXpNb3dQUmI2Wjh1MHFvYmE3TVNsZE42UFd4aW5SazMxR0o1RGE4aU03UU9zUXBpQlpfNllkaEJDU0lqdU1mcDJqT2dDeVAwZ3VvTXNEYnFJbERmRzIyTTc1ell5aWp3MXc?oc=5",
    "published": "2026-09-17T07:00Z",
    "source": "Google News: FMD in Uganda",
    "source_kind": "news",
