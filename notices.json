@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-12T22:02Z",
+ "generated_at": "2026-11-13T07:37Z",
  "note": "Titles, dates and links exactly as published by each source. Always open the source and follow your District Veterinary Officer.",
  "kept_previous": false,
  "sources": [
@@ -399,8 +399,8 @@
    "name": "Google News: FMD in Uganda",
    "url": "https://news.google.com/rss/search?q=Uganda+%28%22foot+and+mouth%22+OR+%22foot-and-mouth%22+OR+FMD%29+when%3A90d&hl=en-UG&gl=UG&ceid=UG%3Aen",
    "ok": true,
-   "items_read": 9,
-   "kept": 3,
+   "items_read": 8,
+   "kept": 2,
    "too_old": 0,
    "undated": 0,
    "untrusted_publisher": 3,
@@ -418,11 +418,11 @@
    "name": "Google News: other animal diseases in Uganda",
    "url": "https://news.google.com/rss/search?q=Uganda+%28anthrax+OR+%22lumpy+skin%22+OR+CBPP+OR+%22East+Coast+Fever%22+OR+%22Rift+Valley+fever%22+OR+%22swine+fever%22+OR+%22bird+flu%22+OR+%22avian+influenza%22+OR+PPR+OR+rabies+OR+trypanosomiasis%29+when%3A90d&hl=en-UG&gl=UG&ceid=UG%3Aen",
    "ok": true,
-   "items_read": 23,
+   "items_read": 24,
    "kept": 9,
    "too_old": 0,
    "undated": 0,
-   "untrusted_publisher": 8,
+   "untrusted_publisher": 9,
    "not_animal_health": 6,
    "duplicate": 0,
    "untrusted_names": [
@@ -431,6 +431,7 @@
     "Mirage News",
     "Food and Agriculture Organization",
     "Health Policy Watch",
+    "Anadolu Ajansı",
     "3tres3.com",
     "Centers for Disease Control and Prevention | CDC (.gov)"
    ],
@@ -441,14 +442,15 @@
    "name": "Google News: livestock quarantines and vaccination in Uganda",
    "url": "https://news.google.com/rss/search?q=Uganda+%28livestock+OR+cattle+OR+animals%29+%28quarantine+OR+vaccination+OR+%22movement+ban%22+OR+outbreak+OR+MAAIF%29+when%3A90d&hl=en-UG&gl=UG&ceid=UG%3Aen",
    "ok": true,
-   "items_read": 25,
+   "items_read": 27,
    "kept": 1,
    "too_old": 0,
    "undated": 0,
-   "untrusted_publisher": 10,
+   "untrusted_publisher": 12,
    "not_animal_health": 11,
    "duplicate": 3,
    "untrusted_names": [
+    "Bioengineer.org",
     "The Jerusalem Post",
     "Centers for Disease Control and Prevention | CDC (.gov)",
     "GOV.UK blogs",
@@ -460,7 +462,7 @@
     "PBS",
     "Global Biodefense"
    ],
-   "newest_seen": "2026-11-10"
+   "newest_seen": "2026-11-09"
   },
   {
    "id": "allafrica",
@@ -475,7 +477,7 @@
    "not_animal_health": 30,
    "duplicate": 0,
    "untrusted_names": [],
-   "newest_seen": "2026-11-12"
+   "newest_seen": "2026-11-13"
   }
  ],
  "notices": [
@@ -560,19 +562,6 @@
    "publisher": "Nilepost",
    "category": "advisory",
    "districts": []
-  },
-  {
-   "id": "37b234d8c577",
-   "title": "Foot and mouth disease hits Nakasongola",
-   "url": "https://news.google.com/rss/articles/CBMinwFBVV95cUxPQks0MEdtODdZNWVCT1F1dXh4YkFsZ3dLMDUxRkV4Y2lUMnUxNzhqV0FuUkNlRDZDUlA1YVVLdXpNb3dQUmI2Wjh1MHFvYmE3TVNsZE42UFd4aW5SazMxR0o1RGE4aU03UU9zUXBpQlpfNllkaEJDU0lqdU1mcDJqT2dDeVAwZ3VvTXNEYnFJbERmRzIyTTc1ell5aWp3MXc?oc=5",
-   "published": "2026-09-17T07:00Z",
-   "source": "Google News: FMD in Uganda",
-   "source_kind": "news",
-   "publisher": "NewVision.co.ug",
-   "category": "outbreak",
-   "districts": [
-    "Nakasongola"
-   ]
   },
   {
    "id": "1832a1cfe876",
