@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-13T10:18Z",
+ "generated_at": "2026-11-13T13:29Z",
  "note": "Titles, dates and links exactly as published by each source. Always open the source and follow your District Veterinary Officer.",
  "kept_previous": false,
  "sources": [
@@ -383,8 +383,16 @@
    "id": "umc",
    "name": "Uganda Media Centre (mediacentre.go.ug)",
    "url": "https://www.mediacentre.go.ug/feed/",
-   "ok": false,
-   "error": "TimeoutError: The read operation timed out"
+   "ok": true,
+   "items_read": 40,
+   "kept": 1,
+   "too_old": 0,
+   "undated": 0,
+   "untrusted_publisher": 0,
+   "not_animal_health": 39,
+   "duplicate": 0,
+   "untrusted_names": [],
+   "newest_seen": "2026-11-11"
   },
   {
    "id": "gnews_fmd",
@@ -437,8 +445,8 @@
    "kept": 1,
    "too_old": 0,
    "undated": 0,
-   "untrusted_publisher": 10,
-   "not_animal_health": 11,
+   "untrusted_publisher": 11,
+   "not_animal_health": 10,
    "duplicate": 3,
    "untrusted_names": [
     "Bioengineer.org",
