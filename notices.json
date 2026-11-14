@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-14T10:02Z",
+ "generated_at": "2026-11-14T13:13Z",
  "note": "Titles, dates and links exactly as published by each source. Always open the source and follow your District Veterinary Officer.",
  "kept_previous": false,
  "sources": [
@@ -383,16 +383,8 @@
    "id": "umc",
    "name": "Uganda Media Centre (mediacentre.go.ug)",
    "url": "https://www.mediacentre.go.ug/feed/",
-   "ok": true,
-   "items_read": 40,
-   "kept": 1,
-   "too_old": 0,
-   "undated": 0,
-   "untrusted_publisher": 0,
-   "not_animal_health": 39,
-   "duplicate": 0,
-   "untrusted_names": [],
-   "newest_seen": "2026-11-11"
+   "ok": false,
+   "error": "TimeoutError: The read operation timed out"
   },
   {
    "id": "gnews_fmd",
@@ -418,11 +410,11 @@
    "name": "Google News: other animal diseases in Uganda",
    "url": "https://news.google.com/rss/search?q=Uganda+%28anthrax+OR+%22lumpy+skin%22+OR+CBPP+OR+%22East+Coast+Fever%22+OR+%22Rift+Valley+fever%22+OR+%22swine+fever%22+OR+%22bird+flu%22+OR+%22avian+influenza%22+OR+PPR+OR+rabies+OR+trypanosomiasis%29+when%3A90d&hl=en-UG&gl=UG&ceid=UG%3Aen",
    "ok": true,
-   "items_read": 27,
+   "items_read": 26,
    "kept": 9,
    "too_old": 0,
    "undated": 0,
-   "untrusted_publisher": 12,
+   "untrusted_publisher": 11,
    "not_animal_health": 6,
    "duplicate": 0,
    "untrusted_names": [
@@ -443,11 +435,11 @@
    "name": "Google News: livestock quarantines and vaccination in Uganda",
    "url": "https://news.google.com/rss/search?q=Uganda+%28livestock+OR+cattle+OR+animals%29+%28quarantine+OR+vaccination+OR+%22movement+ban%22+OR+outbreak+OR+MAAIF%29+when%3A90d&hl=en-UG&gl=UG&ceid=UG%3Aen",
    "ok": true,
-   "items_read": 22,
+   "items_read": 24,
    "kept": 1,
    "too_old": 0,
    "undated": 0,
-   "untrusted_publisher": 9,
+   "untrusted_publisher": 11,
    "not_animal_health": 9,
    "duplicate": 3,
    "untrusted_names": [
@@ -455,6 +447,7 @@
     "Centers for Disease Control and Prevention | CDC (.gov)",
     "BBC",
     "GOV.UK blogs",
+    "National Geographic",
     "Barbados Today",
     "CIDRAP",
     "CABI Digital Library",
