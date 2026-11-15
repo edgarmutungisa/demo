@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-15T15:55Z",
+ "generated_at": "2026-11-15T19:03Z",
  "note": "Titles, dates and links exactly as published by each source. Always open the source and follow your District Veterinary Officer.",
  "kept_previous": false,
  "sources": [
@@ -323,8 +323,17 @@
    "id": "naro_s1",
    "name": "NARO (naro.go.ug), site search: cattle",
    "url": "https://www.naro.go.ug/?s=cattle&feed=rss2",
-   "ok": false,
-   "error": "HTTPError: HTTP Error 500: Internal Server Error"
+   "ok": true,
+   "items_read": 10,
+   "kept": 2,
+   "too_old": 0,
+   "undated": 0,
+   "untrusted_publisher": 0,
+   "not_animal_health": 4,
+   "duplicate": 0,
+   "untrusted_names": [],
+   "newest_seen": "2025-08-19",
+   "older_than_latest": 4
   },
   {
    "id": "uwa",
@@ -425,12 +434,12 @@
    "name": "Google News: livestock quarantines and vaccination in Uganda",
    "url": "https://news.google.com/rss/search?q=Uganda+%28livestock+OR+cattle+OR+animals%29+%28quarantine+OR+vaccination+OR+%22movement+ban%22+OR+outbreak+OR+MAAIF%29+when%3A90d&hl=en-UG&gl=UG&ceid=UG%3Aen",
    "ok": true,
-   "items_read": 22,
+   "items_read": 23,
    "kept": 1,
    "too_old": 0,
    "undated": 0,
    "untrusted_publisher": 10,
-   "not_animal_health": 7,
+   "not_animal_health": 8,
    "duplicate": 4,
    "untrusted_names": [
     "Centers for Disease Control and Prevention | CDC (.gov)",
@@ -522,17 +531,6 @@
    "districts": []
   },
   {
-   "id": "b83b21d449b1",
-   "title": "Uganda Steps Up Rabies Elimination Efforts Ahead of 2030 Target",
-   "url": "https://news.google.com/rss/articles/CBMipAFBVV95cUxOTm5VNzRCSWtZMFJJcHUtNzduTkh5SDRDajlZd3dPdEh4U2xweXRTTkhiR3NQSTlfNUhRVWlRWTNNMnE5S0NoZWp3Q1pfUkJRdWJldjJjemhVdzJRMXZwTFVLY2tqOVNtV1RrMG1xT3JqTkRzcm9wcWFncjlPQ2FtSk1wbVNjZ0wybklJeXRjeElMSVZtUEZYakVGOW1aSV9xYnFMVNIBrAFBVV95cUxNcllOellZcnpJQVZ4eXBtRTBEdEpCMkxkUkI5YjIyUktWMTItekFFN2xGcHNSR2pJOTFhNDE1MUdCWVJlZTRuTjhWaUNjYTA2MHh5T3hIZ1lqRTRPVEYxNGNmSzNYZkZtSHJuOGNnOUtRXzJVSUZidUswcEhZeUtGMVVUTW90WEIxdWZIOXZwVEhfUEdZYTNJUGNqb0RqbnBKSkh3b0tHZjdiQ3hr?oc=5",
-   "published": "2026-09-23T07:00Z",
-   "source": "Google News: other animal diseases in Uganda",
-   "source_kind": "news",
-   "publisher": "Nilepost",
-   "category": "advisory",
-   "districts": []
-  },
-  {
    "id": "2c7c1754a864",
    "title": "Minister Warns Rabies Is a ‘Death Sentence’ as Uganda Targets 2030 Eradication",
    "url": "https://news.google.com/rss/articles/CBMitgFBVV95cUxOOUlUVzNaLTA2MEkzdnVTb0ZNdjZlVUdCc2lSNHI3aXZfMllvdm1nODVmbUtqSVlLOE5vOF9jRGRua0hEeVRLTnlrS29ONzl3eS0xUDFRemdPRDFUU0ZmWDZmLUlKWEZKMGRQaG5VV1JQQjZoaU5ZRWJsSWVqYVZiRzV4MzFPbkM0OGVrUUdGR19ndklfMU4tQXY3QThUczc3ZTBRYUNEd19EUXZXUW1UZnFZWEJtQdIBvgFBVV95cUxPTFBTcGdsY3pOYWg3cUVFelk4Tzc5NE9YU3F3Q2YzTkx4RmVrcHEtcE9GODR5eEZhT3FoR0FEQmJzUElDYURtTkI2MDk1MFozamxBTG5VSUVKV2EyYnFIaVFDLTBSQy1HMk5PSmtjUU92MnVJT3loemNOR2ZadUxRSXJhOUFRTHF2QXkxdTY1RlZmc1RfRmNBelRMX2hjQ3VSM3M4NkNJWTVQNTBfenpSZDJrbTZidXNwNUE3RWZR?oc=5",
@@ -541,6 +539,17 @@
    "source_kind": "news",
    "publisher": "Nilepost",
    "category": "outbreak",
+   "districts": []
+  },
+  {
+   "id": "b83b21d449b1",
+   "title": "Uganda Steps Up Rabies Elimination Efforts Ahead of 2030 Target",
+   "url": "https://news.google.com/rss/articles/CBMipAFBVV95cUxOTm5VNzRCSWtZMFJJcHUtNzduTkh5SDRDajlZd3dPdEh4U2xweXRTTkhiR3NQSTlfNUhRVWlRWTNNMnE5S0NoZWp3Q1pfUkJRdWJldjJjemhVdzJRMXZwTFVLY2tqOVNtV1RrMG1xT3JqTkRzcm9wcWFncjlPQ2FtSk1wbVNjZ0wybklJeXRjeElMSVZtUEZYakVGOW1aSV9xYnFMVNIBrAFBVV95cUxNcllOellZcnpJQVZ4eXBtRTBEdEpCMkxkUkI5YjIyUktWMTItekFFN2xGcHNSR2pJOTFhNDE1MUdCWVJlZTRuTjhWaUNjYTA2MHh5T3hIZ1lqRTRPVEYxNGNmSzNYZkZtSHJuOGNnOUtRXzJVSUZidUswcEhZeUtGMVVUTW90WEIxdWZIOXZwVEhfUEdZYTNJUGNqb0RqbnBKSkh3b0tHZjdiQ3hr?oc=5",
+   "published": "2026-09-23T07:00Z",
+   "source": "Google News: other animal diseases in Uganda",
+   "source_kind": "news",
+   "publisher": "Nilepost",
+   "category": "advisory",
    "districts": []
   },
   {
