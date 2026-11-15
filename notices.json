@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-15T10:03Z",
+ "generated_at": "2026-11-15T13:14Z",
  "note": "Titles, dates and links exactly as published by each source. Always open the source and follow your District Veterinary Officer.",
  "kept_previous": false,
  "sources": [
@@ -293,22 +293,47 @@
    "id": "naro",
    "name": "NARO (naro.go.ug)",
    "url": "https://www.naro.go.ug/feed/",
-   "ok": false,
-   "error": "URLError: <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: certificate has expired (_ssl.c:1011)>"
+   "ok": true,
+   "items_read": 10,
+   "kept": 0,
+   "too_old": 0,
+   "undated": 0,
+   "untrusted_publisher": 0,
+   "not_animal_health": 10,
+   "duplicate": 0,
+   "untrusted_names": [],
+   "newest_seen": "2026-11-05"
   },
   {
    "id": "naro_s0",
    "name": "NARO (naro.go.ug), site search: livestock",
    "url": "https://www.naro.go.ug/?s=livestock&feed=rss2",
-   "ok": false,
-   "error": "URLError: <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: certificate has expired (_ssl.c:1011)>"
+   "ok": true,
+   "items_read": 10,
+   "kept": 3,
+   "too_old": 0,
+   "undated": 0,
+   "untrusted_publisher": 0,
+   "not_animal_health": 6,
+   "duplicate": 0,
+   "untrusted_names": [],
+   "newest_seen": "2026-08-17"
   },
   {
    "id": "naro_s1",
    "name": "NARO (naro.go.ug), site search: cattle",
    "url": "https://www.naro.go.ug/?s=cattle&feed=rss2",
-   "ok": false,
-   "error": "URLError: <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: certificate has expired (_ssl.c:1011)>"
+   "ok": true,
+   "items_read": 10,
+   "kept": 2,
+   "too_old": 0,
+   "undated": 0,
+   "untrusted_publisher": 0,
+   "not_animal_health": 4,
+   "duplicate": 0,
+   "untrusted_names": [],
+   "newest_seen": "2025-08-19",
+   "older_than_latest": 4
   },
   {
    "id": "uwa",
@@ -385,15 +410,14 @@
    "name": "Google News: other animal diseases in Uganda",
    "url": "https://news.google.com/rss/search?q=Uganda+%28anthrax+OR+%22lumpy+skin%22+OR+CBPP+OR+%22East+Coast+Fever%22+OR+%22Rift+Valley+fever%22+OR+%22swine+fever%22+OR+%22bird+flu%22+OR+%22avian+influenza%22+OR+PPR+OR+rabies+OR+trypanosomiasis%29+when%3A90d&hl=en-UG&gl=UG&ceid=UG%3Aen",
    "ok": true,
-   "items_read": 24,
+   "items_read": 23,
    "kept": 8,
    "too_old": 0,
    "undated": 0,
-   "untrusted_publisher": 10,
+   "untrusted_publisher": 9,
    "not_animal_health": 6,
    "duplicate": 0,
    "untrusted_names": [
-    "Bioengineer.org",
     "EurekAlert!",
     "Daily Nation",
     "Food and Agriculture Organization",
@@ -403,7 +427,7 @@
     "3tres3.com",
     "Centers for Disease Control and Prevention | CDC (.gov)"
    ],
-   "newest_seen": "2026-11-13"
+   "newest_seen": "2026-11-11"
   },
   {
    "id": "gnews_control",
@@ -414,20 +438,19 @@
    "kept": 1,
    "too_old": 0,
    "undated": 0,
-   "untrusted_publisher": 10,
-   "not_animal_health": 7,
-   "duplicate": 3,
+   "untrusted_publisher": 8,
+   "not_animal_health": 8,
+   "duplicate": 4,
    "untrusted_names": [
     "Centers for Disease Control and Prevention | CDC (.gov)",
     "BBC",
     "GOV.UK blogs",
-    "National Geographic",
     "Barbados Today",
     "CIDRAP",
     "CABI Digital Library",
     "PBS"
    ],
-   "newest_seen": "2026-11-12"
+   "newest_seen": "2026-11-13"
   },
   {
    "id": "allafrica",
@@ -507,17 +530,6 @@
    "districts": []
   },
   {
-   "id": "2c7c1754a864",
-   "title": "Minister Warns Rabies Is a ‘Death Sentence’ as Uganda Targets 2030 Eradication",
-   "url": "https://news.google.com/rss/articles/CBMitgFBVV95cUxOOUlUVzNaLTA2MEkzdnVTb0ZNdjZlVUdCc2lSNHI3aXZfMllvdm1nODVmbUtqSVlLOE5vOF9jRGRua0hEeVRLTnlrS29ONzl3eS0xUDFRemdPRDFUU0ZmWDZmLUlKWEZKMGRQaG5VV1JQQjZoaU5ZRWJsSWVqYVZiRzV4MzFPbkM0OGVrUUdGR19ndklfMU4tQXY3QThUczc3ZTBRYUNEd19EUXZXUW1UZnFZWEJtQdIBvgFBVV95cUxPTFBTcGdsY3pOYWg3cUVFelk4Tzc5NE9YU3F3Q2YzTkx4RmVrcHEtcE9GODR5eEZhT3FoR0FEQmJzUElDYURtTkI2MDk1MFozamxBTG5VSUVKV2EyYnFIaVFDLTBSQy1HMk5PSmtjUU92MnVJT3loemNOR2ZadUxRSXJhOUFRTHF2QXkxdTY1RlZmc1RfRmNBelRMX2hjQ3VSM3M4NkNJWTVQNTBfenpSZDJrbTZidXNwNUE3RWZR?oc=5",
-   "published": "2026-09-23T07:00Z",
-   "source": "Google News: other animal diseases in Uganda",
-   "source_kind": "news",
-   "publisher": "Nilepost",
-   "category": "outbreak",
-   "districts": []
-  },
-  {
    "id": "b83b21d449b1",
    "title": "Uganda Steps Up Rabies Elimination Efforts Ahead of 2030 Target",
    "url": "https://news.google.com/rss/articles/CBMipAFBVV95cUxOTm5VNzRCSWtZMFJJcHUtNzduTkh5SDRDajlZd3dPdEh4U2xweXRTTkhiR3NQSTlfNUhRVWlRWTNNMnE5S0NoZWp3Q1pfUkJRdWJldjJjemhVdzJRMXZwTFVLY2tqOVNtV1RrMG1xT3JqTkRzcm9wcWFncjlPQ2FtSk1wbVNjZ0wybklJeXRjeElMSVZtUEZYakVGOW1aSV9xYnFMVNIBrAFBVV95cUxNcllOellZcnpJQVZ4eXBtRTBEdEpCMkxkUkI5YjIyUktWMTItekFFN2xGcHNSR2pJOTFhNDE1MUdCWVJlZTRuTjhWaUNjYTA2MHh5T3hIZ1lqRTRPVEYxNGNmSzNYZkZtSHJuOGNnOUtRXzJVSUZidUswcEhZeUtGMVVUTW90WEIxdWZIOXZwVEhfUEdZYTNJUGNqb0RqbnBKSkh3b0tHZjdiQ3hr?oc=5",
@@ -526,6 +538,17 @@
    "source_kind": "news",
    "publisher": "Nilepost",
    "category": "advisory",
+   "districts": []
+  },
+  {
+   "id": "2c7c1754a864",
+   "title": "Minister Warns Rabies Is a ‘Death Sentence’ as Uganda Targets 2030 Eradication",
+   "url": "https://news.google.com/rss/articles/CBMitgFBVV95cUxOOUlUVzNaLTA2MEkzdnVTb0ZNdjZlVUdCc2lSNHI3aXZfMllvdm1nODVmbUtqSVlLOE5vOF9jRGRua0hEeVRLTnlrS29ONzl3eS0xUDFRemdPRDFUU0ZmWDZmLUlKWEZKMGRQaG5VV1JQQjZoaU5ZRWJsSWVqYVZiRzV4MzFPbkM0OGVrUUdGR19ndklfMU4tQXY3QThUczc3ZTBRYUNEd19EUXZXUW1UZnFZWEJtQdIBvgFBVV95cUxPTFBTcGdsY3pOYWg3cUVFelk4Tzc5NE9YU3F3Q2YzTkx4RmVrcHEtcE9GODR5eEZhT3FoR0FEQmJzUElDYURtTkI2MDk1MFozamxBTG5VSUVKV2EyYnFIaVFDLTBSQy1HMk5PSmtjUU92MnVJT3loemNOR2ZadUxRSXJhOUFRTHF2QXkxdTY1RlZmc1RfRmNBelRMX2hjQ3VSM3M4NkNJWTVQNTBfenpSZDJrbTZidXNwNUE3RWZR?oc=5",
+   "published": "2026-09-23T07:00Z",
+   "source": "Google News: other animal diseases in Uganda",
+   "source_kind": "news",
+   "publisher": "Nilepost",
+   "category": "outbreak",
    "districts": []
   },
   {
