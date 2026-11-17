@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-16T22:05Z",
+ "generated_at": "2026-11-17T07:40Z",
  "note": "Titles, dates and links exactly as published by each source. Always open the source and follow your District Veterinary Officer.",
  "kept_previous": false,
  "sources": [
@@ -302,7 +302,7 @@
    "not_animal_health": 10,
    "duplicate": 0,
    "untrusted_names": [],
-   "newest_seen": "2026-11-05"
+   "newest_seen": "2026-11-17"
   },
   {
    "id": "naro_s0",
@@ -400,14 +400,15 @@
    "url": "https://news.google.com/rss/search?q=Uganda+%28%22foot+and+mouth%22+OR+%22foot-and-mouth%22+OR+FMD%29+when%3A90d&hl=en-UG&gl=UG&ceid=UG%3Aen",
    "ok": true,
    "items_read": 10,
-   "kept": 3,
+   "kept": 2,
    "too_old": 0,
    "undated": 0,
-   "untrusted_publisher": 3,
+   "untrusted_publisher": 4,
    "not_animal_health": 4,
    "duplicate": 0,
    "untrusted_names": [
     "3tres3.com",
+    "Philstar.com",
     "Dairy Business Middle East & Africa",
     "Africa24 TV"
    ],
@@ -440,21 +441,22 @@
    "name": "Google News: livestock quarantines and vaccination in Uganda",
    "url": "https://news.google.com/rss/search?q=Uganda+%28livestock+OR+cattle+OR+animals%29+%28quarantine+OR+vaccination+OR+%22movement+ban%22+OR+outbreak+OR+MAAIF%29+when%3A90d&hl=en-UG&gl=UG&ceid=UG%3Aen",
    "ok": true,
-   "items_read": 24,
-   "kept": 1,
+   "items_read": 23,
+   "kept": 2,
    "too_old": 0,
    "undated": 0,
    "untrusted_publisher": 11,
-   "not_animal_health": 8,
-   "duplicate": 4,
+   "not_animal_health": 7,
+   "duplicate": 3,
    "untrusted_names": [
     "Nature World News",
     "Centers for Disease Control and Prevention | CDC (.gov)",
     "AP News",
-    "BBC",
     "GOV.UK blogs",
     "National Geographic",
+    "BBC",
     "Barbados Today",
+    "3tres3.com",
     "CIDRAP",
     "CABI Digital Library",
     "PBS"
@@ -474,7 +476,7 @@
    "not_animal_health": 30,
    "duplicate": 0,
    "untrusted_names": [],
-   "newest_seen": "2026-11-16"
+   "newest_seen": "2026-11-17"
   }
  ],
  "notices": [
@@ -495,7 +497,7 @@
    "title": "Nakasongola Farmers Raise Alarm Over FMD Vaccine, Demand Government Explanation",
    "url": "https://news.google.com/rss/articles/CBMivAFBVV95cUxONVJydEQ2UVZMdUljOEpRZnk2RzlyV3lVLVR5b0IxVU1aVVV4VFUteDRjRnNjUDZJRTZHMHBIZ1lXZGloYWhHU01QZm1ud2NyWFFjU1lDekFZcjNSUlJoTHI5cFlZbmpUT3Vrd2lfYzRxYm9EWS1oZUMzVmVHZGMwR1gyUEQ2TkNCOU1valhXYU5uM0cxcVgxakk2d19nQ2lFVml0eXhNVEVoaDEyX0l1VVZ3RmRfZVpfRDA4VNIBxAFBVV95cUxPYWdPcnNXSkYwbGhZTVg2TlJmVVRWQmZ2dVg1ZGhxYU5COVVCT1J5R2tTVTFZX1I3R0txMjFCcFY5bm1YamFNU1dqV3lCeXpCMjZrNlctRmp2X054LVZaMjFvQlRGT0dCdHlDMjVBcEFDMWRqcV9FWWNBOHpkaUl2bFVwYkt3dlZSMWRPeHMwSkItNDYwb0JWTDZ1dk9XR1lFYzBERXQxQzdCT0p5YmJuTTFIeEtOZWlEaTRQX25rSXkzNV9v?oc=5",
    "published": "2026-10-29T07:00Z",
-   "source": "Google News: FMD in Uganda",
+   "source": "Google News: livestock quarantines and vaccination in Uganda",
    "source_kind": "news",
    "publisher": "Nilepost",
    "category": "advisory",
