@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-17T10:25Z",
+ "generated_at": "2026-11-17T13:31Z",
  "note": "Titles, dates and links exactly as published by each source. Always open the source and follow your District Veterinary Officer.",
  "kept_previous": false,
  "sources": [
@@ -38,8 +38,17 @@
    "id": "maaif_p3",
    "name": "MAAIF (agriculture.go.ug), older posts page 3",
    "url": "https://www.agriculture.go.ug/feed/?paged=3",
-   "ok": false,
-   "error": "TimeoutError: The read operation timed out"
+   "ok": true,
+   "items_read": 10,
+   "kept": 0,
+   "too_old": 0,
+   "undated": 0,
+   "untrusted_publisher": 0,
+   "not_animal_health": 0,
+   "duplicate": 0,
+   "untrusted_names": [],
+   "newest_seen": "2022-08-02",
+   "older_than_latest": 10
   },
   {
    "id": "maaif_p4",
@@ -77,8 +86,17 @@
    "id": "maaif_s0",
    "name": "MAAIF (agriculture.go.ug), site search: foot and mouth",
    "url": "https://www.agriculture.go.ug/?s=foot+and+mouth&feed=rss2",
-   "ok": false,
-   "error": "HTTPError: HTTP Error 520: <none>"
+   "ok": true,
+   "items_read": 10,
+   "kept": 0,
+   "too_old": 0,
+   "undated": 0,
+   "untrusted_publisher": 0,
+   "not_animal_health": 0,
+   "duplicate": 0,
+   "untrusted_names": [],
+   "newest_seen": "2022-04-25",
+   "older_than_latest": 10
   },
   {
    "id": "maaif_s1",
@@ -172,7 +190,7 @@
    "not_animal_health": 20,
    "duplicate": 0,
    "untrusted_names": [],
-   "newest_seen": "2026-11-12"
+   "newest_seen": "2026-11-13"
   },
   {
    "id": "moh_s0",
@@ -275,8 +293,16 @@
    "id": "naro",
    "name": "NARO (naro.go.ug)",
    "url": "https://www.naro.go.ug/feed/",
-   "ok": false,
-   "error": "HTTPError: HTTP Error 500: Internal Server Error"
+   "ok": true,
+   "items_read": 10,
+   "kept": 0,
+   "too_old": 0,
+   "undated": 0,
+   "untrusted_publisher": 0,
+   "not_animal_health": 10,
+   "duplicate": 0,
+   "untrusted_names": [],
+   "newest_seen": "2026-11-17"
   },
   {
    "id": "naro_s0",
@@ -366,14 +392,15 @@
    "url": "https://news.google.com/rss/search?q=Uganda+%28%22foot+and+mouth%22+OR+%22foot-and-mouth%22+OR+FMD%29+when%3A90d&hl=en-UG&gl=UG&ceid=UG%3Aen",
    "ok": true,
    "items_read": 10,
-   "kept": 3,
+   "kept": 2,
    "too_old": 0,
    "undated": 0,
-   "untrusted_publisher": 3,
+   "untrusted_publisher": 4,
    "not_animal_health": 4,
    "duplicate": 0,
    "untrusted_names": [
     "3tres3.com",
+    "Philstar.com",
     "Dairy Business Middle East & Africa",
     "Africa24 TV"
    ],
@@ -384,11 +411,11 @@
    "name": "Google News: other animal diseases in Uganda",
    "url": "https://news.google.com/rss/search?q=Uganda+%28anthrax+OR+%22lumpy+skin%22+OR+CBPP+OR+%22East+Coast+Fever%22+OR+%22Rift+Valley+fever%22+OR+%22swine+fever%22+OR+%22bird+flu%22+OR+%22avian+influenza%22+OR+PPR+OR+rabies+OR+trypanosomiasis%29+when%3A90d&hl=en-UG&gl=UG&ceid=UG%3Aen",
    "ok": true,
-   "items_read": 20,
+   "items_read": 21,
    "kept": 7,
    "too_old": 0,
    "undated": 0,
-   "untrusted_publisher": 8,
+   "untrusted_publisher": 9,
    "not_animal_health": 5,
    "duplicate": 0,
    "untrusted_names": [
@@ -407,12 +434,12 @@
    "url": "https://news.google.com/rss/search?q=Uganda+%28livestock+OR+cattle+OR+animals%29+%28quarantine+OR+vaccination+OR+%22movement+ban%22+OR+outbreak+OR+MAAIF%29+when%3A90d&hl=en-UG&gl=UG&ceid=UG%3Aen",
    "ok": true,
    "items_read": 23,
-   "kept": 1,
+   "kept": 2,
    "too_old": 0,
    "undated": 0,
    "untrusted_publisher": 11,
    "not_animal_health": 7,
-   "duplicate": 4,
+   "duplicate": 3,
    "untrusted_names": [
     "Nature World News",
     "Centers for Disease Control and Prevention | CDC (.gov)",
@@ -461,7 +488,7 @@
    "title": "Nakasongola Farmers Raise Alarm Over FMD Vaccine, Demand Government Explanation",
    "url": "https://news.google.com/rss/articles/CBMivAFBVV95cUxONVJydEQ2UVZMdUljOEpRZnk2RzlyV3lVLVR5b0IxVU1aVVV4VFUteDRjRnNjUDZJRTZHMHBIZ1lXZGloYWhHU01QZm1ud2NyWFFjU1lDekFZcjNSUlJoTHI5cFlZbmpUT3Vrd2lfYzRxYm9EWS1oZUMzVmVHZGMwR1gyUEQ2TkNCOU1valhXYU5uM0cxcVgxakk2d19nQ2lFVml0eXhNVEVoaDEyX0l1VVZ3RmRfZVpfRDA4VNIBxAFBVV95cUxPYWdPcnNXSkYwbGhZTVg2TlJmVVRWQmZ2dVg1ZGhxYU5COVVCT1J5R2tTVTFZX1I3R0txMjFCcFY5bm1YamFNU1dqV3lCeXpCMjZrNlctRmp2X054LVZaMjFvQlRGT0dCdHlDMjVBcEFDMWRqcV9FWWNBOHpkaUl2bFVwYkt3dlZSMWRPeHMwSkItNDYwb0JWTDZ1dk9XR1lFYzBERXQxQzdCT0p5YmJuTTFIeEtOZWlEaTRQX25rSXkzNV9v?oc=5",
    "published": "2026-10-29T07:00Z",
-   "source": "Google News: FMD in Uganda",
+   "source": "Google News: livestock quarantines and vaccination in Uganda",
    "source_kind": "news",
    "publisher": "Nilepost",
    "category": "advisory",
