@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-18T04:15Z",
+ "generated_at": "2026-11-18T07:38Z",
  "note": "Titles, dates and links exactly as published by each source. Always open the source and follow your District Veterinary Officer.",
  "kept_previous": false,
  "sources": [
@@ -419,36 +419,39 @@
    "name": "Google News: other animal diseases in Uganda",
    "url": "https://news.google.com/rss/search?q=Uganda+%28anthrax+OR+%22lumpy+skin%22+OR+CBPP+OR+%22East+Coast+Fever%22+OR+%22Rift+Valley+fever%22+OR+%22swine+fever%22+OR+%22bird+flu%22+OR+%22avian+influenza%22+OR+PPR+OR+rabies+OR+trypanosomiasis%29+when%3A90d&hl=en-UG&gl=UG&ceid=UG%3Aen",
    "ok": true,
-   "items_read": 21,
+   "items_read": 24,
    "kept": 7,
    "too_old": 0,
    "undated": 0,
-   "untrusted_publisher": 9,
+   "untrusted_publisher": 12,
    "not_animal_health": 5,
    "duplicate": 0,
    "untrusted_names": [
+    "The Hawk",
     "EurekAlert!",
     "Food and Agriculture Organization",
+    "ReliefWeb",
     "Health Policy Watch",
     "Anadolu Ajansı",
     "3tres3.com",
     "Centers for Disease Control and Prevention | CDC (.gov)"
    ],
-   "newest_seen": "2026-11-11"
+   "newest_seen": "2026-11-18"
   },
   {
    "id": "gnews_control",
    "name": "Google News: livestock quarantines and vaccination in Uganda",
    "url": "https://news.google.com/rss/search?q=Uganda+%28livestock+OR+cattle+OR+animals%29+%28quarantine+OR+vaccination+OR+%22movement+ban%22+OR+outbreak+OR+MAAIF%29+when%3A90d&hl=en-UG&gl=UG&ceid=UG%3Aen",
    "ok": true,
-   "items_read": 21,
-   "kept": 1,
+   "items_read": 23,
+   "kept": 2,
    "too_old": 0,
    "undated": 0,
-   "untrusted_publisher": 10,
+   "untrusted_publisher": 11,
    "not_animal_health": 7,
    "duplicate": 3,
    "untrusted_names": [
+    "DairyNews.today",
     "Nature World News",
     "Centers for Disease Control and Prevention | CDC (.gov)",
     "AP News",
@@ -459,7 +462,7 @@
     "CIDRAP",
     "CABI Digital Library"
    ],
-   "newest_seen": "2026-11-16"
+   "newest_seen": "2026-11-17"
   },
   {
    "id": "allafrica",
@@ -474,7 +477,7 @@
    "not_animal_health": 30,
    "duplicate": 0,
    "untrusted_names": [],
-   "newest_seen": "2026-11-17"
+   "newest_seen": "2026-11-18"
   }
  ],
  "notices": [
@@ -489,6 +492,19 @@
    "body": "Uganda Media Centre",
    "category": "livestock",
    "districts": []
+  },
+  {
+   "id": "e13fa6ae93a7",
+   "title": "Nakasongola Farmers Raise Alarm Over FMD Vaccine, Demand Government Explanation",
+   "url": "https://news.google.com/rss/articles/CBMivAFBVV95cUxONVJydEQ2UVZMdUljOEpRZnk2RzlyV3lVLVR5b0IxVU1aVVV4VFUteDRjRnNjUDZJRTZHMHBIZ1lXZGloYWhHU01QZm1ud2NyWFFjU1lDekFZcjNSUlJoTHI5cFlZbmpUT3Vrd2lfYzRxYm9EWS1oZUMzVmVHZGMwR1gyUEQ2TkNCOU1valhXYU5uM0cxcVgxakk2d19nQ2lFVml0eXhNVEVoaDEyX0l1VVZ3RmRfZVpfRDA4VNIBxAFBVV95cUxPYWdPcnNXSkYwbGhZTVg2TlJmVVRWQmZ2dVg1ZGhxYU5COVVCT1J5R2tTVTFZX1I3R0txMjFCcFY5bm1YamFNU1dqV3lCeXpCMjZrNlctRmp2X054LVZaMjFvQlRGT0dCdHlDMjVBcEFDMWRqcV9FWWNBOHpkaUl2bFVwYkt3dlZSMWRPeHMwSkItNDYwb0JWTDZ1dk9XR1lFYzBERXQxQzdCT0p5YmJuTTFIeEtOZWlEaTRQX25rSXkzNV9v?oc=5",
+   "published": "2026-10-29T07:00Z",
+   "source": "Google News: livestock quarantines and vaccination in Uganda",
+   "source_kind": "news",
+   "publisher": "Nilepost",
+   "category": "advisory",
+   "districts": [
+    "Nakasongola"
+   ]
   },
   {
    "id": "ca29636e7fdb",
