@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-21T11:17Z",
+ "generated_at": "2026-11-21T19:24Z",
  "note": "Titles, dates and links exactly as published by each source. Always open the source and follow your District Veterinary Officer.",
  "kept_previous": false,
  "sources": [
@@ -293,16 +293,8 @@
    "id": "naro",
    "name": "NARO (naro.go.ug)",
    "url": "https://www.naro.go.ug/feed/",
-   "ok": true,
-   "items_read": 10,
-   "kept": 0,
-   "too_old": 0,
-   "undated": 0,
-   "untrusted_publisher": 0,
-   "not_animal_health": 10,
-   "duplicate": 0,
-   "untrusted_names": [],
-   "newest_seen": "2026-11-17"
+   "ok": false,
+   "error": "HTTPError: HTTP Error 500: Internal Server Error"
   },
   {
    "id": "naro_s0",
@@ -384,33 +376,26 @@
    "name": "Uganda Media Centre (mediacentre.go.ug)",
    "url": "https://www.mediacentre.go.ug/feed/",
    "ok": false,
-   "error": "HTTPError: HTTP Error 508: Loop Detected"
+   "error": "TimeoutError: The read operation timed out"
   },
   {
    "id": "gnews_fmd",
    "name": "Google News: FMD in Uganda",
    "url": "https://news.google.com/rss/search?q=Uganda+%28%22foot+and+mouth%22+OR+%22foot-and-mouth%22+OR+FMD%29+when%3A90d&hl=en-UG&gl=UG&ceid=UG%3Aen",
    "ok": true,
-   "items_read": 30,
-   "kept": 4,
+   "items_read": 10,
+   "kept": 3,
    "too_old": 0,
    "undated": 0,
-   "untrusted_publisher": 15,
-   "not_animal_health": 10,
-   "duplicate": 1,
+   "untrusted_publisher": 3,
+   "not_animal_health": 4,
+   "duplicate": 0,
    "untrusted_names": [
-    "The Tanzania Times",
-    "UG Diplomat",
-    "ReliefWeb",
-    "The Namibian",
     "3tres3.com",
-    "Inquirer.net",
     "Philstar.com",
-    "Manila Bulletin",
-    "Kilimo News",
     "Dairy Business Middle East & Africa"
    ],
-   "newest_seen": "2026-11-19"
+   "newest_seen": "2026-11-09"
   },
   {
    "id": "gnews_diseases",
@@ -446,13 +431,14 @@
    "kept": 1,
    "too_old": 0,
    "undated": 0,
-   "untrusted_publisher": 11,
-   "not_animal_health": 8,
+   "untrusted_publisher": 12,
+   "not_animal_health": 7,
    "duplicate": 3,
    "untrusted_names": [
     "Capital FM Africa",
     "Dairy Business Middle East & Africa",
     "Bioengineer.org",
+    "DairyNews.today",
     "Nature World News",
     "Britannica",
     "Centers for Disease Control and Prevention | CDC (.gov)",
@@ -494,13 +480,13 @@
    "districts": []
   },
   {
-   "id": "74c703654c55",
-   "title": "Nakasongola Pastoralists Alarmed by FMD Infections in Immunized Cattle, Doubt Vaccine Effectiveness",
-   "url": "https://news.google.com/rss/articles/CBMi0gFBVV95cUxNaE9HN0JZOGN3UHJwcDhpcFNrRnhzdElmeTlfRnBVLWpxcGRXWEttaG95Mm9QS01VXzhyZFY5T2NRTlVZSy1tcUF3emk2S1NSTW9LVHVnOWcxRzhmVFVSM01fZ0NZejBESVRFRElleEd2a3ZneElYTWVDdFY0S2tRLUJHNXdXcDRta0U5SnBwN05Ed096TXA4bmwxejBrYkNPV3RxOWJXSk5FazcyN3BUazNRSE52VlRRbHdiRnVVbDVGVUwwZUZkTHNTUHpqcXM0aEE?oc=5",
+   "id": "e13fa6ae93a7",
+   "title": "Nakasongola Farmers Raise Alarm Over FMD Vaccine, Demand Government Explanation",
+   "url": "https://news.google.com/rss/articles/CBMivAFBVV95cUxONVJydEQ2UVZMdUljOEpRZnk2RzlyV3lVLVR5b0IxVU1aVVV4VFUteDRjRnNjUDZJRTZHMHBIZ1lXZGloYWhHU01QZm1ud2NyWFFjU1lDekFZcjNSUlJoTHI5cFlZbmpUT3Vrd2lfYzRxYm9EWS1oZUMzVmVHZGMwR1gyUEQ2TkNCOU1valhXYU5uM0cxcVgxakk2d19nQ2lFVml0eXhNVEVoaDEyX0l1VVZ3RmRfZVpfRDA4VNIBxAFBVV95cUxPYWdPcnNXSkYwbGhZTVg2TlJmVVRWQmZ2dVg1ZGhxYU5COVVCT1J5R2tTVTFZX1I3R0txMjFCcFY5bm1YamFNU1dqV3lCeXpCMjZrNlctRmp2X054LVZaMjFvQlRGT0dCdHlDMjVBcEFDMWRqcV9FWWNBOHpkaUl2bFVwYkt3dlZSMWRPeHMwSkItNDYwb0JWTDZ1dk9XR1lFYzBERXQxQzdCT0p5YmJuTTFIeEtOZWlEaTRQX25rSXkzNV9v?oc=5",
    "published": "2026-10-29T07:00Z",
    "source": "Google News: FMD in Uganda",
    "source_kind": "news",
-   "publisher": "Uganda Radionetwork",
+   "publisher": "Nilepost",
    "category": "advisory",
    "districts": [
     "Nakasongola"
@@ -562,19 +548,6 @@
    "publisher": "Nilepost",
    "category": "outbreak",
    "districts": []
-  },
-  {
-   "id": "37b234d8c577",
-   "title": "Foot and mouth disease hits Nakasongola",
-   "url": "https://news.google.com/rss/articles/CBMinwFBVV95cUxPQks0MEdtODdZNWVCT1F1dXh4YkFsZ3dLMDUxRkV4Y2lUMnUxNzhqV0FuUkNlRDZDUlA1YVVLdXpNb3dQUmI2Wjh1MHFvYmE3TVNsZE42UFd4aW5SazMxR0o1RGE4aU03UU9zUXBpQlpfNllkaEJDU0lqdU1mcDJqT2dDeVAwZ3VvTXNEYnFJbERmRzIyTTc1ell5aWp3MXc?oc=5",
-   "published": "2026-09-17T07:00Z",
-   "source": "Google News: FMD in Uganda",
-   "source_kind": "news",
-   "publisher": "NewVision.co.ug",
-   "category": "outbreak",
-   "districts": [
-    "Nakasongola"
-   ]
   },
   {
    "id": "1832a1cfe876",
