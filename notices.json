@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-23T13:01Z",
+ "generated_at": "2026-11-24T02:18Z",
  "note": "Titles, dates and links exactly as published by each source. Always open the source and follow your District Veterinary Officer.",
  "kept_previous": false,
  "sources": [
@@ -293,22 +293,47 @@
    "id": "naro",
    "name": "NARO (naro.go.ug)",
    "url": "https://www.naro.go.ug/feed/",
-   "ok": false,
-   "error": "URLError: <urlopen error timed out>"
+   "ok": true,
+   "items_read": 10,
+   "kept": 0,
+   "too_old": 0,
+   "undated": 0,
+   "untrusted_publisher": 0,
+   "not_animal_health": 10,
+   "duplicate": 0,
+   "untrusted_names": [],
+   "newest_seen": "2026-11-17"
   },
   {
    "id": "naro_s0",
    "name": "NARO (naro.go.ug), site search: livestock",
    "url": "https://www.naro.go.ug/?s=livestock&feed=rss2",
-   "ok": false,
-   "error": "URLError: <urlopen error timed out>"
+   "ok": true,
+   "items_read": 10,
+   "kept": 3,
+   "too_old": 0,
+   "undated": 0,
+   "untrusted_publisher": 0,
+   "not_animal_health": 6,
+   "duplicate": 0,
+   "untrusted_names": [],
+   "newest_seen": "2026-08-17"
   },
   {
    "id": "naro_s1",
    "name": "NARO (naro.go.ug), site search: cattle",
    "url": "https://www.naro.go.ug/?s=cattle&feed=rss2",
-   "ok": false,
-   "error": "URLError: <urlopen error timed out>"
+   "ok": true,
+   "items_read": 10,
+   "kept": 2,
+   "too_old": 0,
+   "undated": 0,
+   "untrusted_publisher": 0,
+   "not_animal_health": 4,
+   "duplicate": 0,
+   "untrusted_names": [],
+   "newest_seen": "2025-08-19",
+   "older_than_latest": 4
   },
   {
    "id": "uwa",
@@ -374,13 +399,13 @@
    "name": "Google News: FMD in Uganda",
    "url": "https://news.google.com/rss/search?q=Uganda+%28%22foot+and+mouth%22+OR+%22foot-and-mouth%22+OR+FMD%29+when%3A90d&hl=en-UG&gl=UG&ceid=UG%3Aen",
    "ok": true,
-   "items_read": 10,
+   "items_read": 9,
    "kept": 3,
    "too_old": 0,
    "undated": 0,
    "untrusted_publisher": 2,
    "not_animal_health": 4,
-   "duplicate": 1,
+   "duplicate": 0,
    "untrusted_names": [
     "3tres3.com",
     "Philstar.com"
@@ -392,22 +417,29 @@
    "name": "Google News: other animal diseases in Uganda",
    "url": "https://news.google.com/rss/search?q=Uganda+%28anthrax+OR+%22lumpy+skin%22+OR+CBPP+OR+%22East+Coast+Fever%22+OR+%22Rift+Valley+fever%22+OR+%22swine+fever%22+OR+%22bird+flu%22+OR+%22avian+influenza%22+OR+PPR+OR+rabies+OR+trypanosomiasis%29+when%3A90d&hl=en-UG&gl=UG&ceid=UG%3Aen",
    "ok": true,
-   "items_read": 20,
+   "items_read": 34,
    "kept": 5,
    "too_old": 0,
    "undated": 0,
-   "untrusted_publisher": 9,
-   "not_animal_health": 5,
+   "untrusted_publisher": 19,
+   "not_animal_health": 9,
    "duplicate": 1,
    "untrusted_names": [
-    "CIDRAP",
+    "Eye Radio",
     "Bioengineer.org",
-    "Nature",
+    "Ветеринария и жизнь",
+    "The Standard Media Group",
+    "The Eastleigh Voice",
+    "Business Daily",
+    "ethiopiatoday.net",
+    "Addis Standard",
+    "Facebook",
+    "Mirage News",
     "Food and Agriculture Organization",
-    "ReliefWeb",
     "Health Policy Watch",
-    "Anadolu Ajansı",
-    "3tres3.com"
+    "All about feed",
+    "3tres3.com",
+    "Anadolu Ajansı"
    ],
    "newest_seen": "2026-11-20"
   },
@@ -416,25 +448,28 @@
    "name": "Google News: livestock quarantines and vaccination in Uganda",
    "url": "https://news.google.com/rss/search?q=Uganda+%28livestock+OR+cattle+OR+animals%29+%28quarantine+OR+vaccination+OR+%22movement+ban%22+OR+outbreak+OR+MAAIF%29+when%3A90d&hl=en-UG&gl=UG&ceid=UG%3Aen",
    "ok": true,
-   "items_read": 19,
+   "items_read": 21,
    "kept": 1,
    "too_old": 0,
    "undated": 0,
-   "untrusted_publisher": 9,
-   "not_animal_health": 6,
+   "untrusted_publisher": 12,
+   "not_animal_health": 5,
    "duplicate": 3,
    "untrusted_names": [
-    "Centers for Disease Control and Prevention | CDC (.gov)",
+    "Dairy Business Middle East & Africa",
+    "World Vision",
+    "DairyNews.today",
     "Nature World News",
-    "Britannica",
+    "The Jerusalem Post",
     "Nature",
+    "Centers for Disease Control and Prevention | CDC (.gov)",
     "GOV.UK blogs",
     "BBC",
     "Barbados Today",
     "3tres3.com",
     "CABI Digital Library"
    ],
-   "newest_seen": "2026-11-20"
+   "newest_seen": "2026-11-19"
   },
   {
    "id": "allafrica",
@@ -449,7 +484,7 @@
    "not_animal_health": 30,
    "duplicate": 0,
    "untrusted_names": [],
-   "newest_seen": "2026-11-23"
+   "newest_seen": "2026-11-24"
   }
  ],
  "notices": [
@@ -466,13 +501,13 @@
    "districts": []
   },
   {
-   "id": "74c703654c55",
-   "title": "Nakasongola Pastoralists Alarmed by FMD Infections in Immunized Cattle, Doubt Vaccine Effectiveness",
-   "url": "https://news.google.com/rss/articles/CBMi0gFBVV95cUxNaE9HN0JZOGN3UHJwcDhpcFNrRnhzdElmeTlfRnBVLWpxcGRXWEttaG95Mm9QS01VXzhyZFY5T2NRTlVZSy1tcUF3emk2S1NSTW9LVHVnOWcxRzhmVFVSM01fZ0NZejBESVRFRElleEd2a3ZneElYTWVDdFY0S2tRLUJHNXdXcDRta0U5SnBwN05Ed096TXA4bmwxejBrYkNPV3RxOWJXSk5FazcyN3BUazNRSE52VlRRbHdiRnVVbDVGVUwwZUZkTHNTUHpqcXM0aEE?oc=5",
+   "id": "e13fa6ae93a7",
+   "title": "Nakasongola Farmers Raise Alarm Over FMD Vaccine, Demand Government Explanation",
+   "url": "https://news.google.com/rss/articles/CBMivAFBVV95cUxONVJydEQ2UVZMdUljOEpRZnk2RzlyV3lVLVR5b0IxVU1aVVV4VFUteDRjRnNjUDZJRTZHMHBIZ1lXZGloYWhHU01QZm1ud2NyWFFjU1lDekFZcjNSUlJoTHI5cFlZbmpUT3Vrd2lfYzRxYm9EWS1oZUMzVmVHZGMwR1gyUEQ2TkNCOU1valhXYU5uM0cxcVgxakk2d19nQ2lFVml0eXhNVEVoaDEyX0l1VVZ3RmRfZVpfRDA4VNIBxAFBVV95cUxPYWdPcnNXSkYwbGhZTVg2TlJmVVRWQmZ2dVg1ZGhxYU5COVVCT1J5R2tTVTFZX1I3R0txMjFCcFY5bm1YamFNU1dqV3lCeXpCMjZrNlctRmp2X054LVZaMjFvQlRGT0dCdHlDMjVBcEFDMWRqcV9FWWNBOHpkaUl2bFVwYkt3dlZSMWRPeHMwSkItNDYwb0JWTDZ1dk9XR1lFYzBERXQxQzdCT0p5YmJuTTFIeEtOZWlEaTRQX25rSXkzNV9v?oc=5",
    "published": "2026-10-29T07:00Z",
    "source": "Google News: FMD in Uganda",
    "source_kind": "news",
-   "publisher": "Uganda Radionetwork",
+   "publisher": "Nilepost",
    "category": "advisory",
    "districts": [
     "Nakasongola"
