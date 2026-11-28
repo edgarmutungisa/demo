@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-27T23:31Z",
+ "generated_at": "2026-11-28T07:58Z",
  "note": "Titles, dates and links exactly as published by each source. Always open the source and follow your District Veterinary Officer.",
  "kept_previous": false,
  "sources": [
@@ -24,15 +24,15 @@
    "url": "https://www.agriculture.go.ug/feed/?paged=2",
    "ok": true,
    "items_read": 10,
-   "kept": 1,
+   "kept": 0,
    "too_old": 0,
    "undated": 0,
    "untrusted_publisher": 0,
-   "not_animal_health": 6,
+   "not_animal_health": 5,
    "duplicate": 0,
    "untrusted_names": [],
    "newest_seen": "2025-08-21",
-   "older_than_latest": 3
+   "older_than_latest": 5
   },
   {
    "id": "maaif_p3",
@@ -165,8 +165,17 @@
    "id": "maaif_s5",
    "name": "MAAIF (agriculture.go.ug), site search: animal disease",
    "url": "https://www.agriculture.go.ug/?s=animal+disease&feed=rss2",
-   "ok": false,
-   "error": "TimeoutError: The read operation timed out"
+   "ok": true,
+   "items_read": 10,
+   "kept": 1,
+   "too_old": 0,
+   "undated": 0,
+   "untrusted_publisher": 0,
+   "not_animal_health": 1,
+   "duplicate": 2,
+   "untrusted_names": [],
+   "newest_seen": "2025-10-20",
+   "older_than_latest": 6
   },
   {
    "id": "moh",
@@ -351,11 +360,11 @@
    "url": "https://www.mediacentre.go.ug/feed/",
    "ok": true,
    "items_read": 40,
-   "kept": 1,
+   "kept": 2,
    "too_old": 0,
    "undated": 0,
    "untrusted_publisher": 0,
-   "not_animal_health": 38,
+   "not_animal_health": 37,
    "duplicate": 1,
    "untrusted_names": [],
    "newest_seen": "2026-11-26"
@@ -383,21 +392,31 @@
    "name": "Google News: other animal diseases in Uganda",
    "url": "https://news.google.com/rss/search?q=Uganda+%28anthrax+OR+%22lumpy+skin%22+OR+CBPP+OR+%22East+Coast+Fever%22+OR+%22Rift+Valley+fever%22+OR+%22swine+fever%22+OR+%22bird+flu%22+OR+%22avian+influenza%22+OR+PPR+OR+rabies+OR+trypanosomiasis%29+when%3A90d&hl=en-UG&gl=UG&ceid=UG%3Aen",
    "ok": true,
-   "items_read": 18,
+   "items_read": 36,
    "kept": 6,
    "too_old": 0,
    "undated": 0,
-   "untrusted_publisher": 6,
-   "not_animal_health": 6,
+   "untrusted_publisher": 21,
+   "not_animal_health": 9,
    "duplicate": 0,
    "untrusted_names": [
+    "Al Jazeera",
+    "Eye Radio",
     "Bioengineer.org",
-    "Daily Nation",
+    "Ветеринария и жизнь",
+    "CTV News",
+    "The Standard Media Group",
+    "Nature",
+    "The Eastleigh Voice",
     "Food and Agriculture Organization",
-    "Health Policy Watch",
-    "Anadolu Ajansı"
+    "Business Daily",
+    "ethiopiatoday.net",
+    "Facebook",
+    "Addis Standard",
+    "Mirage News",
+    "Health Policy Watch"
    ],
-   "newest_seen": "2026-11-25"
+   "newest_seen": "2026-11-28"
   },
   {
    "id": "gnews_control",
@@ -408,9 +427,9 @@
    "kept": 1,
    "too_old": 0,
    "undated": 0,
-   "untrusted_publisher": 11,
+   "untrusted_publisher": 12,
    "not_animal_health": 7,
-   "duplicate": 3,
+   "duplicate": 2,
    "untrusted_names": [
     "Gavi, the Vaccine Alliance",
     "CTV News",
@@ -422,6 +441,7 @@
     "World Vision",
     "Centers for Disease Control and Prevention | CDC (.gov)",
     "GOV.UK blogs",
+    "National Geographic",
     "BBC"
    ],
    "newest_seen": "2026-11-27"
@@ -443,6 +463,18 @@
   }
  ],
  "notices": [
+  {
+   "id": "2440be288c06",
+   "title": "President Museveni To Award South Africa's Ramaphosa For Promoting Uganda’s Ankole Cattle",
+   "url": "https://www.mediacentre.go.ug/press-room/president-museveni-to-award-south-africas-ramaphosa-for-promoting-ugandas-ankole-cattle",
+   "published": "2026-11-26T21:00Z",
+   "source": "Uganda Media Centre (mediacentre.go.ug)",
+   "source_kind": "official",
+   "publisher": "Uganda Media Centre",
+   "body": "Uganda Media Centre",
+   "category": "livestock",
+   "districts": []
+  },
   {
    "id": "3cff6e0feafa",
    "title": "Govt Launches Pre-Shipment Dairy Inspections to Cut Shipment Rejections",
